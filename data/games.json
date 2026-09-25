@@ -33,6 +33,17 @@
     "description": "The Ultimate Thumb War Style Blob Duel - for PC and Mobile."
   },
   {
+    "id": "neon-tetris",
+    "title": "Neon Tetris",
+    "category": "Puzzle",
+    "code": "NT",
+    "accent": "#00f0ff",
+    "coverUrl": "/uploads/cover-neon-tetris.svg",
+    "url": "games/neon-tetris.html",
+    "featured": true,
+    "description": "Tetris neon klasik dengan fitur Ghost Piece, Hard Drop screen-shake, efek partikel, dan level speed progresif."
+  },
+  {
     "id": "block-odyssey",
     "title": "Block Odyssey: Matrix Blast",
     "category": "Puzzle",

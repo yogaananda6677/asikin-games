@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" width="640" height="400">
+  <defs>
+    <radialGradient id="ntBg" cx="0.5" cy="0.35" r="0.7">
+      <stop offset="0%" stop-color="#141428"/>
+      <stop offset="100%" stop-color="#080810"/>
+    </radialGradient>
+    <linearGradient id="ntTitle" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#00f0ff"/>
+      <stop offset="100%" stop-color="#c678dd"/>
+    </linearGradient>
+    <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+  <rect width="640" height="400" fill="url(#ntBg)"/>
+
+  <!-- Subtle Grid Dots -->
+  <g fill="#ffffff" fill-opacity="0.06">
+    <circle cx="180" cy="100" r="1.5"/><circle cx="220" cy="100" r="1.5"/><circle cx="260" cy="100" r="1.5"/><circle cx="300" cy="100" r="1.5"/><circle cx="340" cy="100" r="1.5"/><circle cx="380" cy="100" r="1.5"/><circle cx="420" cy="100" r="1.5"/><circle cx="460" cy="100" r="1.5"/>
+    <circle cx="180" cy="140" r="1.5"/><circle cx="220" cy="140" r="1.5"/><circle cx="260" cy="140" r="1.5"/><circle cx="300" cy="140" r="1.5"/><circle cx="340" cy="140" r="1.5"/><circle cx="380" cy="140" r="1.5"/><circle cx="420" cy="140" r="1.5"/><circle cx="460" cy="140" r="1.5"/>
+    <circle cx="180" cy="180" r="1.5"/><circle cx="220" cy="180" r="1.5"/><circle cx="260" cy="180" r="1.5"/><circle cx="300" cy="180" r="1.5"/><circle cx="340" cy="180" r="1.5"/><circle cx="380" cy="180" r="1.5"/><circle cx="420" cy="180" r="1.5"/><circle cx="460" cy="180" r="1.5"/>
+  </g>
+
+  <!-- Glowing Tetromino Pieces -->
+  <!-- T-Piece (#c678dd) -->
+  <g transform="translate(230, 86)" filter="url(#neonGlow)">
+    <rect x="40" y="0" width="38" height="38" rx="4" fill="#c678dd"/>
+    <rect x="0" y="40" width="38" height="38" rx="4" fill="#c678dd"/>
+    <rect x="40" y="40" width="38" height="38" rx="4" fill="#c678dd"/>
+    <rect x="80" y="40" width="38" height="38" rx="4" fill="#c678dd"/>
+  </g>
+
+  <!-- I-Piece (#00f0ff) -->
+  <g transform="translate(390, 66)" filter="url(#neonGlow)">
+    <rect x="0" y="0" width="38" height="38" rx="4" fill="#00f0ff"/>
+    <rect x="0" y="40" width="38" height="38" rx="4" fill="#00f0ff"/>
+    <rect x="0" y="80" width="38" height="38" rx="4" fill="#00f0ff"/>
+    <rect x="0" y="120" width="38" height="38" rx="4" fill="#00f0ff"/>
+  </g>
+
+  <!-- Ghost Outline Landing Indicator -->
+  <g transform="translate(230, 226)" stroke="#c678dd" stroke-width="2" stroke-dasharray="5 4" fill="none" opacity="0.55">
+    <rect x="40" y="0" width="38" height="38" rx="4"/>
+    <rect x="0" y="40" width="38" height="38" rx="4"/>
+    <rect x="40" y="40" width="38" height="38" rx="4"/>
+    <rect x="80" y="40" width="38" height="38" rx="4"/>
+  </g>
+
+  <!-- Bottom Settled Stack -->
+  <g transform="translate(150, 266)">
+    <rect x="0" y="0" width="38" height="38" rx="4" fill="#f7a44f"/>
+    <rect x="0" y="40" width="38" height="38" rx="4" fill="#f7a44f"/>
+    <rect x="40" y="40" width="38" height="38" rx="4" fill="#f7a44f"/>
+    <rect x="80" y="40" width="38" height="38" rx="4" fill="#52f76e"/>
+    <rect x="120" y="40" width="38" height="38" rx="4" fill="#52f76e"/>
+    <rect x="160" y="40" width="38" height="38" rx="4" fill="#f74f6e"/>
+    <rect x="200" y="40" width="38" height="38" rx="4" fill="#f7e14f"/>
+    <rect x="240" y="40" width="38" height="38" rx="4" fill="#f7e14f"/>
+    <rect x="280" y="40" width="38" height="38" rx="4" fill="#4f8ef7"/>
+    <rect x="280" y="0" width="38" height="38" rx="4" fill="#4f8ef7"/>
+  </g>
+
+  <text x="320" y="368" fill="url(#ntTitle)" font-family="system-ui, sans-serif" font-size="22" font-weight="700" text-anchor="middle" letter-spacing="8">NEON TETRIS</text>
+</svg>
