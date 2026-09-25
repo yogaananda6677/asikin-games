@@ -1,9 +1,0 @@
-{
-  "name": "asikin-games",
-  "version": "1.0.0",
-  "description": "ASIKIN GAMES — Interactive Web Game Catalog & Player",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  }
-}
