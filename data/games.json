@@ -5,7 +5,7 @@
     "category": "Arcade",
     "code": "MD",
     "accent": "#6366f1",
-    "coverUrl": "/uploads/1790340569225-gemini_generated_image_2k9hkp2k9hkp2k9h.jpg",
+    "coverUrl": "/uploads/cover-mendaki-matematika.svg",
     "url": "https://chat.z.ai/space/w1r4b8w4ta31-art",
     "featured": true,
     "description": "Belajar matematika dengan bermain seperti mendaki"
@@ -16,7 +16,7 @@
     "category": "Sports",
     "code": "FB",
     "accent": "#6366f1",
-    "coverUrl": "/uploads/1790339051709-chatgpt-image-sep-25-2026-07_05_29-pm.png",
+    "coverUrl": "/uploads/cover-football.svg",
     "url": "https://chat.z.ai/space/w1p4s8pkgmz0-art",
     "featured": true,
     "description": "Pertandingan sepak bola arcade cepat — cetak gol dan raih mahkota juara."
@@ -27,10 +27,20 @@
     "category": "Arcade",
     "code": "DB",
     "accent": "#6366f1",
-    "coverUrl": "/uploads/1790339636747-gemini_generated_image_tw9ws9tw9ws9tw9w.jpg",
+    "coverUrl": "/uploads/cover-duel-blob.svg",
     "url": "https://chat.z.ai/space/s1t4e8b2zdg0-art",
     "featured": true,
     "description": "The Ultimate Thumb War Style Blob Duel - for PC and Mobile."
+  },
+  {
+    "id": "wordy-woods-zai",
+    "title": "Wordy Woods",
+    "category": "Puzzle",
+    "code": "WW",
+    "coverUrl": "/uploads/cover-wordy-woods.svg",
+    "url": "https://chat.z.ai/space/a1f458qxwka1-art",
+    "featured": true,
+    "description": "Belajar kosakata dan menyusun kata Bahasa Inggris seru lewat petualangan edukatif bersama burung hantu pintar di Wordy Woods."
   },
   {
     "id": "neon-tetris",
