@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Internal Access — ASIKIN GAMES</title>
+  <link rel="icon" type="image/png" href="../assets/img/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    (function() {
+      const saved = localStorage.getItem("asikin-color-scheme");
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      const theme = saved || (prefersDark ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+      document.querySelector('meta[name="color-scheme"]').content = theme;
+    })();
+  </script>
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/catalog.css" />
+  <link rel="stylesheet" href="../assets/css/admin.css" />
+</head>
+<body>
+  <div class="auth-page">
+    <div style="width:100%;max-width:400px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <a href="../index.html" class="ghost-link">
+        <span class="icon-slot" data-icon="arrowRight" style="transform:rotate(180deg)"></span>
+        <span>Kembali</span>
+      </a>
+      <button type="button" id="themeToggleBtn" class="icon-button" aria-label="Ganti Mode Gelap / Terang"></button>
+    </div>
+
+    <div class="auth-card">
+      <div class="auth-header">
+        <img src="../assets/img/logo.png" alt="ASIKIN GAMES" style="height:44px;width:auto;display:block;margin-bottom:12px;object-fit:contain" />
+        <span class="auth-badge">RESTRICTED</span>
+        <h1>Console Authentication</h1>
+        <p>Masukkan kredensial otorisasi untuk melanjutkan.</p>
+      </div>
+
+      <div id="authError" class="auth-error"></div>
+
+      <form id="loginForm">
+        <div class="form-field">
+          <label for="adminUser">Identifier</label>
+          <input
+            type="text"
+            id="adminUser"
+            class="form-input"
+            placeholder="Masukkan ID"
+            required
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="adminPass">Passkey</label>
+          <input
+            type="password"
+            id="adminPass"
+            class="form-input"
+            placeholder="••••••••••"
+            required
+            autocomplete="off"
+          />
+        </div>
+
+        <button type="submit" class="btn-full">Verifikasi Akses</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="../assets/js/icons.js"></script>
+  <script src="../assets/js/theme.js"></script>
+  <script src="../assets/js/store.js"></script>
+  <script src="../assets/js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "cleanUrls": false,
+  "rewrites": [
+    { "source": "/vault", "destination": "/admin/login.html" },
+    { "source": "/superadmin", "destination": "/admin/login.html" },
+    { "source": "/admin", "destination": "/admin/login.html" },
+    { "source": "/api/games", "destination": "/data/games.json" }
+  ]
+}

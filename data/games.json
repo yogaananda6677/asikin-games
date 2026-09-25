@@ -1,0 +1,79 @@
+[
+  {
+    "id": "game-1790340569228",
+    "title": "Mendaki dengan Matematika",
+    "category": "Arcade",
+    "code": "MD",
+    "accent": "#6366f1",
+    "coverUrl": "/uploads/1790340569225-gemini_generated_image_2k9hkp2k9hkp2k9h.jpg",
+    "url": "https://chat.z.ai/space/w1r4b8w4ta31-art",
+    "featured": true,
+    "description": "Belajar matematika dengan bermain seperti mendaki"
+  },
+  {
+    "id": "zai-space-01",
+    "title": "Football",
+    "category": "Sports",
+    "code": "FB",
+    "accent": "#6366f1",
+    "coverUrl": "/uploads/1790339051709-chatgpt-image-sep-25-2026-07_05_29-pm.png",
+    "url": "https://chat.z.ai/space/w1p4s8pkgmz0-art",
+    "featured": true,
+    "description": "Pertandingan sepak bola arcade cepat — cetak gol dan raih mahkota juara."
+  },
+  {
+    "id": "zai-space-02",
+    "title": "Duel Blob!",
+    "category": "Arcade",
+    "code": "DB",
+    "accent": "#6366f1",
+    "coverUrl": "/uploads/1790339636747-gemini_generated_image_tw9ws9tw9ws9tw9w.jpg",
+    "url": "https://chat.z.ai/space/s1t4e8b2zdg0-art",
+    "featured": true,
+    "description": "The Ultimate Thumb War Style Blob Duel - for PC and Mobile."
+  },
+  {
+    "id": "block-odyssey",
+    "title": "Block Odyssey: Matrix Blast",
+    "category": "Puzzle",
+    "code": "BO",
+    "accent": "#38bdf8",
+    "coverUrl": "/uploads/cover-block-odyssey.svg",
+    "url": "games/block-odyssey.html",
+    "featured": true,
+    "description": "Puzzle matriks 8x8 dengan fitur rotasi blok, mode Crystal Quest, Combo Streak, serta skill Bomb & Laser."
+  },
+  {
+    "id": "cyber-strike",
+    "title": "Cyber Strike: Arena",
+    "category": "Action",
+    "code": "CS",
+    "accent": "#f43f5e",
+    "coverUrl": "/uploads/cover-cyber-strike.svg",
+    "url": "games/cyber-strike.html",
+    "featured": true,
+    "description": "Arena shooter taktis 360 derajat dengan senjata Railgun, Shotgun, dan kemampuan Dash."
+  },
+  {
+    "id": "void-runner",
+    "title": "Void Runner",
+    "category": "Action",
+    "code": "VR",
+    "accent": "#f43f5e",
+    "coverUrl": "/uploads/cover-void-runner.svg",
+    "url": "games/void-runner.html",
+    "featured": true,
+    "description": "Refleks cepat melewati gelombang rintangan di ruang hampa."
+  },
+  {
+    "id": "monolith-blocks",
+    "title": "Monolith Memory Grid",
+    "category": "Puzzle",
+    "code": "MM",
+    "accent": "#6366f1",
+    "coverUrl": "/uploads/cover-monolith-grid.svg",
+    "url": "games/monolith-blocks.html",
+    "featured": true,
+    "description": "Uji fokus dan ingatan visual melalui matriks blok berurutan."
+  }
+]

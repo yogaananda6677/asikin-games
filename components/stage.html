@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Stage Viewport — ASIKIN.GAMES</title>
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/catalog.css" />
+</head>
+<body style="padding:20px">
+  <section class="stage-card" style="max-width:980px;margin:0 auto">
+    <div class="stage-viewport" id="stageViewport">
+      <iframe
+        id="gameFrame"
+        class="game-frame"
+        src="../games/void-runner.html"
+        title="Game Stage Viewport"
+        allowfullscreen
+      ></iframe>
+    </div>
+
+    <div class="stage-bar">
+      <div class="stage-meta">
+        <div class="stage-code" id="activeCode">VR</div>
+        <div class="stage-text">
+          <h1 id="activeTitle">Void Runner</h1>
+          <p id="activeCategory">Action · Kotak layar game polos tanpa bar URL browser</p>
+        </div>
+      </div>
+
+      <div class="stage-actions">
+        <a href="../index.html" class="action-btn">Buka Katalog Lengkap</a>
+        <button type="button" class="action-btn primary" onclick="document.getElementById('stageViewport').requestFullscreen?.()">
+          <span>Fullscreen</span>
+        </button>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

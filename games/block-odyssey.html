@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Block Odyssey: Matrix Blast</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #080b12;
+    color: #f1f5f9;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    user-select: none;
+  }
+  .topbar {
+    height: 52px;
+    padding: 0 18px;
+    background: rgba(13, 17, 28, 0.94);
+    border-bottom: 1px solid #1e273d;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .mode-tabs {
+    display: flex;
+    gap: 6px;
+  }
+  .mode-btn {
+    padding: 6px 12px;
+    border-radius: 7px;
+    border: 1px solid #26314d;
+    background: #111726;
+    color: #94a3b8;
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.15s ease;
+  }
+  .mode-btn.active {
+    background: #38bdf8;
+    color: #080b12;
+    border-color: #38bdf8;
+  }
+  .stats-row {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .stat-item {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .stat-item span {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: #64748b;
+  }
+  .stat-item b {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 15px;
+    font-weight: 800;
+    color: #f8fafc;
+  }
+  .arena {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 205px minmax(0, 1fr) 225px;
+    gap: 16px;
+    max-width: 960px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 14px 18px;
+    align-items: center;
+  }
+  .side-card {
+    background: #0f1524;
+    border: 1px solid #1e2942;
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .side-title {
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #64748b;
+    text-transform: uppercase;
+  }
+  .skill-btn {
+    width: 100%;
+    padding: 10px 11px;
+    border-radius: 10px;
+    border: 1px solid #24314f;
+    background: #141c30;
+    color: #e2e8f0;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: 0.15s ease;
+  }
+  .skill-btn:hover:not(:disabled) {
+    border-color: #38bdf8;
+    background: #19233c;
+  }
+  .skill-btn.armed {
+    border-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.16);
+  }
+  .skill-btn:disabled {
+    opacity: 0.42;
+    cursor: not-allowed;
+  }
+  .skill-info b {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .skill-info small {
+    font-size: 10.5px;
+    color: #94a3b8;
+  }
+  .skill-charge {
+    font-family: monospace;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 3px 7px;
+    border-radius: 6px;
+    background: rgba(56, 189, 248, 0.14);
+    color: #38bdf8;
+  }
+  .board-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .board {
+    display: grid;
+    grid-template-columns: repeat(8, 42px);
+    grid-template-rows: repeat(8, 42px);
+    gap: 5px;
+    padding: 10px;
+    background: #0d1220;
+    border: 1.5px solid #23304f;
+    border-radius: 16px;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
+  }
+  .cell {
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    background: #141c2f;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    position: relative;
+    transition: transform 0.12s ease, background-color 0.12s ease;
+    cursor: pointer;
+  }
+  .cell.filled {
+    border-color: rgba(255, 255, 255, 0.28);
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.25);
+  }
+  .cell.crystal::after {
+    content: "";
+    position: absolute;
+    inset: 9px;
+    transform: rotate(45deg);
+    background: #ffffff;
+    border-radius: 3px;
+    box-shadow: 0 0 10px #ffffff;
+  }
+  .cell.preview-ok {
+    background: rgba(56, 189, 248, 0.38) !important;
+    border-color: #38bdf8 !important;
+  }
+  .cell.preview-clear {
+    box-shadow: 0 0 12px #fde047, inset 0 0 8px #fde047 !important;
+  }
+  .cell.preview-bad {
+    background: rgba(244, 63, 94, 0.28) !important;
+  }
+  .dock-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .piece-slot {
+    height: 104px;
+    background: #0f1524;
+    border: 1.5px solid #1e2942;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: 0.15s ease;
+  }
+  .piece-slot:hover {
+    border-color: #38bdf8;
+  }
+  .piece-slot.selected {
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.1);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.18);
+  }
+  .piece-slot.used {
+    opacity: 0.25;
+    pointer-events: none;
+  }
+  .mini-grid {
+    display: grid;
+    gap: 3px;
+    margin: 0 auto;
+  }
+  .mini-cell {
+    width: 17px;
+    height: 17px;
+    border-radius: 4px;
+  }
+  .rot-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    border: 1px solid #283657;
+    background: #151e33;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .rot-btn:hover {
+    color: #fff;
+    border-color: #38bdf8;
+  }
+  .banner-toast {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #f59e0b;
+    color: #080b12;
+    font-family: monospace;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 99px;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.2s ease;
+  }
+  .banner-toast.show {
+    opacity: 1;
+    top: -18px;
+  }
+  .modal-over {
+    position: fixed;
+    inset: 0;
+    background: rgba(7, 9, 15, 0.86);
+    backdrop-filter: blur(5px);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px;
+    z-index: 30;
+  }
+  .modal-over.show {
+    display: flex;
+  }
+  .modal-box {
+    background: #101728;
+    border: 1px solid #283655;
+    border-radius: 16px;
+    padding: 26px;
+    max-width: 360px;
+    width: 100%;
+  }
+  .modal-box h2 {
+    font-size: 22px;
+    margin-bottom: 6px;
+  }
+  .modal-box p {
+    font-size: 13px;
+    color: #94a3b8;
+    margin-bottom: 18px;
+  }
+  .primary-btn {
+    width: 100%;
+    height: 40px;
+    border-radius: 9px;
+    border: 0;
+    background: #38bdf8;
+    color: #080b12;
+    font-weight: 800;
+    font-size: 13.5px;
+    cursor: pointer;
+  }
+  @media (max-width: 820px) {
+    .arena {
+      grid-template-columns: 1fr;
+      overflow-y: auto;
+    }
+    .dock-panel {
+      flex-direction: row;
+    }
+    .piece-slot {
+      flex: 1;
+    }
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="mode-tabs">
+      <button type="button" class="mode-btn active" id="modeClassicBtn">CLASSIC ENDLESS</button>
+      <button type="button" class="mode-btn" id="modeQuestBtn">CRYSTAL QUEST</button>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-item" id="questBox" style="display:none">
+        <span>CRYSTALS</span>
+        <b id="crystalVal" style="color:#38bdf8">0/5</b>
+      </div>
+      <div class="stat-item">
+        <span>STREAK</span>
+        <b id="streakVal" style="color:#f59e0b">x1</b>
+      </div>
+      <div class="stat-item">
+        <span>SCORE</span>
+        <b id="scoreVal">0</b>
+      </div>
+      <div class="stat-item">
+        <span>BEST</span>
+        <b id="bestVal">0</b>
+      </div>
+    </div>
+  </header>
+
+  <main class="arena">
+    <!-- Left Power-Ups -->
+    <aside class="side-card">
+      <div class="side-title">Tactical Power-Ups</div>
+      <button type="button" class="skill-btn" id="skillBomb">
+        <div class="skill-info">
+          <b>Bomb 3x3</b>
+          <small>Hancurkan area 3x3</small>
+        </div>
+        <span class="skill-charge" id="chargeBomb">2</span>
+      </button>
+
+      <button type="button" class="skill-btn" id="skillLaser">
+        <div class="skill-info">
+          <b>Laser Cross</b>
+          <small>Bersihkan 1 baris + kolom</small>
+        </div>
+        <span class="skill-charge" id="chargeLaser">1</span>
+      </button>
+
+      <button type="button" class="skill-btn" id="skillShuffle">
+        <div class="skill-info">
+          <b>Reroll Dock</b>
+          <small>Acak 3 bentuk blok baru</small>
+        </div>
+        <span class="skill-charge" id="chargeShuffle">2</span>
+      </button>
+
+      <div style="margin-top:6px;padding-top:10px;border-top:1px solid #1e2942;font-size:11px;color:#64748b;line-height:1.45">
+        Pilih blok di kanan (atau tekan <b>R</b> untuk putar), lalu arahkan &amp; klik pada papan matriks.
+      </div>
+    </aside>
+
+    <!-- Center 8x8 Matrix Board -->
+    <section class="board-wrap">
+      <div class="banner-toast" id="comboToast">COMBO CLEAR!</div>
+      <div class="board" id="boardGrid"></div>
+    </section>
+
+    <!-- Right Polyomino Dock -->
+    <aside class="dock-panel" id="dockPanel"></aside>
+  </main>
+
+  <div class="modal-over" id="overModal">
+    <div class="modal-box">
+      <h2 id="overTitle">Tidak Ada Ruang Tersisa</h2>
+      <p id="overDesc">Skor akhir kamu tercatat di papan peringkat lokal.</p>
+      <button type="button" class="primary-btn" id="restartBtn">Main Lagi</button>
+    </div>
+  </div>
+
+<script>
+(function() {
+  const SIZE = 8;
+  const COLORS = ["#38bdf8", "#f59e0b", "#f43f5e", "#10b981", "#a855f7", "#ec4899"];
+  const SHAPES = [
+    [[1]],
+    [[1, 1]],
+    [[1, 1, 1]],
+    [[1, 1, 1, 1]],
+    [[1, 1], [1, 1]],
+    [[1, 0], [1, 0], [1, 1]],
+    [[0, 1], [0, 1], [1, 1]],
+    [[1, 1, 1], [0, 1, 0]],
+    [[1, 1, 0], [0, 1, 1]],
+    [[1, 0], [1, 1]],
+    [[1, 1, 1], [1, 0, 0]]
+  ];
+
+  let board = [];
+  let dock = [];
+  let selectedSlot = 0;
+  let activeSkill = null;
+  let gameMode = "CLASSIC";
+  let score = 0;
+  let bestScore = Number(localStorage.getItem("asikin_block_odyssey_best") || "0");
+  let streak = 1;
+  let crystalsCollected = 0;
+  let crystalTarget = 5;
+  let charges = { bomb: 2, laser: 1, shuffle: 2 };
+  let hoverCell = null;
+
+  const boardEl = document.getElementById("boardGrid");
+  const dockEl = document.getElementById("dockPanel");
+  const scoreEl = document.getElementById("scoreVal");
+  const bestEl = document.getElementById("bestVal");
+  const streakEl = document.getElementById("streakVal");
+  const crystalVal = document.getElementById("crystalVal");
+  const questBox = document.getElementById("questBox");
+  const comboToast = document.getElementById("comboToast");
+  const overModal = document.getElementById("overModal");
+  const overTitle = document.getElementById("overTitle");
+  const overDesc = document.getElementById("overDesc");
+
+  // Synth Sound
+  let audioCtx = null;
+  function tone(freq, dur = 0.12, type = "sine") {
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = type;
+      o.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      g.gain.setValueAtTime(0.06, audioCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+      o.connect(g);
+      g.connect(audioCtx.destination);
+      o.start();
+      o.stop(audioCtx.currentTime + dur);
+    } catch (_) {}
+  }
+
+  function showBanner(text) {
+    comboToast.textContent = text;
+    comboToast.classList.add("show");
+    setTimeout(() => comboToast.classList.remove("show"), 1100);
+  }
+
+  function rotateMatrix(mat) {
+    const rows = mat.length, cols = mat[0].length;
+    const res = Array.from({ length: cols }, () => Array(rows).fill(0));
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        res[c][rows - 1 - r] = mat[r][c];
+      }
+    }
+    return res;
+  }
+
+  function initGame(mode = gameMode) {
+    gameMode = mode;
+    board = Array.from({ length: SIZE }, () =>
+      Array.from({ length: SIZE }, () => ({ color: null, crystal: false }))
+    );
+    score = 0;
+    streak = 1;
+    crystalsCollected = 0;
+    crystalTarget = 5;
+    charges = { bomb: 2, laser: 1, shuffle: 2 };
+    activeSkill = null;
+    overModal.classList.remove("show");
+
+    questBox.style.display = gameMode === "QUEST" ? "flex" : "none";
+    if (gameMode === "QUEST") {
+      seedCrystals(5);
+    }
+
+    spawnDock();
+    buildBoardDom();
+    renderAll();
+  }
+
+  function seedCrystals(count) {
+    let placed = 0;
+    while (placed < count) {
+      const r = Math.floor(Math.random() * SIZE);
+      const c = Math.floor(Math.random() * SIZE);
+      if (!board[r][c].color) {
+        board[r][c] = { color: "#38bdf8", crystal: true };
+        placed++;
+      }
+    }
+  }
+
+  function spawnDock() {
+    dock = [0, 1, 2].map(() => {
+      const mat = SHAPES[Math.floor(Math.random() * SHAPES.length)];
+      const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+      return { matrix: mat, color, used: false };
+    });
+    selectedSlot = 0;
+  }
+
+  function buildBoardDom() {
+    boardEl.innerHTML = "";
+    for (let r = 0; r < SIZE; r++) {
+      for (let c = 0; c < SIZE; c++) {
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        cell.dataset.r = r;
+        cell.dataset.c = c;
+        cell.addEventListener("mouseenter", () => {
+          hoverCell = { r, c };
+          renderBoard();
+        });
+        cell.addEventListener("click", () => handleBoardClick(r, c));
+        boardEl.appendChild(cell);
+      }
+    }
+    boardEl.addEventListener("mouseleave", () => {
+      hoverCell = null;
+      renderBoard();
+    });
+  }
+
+  function canPlace(mat, r0, c0) {
+    for (let r = 0; r < mat.length; r++) {
+      for (let c = 0; c < mat[0].length; c++) {
+        if (mat[r][c]) {
+          const nr = r0 + r, nc = c0 + c;
+          if (nr < 0 || nr >= SIZE || nc < 0 || nc >= SIZE) return false;
+          if (board[nr][nc].color) return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  function handleBoardClick(r, c) {
+    if (activeSkill === "BOMB") {
+      if (charges.bomb <= 0) return;
+      charges.bomb--;
+      activeSkill = null;
+      for (let dr = -1; dr <= 1; dr++) {
+        for (let dc = -1; dc <= 1; dc++) {
+          const nr = r + dr, nc = c + dc;
+          if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE && board[nr][nc].color) {
+            if (board[nr][nc].crystal) crystalsCollected++;
+            board[nr][nc] = { color: null, crystal: false };
+            score += 15;
+          }
+        }
+      }
+      tone(220, 0.2, "sawtooth");
+      showBanner("3x3 BLAST!");
+      renderAll();
+      checkQuestWin();
+      return;
+    }
+
+    if (activeSkill === "LASER") {
+      if (charges.laser <= 0) return;
+      charges.laser--;
+      activeSkill = null;
+      for (let i = 0; i < SIZE; i++) {
+        if (board[r][i].crystal) crystalsCollected++;
+        if (board[i][c].crystal) crystalsCollected++;
+        board[r][i] = { color: null, crystal: false };
+        board[i][c] = { color: null, crystal: false };
+      }
+      score += 120;
+      tone(520, 0.22, "triangle");
+      showBanner("LASER CROSS!");
+      renderAll();
+      checkQuestWin();
+      return;
+    }
+
+    const piece = dock[selectedSlot];
+    if (!piece || piece.used) return;
+    if (!canPlace(piece.matrix, r, c)) {
+      tone(140, 0.1, "square");
+      return;
+    }
+
+    // Place block
+    let blocksPlaced = 0;
+    for (let pr = 0; pr < piece.matrix.length; pr++) {
+      for (let pc = 0; pc < piece.matrix[0].length; pc++) {
+        if (piece.matrix[pr][pc]) {
+          board[r + pr][c + pc] = { color: piece.color, crystal: false };
+          blocksPlaced++;
+        }
+      }
+    }
+
+    piece.used = true;
+    score += blocksPlaced * 10;
+    tone(360, 0.09, "sine");
+
+    // Check full rows & columns
+    const fullRows = [];
+    const fullCols = [];
+    for (let i = 0; i < SIZE; i++) {
+      if (board[i].every(cell => cell.color !== null)) fullRows.push(i);
+      if (board.every(row => row[i].color !== null)) fullCols.push(i);
+    }
+
+    const linesCleared = fullRows.length + fullCols.length;
+    if (linesCleared > 0) {
+      streak++;
+      fullRows.forEach(ri => {
+        for (let ci = 0; ci < SIZE; ci++) {
+          if (board[ri][ci].crystal) crystalsCollected++;
+          board[ri][ci] = { color: null, crystal: false };
+        }
+      });
+      fullCols.forEach(ci => {
+        for (let ri = 0; ri < SIZE; ri++) {
+          if (board[ri][ci].crystal) crystalsCollected++;
+          board[ri][ci] = { color: null, crystal: false };
+        }
+      });
+
+      const bonus = linesCleared * 100 * streak;
+      score += bonus;
+      if (linesCleared >= 2) {
+        charges.bomb++;
+      }
+      tone(520 + streak * 60, 0.2, "triangle");
+      showBanner(linesCleared > 1 ? `MULTI CLEAR x${linesCleared}! +${bonus}` : `STREAK x${streak}! +${bonus}`);
+    } else {
+      streak = 1;
+    }
+
+    if (score > bestScore) {
+      bestScore = score;
+      localStorage.setItem("asikin_block_odyssey_best", String(bestScore));
+    }
+
+    // Refill dock if all used
+    if (dock.every(d => d.used)) {
+      spawnDock();
+    } else {
+      const nextIdx = dock.findIndex(d => !d.used);
+      if (nextIdx !== -1) selectedSlot = nextIdx;
+    }
+
+    renderAll();
+    if (!checkQuestWin()) {
+      checkGameOver();
+    }
+  }
+
+  function checkQuestWin() {
+    if (gameMode === "QUEST" && crystalsCollected >= crystalTarget) {
+      crystalsCollected = 0;
+      crystalTarget += 2;
+      charges.laser++;
+      charges.Shuffle = (charges.shuffle || 0) + 1;
+      seedCrystals(Math.min(7, crystalTarget));
+      showBanner("QUEST STAGE CLEARED! +1 LASER");
+      renderAll();
+      return true;
+    }
+    return false;
+  }
+
+  function hasAnyValidMove() {
+    for (const p of dock) {
+      if (p.used) continue;
+      for (let r = 0; r < SIZE; r++) {
+        for (let c = 0; c < SIZE; c++) {
+          if (canPlace(p.matrix, r, c)) return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  function checkGameOver() {
+    if (!hasAnyValidMove() && charges.bomb === 0 && charges.laser === 0 && charges.shuffle === 0) {
+      overTitle.textContent = "Papan Penuh!";
+      overDesc.textContent = `Skor Akhir: ${score.toLocaleString("id-ID")} · Rekor Terbaik: ${bestScore.toLocaleString("id-ID")}`;
+      overModal.classList.add("show");
+    }
+  }
+
+  function renderBoard() {
+    const cells = boardEl.children;
+    const piece = dock[selectedSlot];
+    const previewSet = new Set();
+    let validPreview = false;
+
+    if (hoverCell && !activeSkill && piece && !piece.used) {
+      validPreview = canPlace(piece.matrix, hoverCell.r, hoverCell.c);
+      for (let pr = 0; pr < piece.matrix.length; pr++) {
+        for (let pc = 0; pc < piece.matrix[0].length; pc++) {
+          if (piece.matrix[pr][pc]) {
+            const nr = hoverCell.r + pr, nc = hoverCell.c + pc;
+            if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE) {
+              previewSet.add(`${nr},${nc}`);
+            }
+          }
+        }
+      }
+    }
+
+    for (let r = 0; r < SIZE; r++) {
+      for (let c = 0; c < SIZE; c++) {
+        const idx = r * SIZE + c;
+        const el = cells[idx];
+        const data = board[r][c];
+        el.className = "cell";
+        el.style.backgroundColor = data.color || "#141c2f";
+        if (data.color) el.classList.add("filled");
+        if (data.crystal) el.classList.add("crystal");
+
+        if (previewSet.has(`${r},${c}`)) {
+          el.classList.add(validPreview ? "preview-ok" : "preview-bad");
+        }
+      }
+    }
+  }
+
+  function renderDock() {
+    dockEl.innerHTML = dock.map((p, idx) => {
+      const rows = p.matrix.length;
+      const cols = p.matrix[0].length;
+      const gridHtml = p.matrix.map(row =>
+        row.map(v => `<div class="mini-cell" style="background:${v ? p.color : 'transparent'}"></div>`).join("")
+      ).join("");
+
+      return `
+        <div class="piece-slot ${idx === selectedSlot ? 'selected' : ''} ${p.used ? 'used' : ''}" data-slot="${idx}">
+          <div class="mini-grid" style="grid-template-columns: repeat(${cols}, 17px); grid-template-rows: repeat(${rows}, 17px);">
+            ${gridHtml}
+          </div>
+          <button type="button" class="rot-btn" data-rot="${idx}" title="Putar Bentuk (R)">↻</button>
+        </div>
+      `;
+    }).join("");
+
+    dockEl.querySelectorAll(".piece-slot").forEach(slot => {
+      slot.addEventListener("click", () => {
+        selectedSlot = Number(slot.dataset.slot);
+        activeSkill = null;
+        renderAll();
+      });
+    });
+
+    dockEl.querySelectorAll("[data-rot]").forEach(btn => {
+      btn.addEventListener("click", e => {
+        e.stopPropagation();
+        const idx = Number(btn.dataset.rot);
+        if (dock[idx] && !dock[idx].used) {
+          dock[idx].matrix = rotateMatrix(dock[idx].matrix);
+          selectedSlot = idx;
+          tone(440, 0.07, "sine");
+          renderAll();
+        }
+      });
+    });
+  }
+
+  function renderHud() {
+    scoreEl.textContent = score.toLocaleString("id-ID");
+    bestEl.textContent = bestScore.toLocaleString("id-ID");
+    streakEl.textContent = `x${streak}`;
+    crystalVal.textContent = `${crystalsCollected}/${crystalTarget}`;
+
+    document.getElementById("chargeBomb").textContent = charges.bomb;
+    document.getElementById("chargeLaser").textContent = charges.laser;
+    document.getElementById("chargeShuffle").textContent = charges.shuffle;
+
+    const bBtn = document.getElementById("skillBomb");
+    const lBtn = document.getElementById("skillLaser");
+    const sBtn = document.getElementById("skillShuffle");
+
+    bBtn.disabled = charges.bomb <= 0;
+    lBtn.disabled = charges.laser <= 0;
+    sBtn.disabled = charges.shuffle <= 0;
+
+    bBtn.classList.toggle("armed", activeSkill === "BOMB");
+    lBtn.classList.toggle("armed", activeSkill === "LASER");
+  }
+
+  function renderAll() {
+    renderBoard();
+    renderDock();
+    renderHud();
+  }
+
+  document.getElementById("skillBomb").addEventListener("click", () => {
+    activeSkill = activeSkill === "BOMB" ? null : "BOMB";
+    renderHud();
+  });
+
+  document.getElementById("skillLaser").addEventListener("click", () => {
+    activeSkill = activeSkill === "LASER" ? null : "LASER";
+    renderHud();
+  });
+
+  document.getElementById("skillShuffle").addEventListener("click", () => {
+    if (charges.shuffle <= 0) return;
+    charges.shuffle--;
+    spawnDock();
+    tone(480, 0.14, "triangle");
+    renderAll();
+  });
+
+  window.addEventListener("keydown", e => {
+    if (e.key.toLowerCase() === "r") {
+      const p = dock[selectedSlot];
+      if (p && !p.used) {
+        p.matrix = rotateMatrix(p.matrix);
+        tone(440, 0.07, "sine");
+        renderAll();
+      }
+    }
+  });
+
+  document.getElementById("modeClassicBtn").addEventListener("click", e => {
+    document.getElementById("modeClassicBtn").classList.add("active");
+    document.getElementById("modeQuestBtn").classList.remove("active");
+    initGame("CLASSIC");
+  });
+
+  document.getElementById("modeQuestBtn").addEventListener("click", e => {
+    document.getElementById("modeQuestBtn").classList.add("active");
+    document.getElementById("modeClassicBtn").classList.remove("active");
+    initGame("QUEST");
+  });
+
+  document.getElementById("restartBtn").addEventListener("click", () => initGame(gameMode));
+
+  initGame("CLASSIC");
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Monolith Memory Grid</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #090a0f; color: #f4f4f6; font-family: system-ui, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; user-select: none; }
+  .head { margin-bottom: 16px; text-align: center; }
+  .head h2 { font-size: 15px; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; }
+  .head p { font-size: 12px; color: #9ca3af; }
+  .grid { display: grid; grid-template-columns: repeat(3, 82px); gap: 10px; }
+  .tile { width: 82px; height: 82px; border-radius: 12px; background: #141720; border: 1px solid #252936; cursor: pointer; transition: 0.15s ease; }
+  .tile.lit { background: #6366f1; border-color: #818cf8; transform: scale(0.95); box-shadow: 0 0 20px rgba(99,102,241,0.45); }
+  .btn { margin-top: 18px; padding: 8px 16px; border-radius: 8px; border: 1px solid #2d3242; background: #181c26; color: #fff; font-size: 12px; font-weight: 600; cursor: pointer; }
+</style>
+</head>
+<body>
+  <div class="head">
+    <h2 id="title">LEVEL 1</h2>
+    <p id="status">Ulangi urutan blok yang menyala</p>
+  </div>
+  <div class="grid" id="grid"></div>
+  <button class="btn" onclick="startGame()">Mulai Ulang Urutan</button>
+<script>
+  const grid = document.getElementById("grid");
+  let seq = [], step = 0, locked = false;
+  for (let i = 0; i < 9; i++) {
+    const d = document.createElement("div");
+    d.className = "tile";
+    d.onclick = () => tap(i);
+    grid.appendChild(d);
+  }
+  function flash(idx, ms = 320) {
+    const t = grid.children[idx];
+    t.classList.add("lit");
+    setTimeout(() => t.classList.remove("lit"), ms);
+  }
+  function playSeq() {
+    locked = true; step = 0;
+    document.getElementById("title").textContent = "LEVEL " + seq.length;
+    document.getElementById("status").textContent = "Perhatikan pola...";
+    seq.forEach((idx, i) => {
+      setTimeout(() => {
+        flash(idx);
+        if (i === seq.length - 1) {
+          setTimeout(() => {
+            locked = false;
+            document.getElementById("status").textContent = "Giliranmu! Klik blok sesuai urutan.";
+          }, 400);
+        }
+      }, (i + 1) * 500);
+    });
+  }
+  function tap(idx) {
+    if (locked || !seq.length) return;
+    flash(idx, 180);
+    if (idx === seq[step]) {
+      step++;
+      if (step === seq.length) {
+        locked = true;
+        document.getElementById("status").textContent = "Bagus! Lanjut level berikutnya...";
+        setTimeout(nextRound, 600);
+      }
+    } else {
+      locked = true;
+      document.getElementById("status").textContent = "Urutan salah! Klik tombol Mulai Ulang.";
+    }
+  }
+  function nextRound() { seq.push(Math.floor(Math.random() * 9)); playSeq(); }
+  function startGame() { seq = []; nextRound(); }
+  startGame();
+</script>
+</body>
+</html>

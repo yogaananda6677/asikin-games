@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Void Runner</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #090a0f; color: #f4f4f6; font-family: system-ui, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; user-select: none; }
+  canvas { border: 1px solid #22252b; border-radius: 10px; background: #0d0f17; max-width: 95vw; max-height: 82vh; cursor: pointer; }
+  .hud { display: flex; gap: 24px; margin-bottom: 10px; font-size: 12px; font-weight: 600; letter-spacing: 0.05em; color: #9ca3af; }
+  .hud b { color: #fff; font-family: monospace; font-size: 14px; }
+</style>
+</head>
+<body>
+  <div class="hud">
+    <span>SCORE <b id="sc">0</b></span>
+    <span>BEST <b id="hi">0</b></span>
+    <span>GERAKKAN MOUSE / PANAH KIRI-KANAN</span>
+  </div>
+  <canvas id="c" width="660" height="360"></canvas>
+<script>
+  const c = document.getElementById("c"), ctx = c.getContext("2d");
+  let player = { x: 330, y: 315, r: 11 };
+  let blocks = [], score = 0, best = 0, over = false, frame = 0;
+  window.addEventListener("mousemove", e => {
+    const rect = c.getBoundingClientRect();
+    player.x = Math.max(20, Math.min(c.width - 20, (e.clientX - rect.left) * (c.width / rect.width)));
+  });
+  window.addEventListener("keydown", e => {
+    if (e.key === "ArrowLeft") player.x = Math.max(20, player.x - 28);
+    if (e.key === "ArrowRight") player.x = Math.min(c.width - 20, player.x + 28);
+    if (over && (e.key === " " || e.key === "Enter")) reset();
+  });
+  c.addEventListener("click", () => { if (over) reset(); });
+  function reset() { blocks = []; score = 0; over = false; frame = 0; }
+  function loop() {
+    ctx.fillStyle = "#0d0f17";
+    ctx.fillRect(0, 0, c.width, c.height);
+    ctx.strokeStyle = "rgba(255,255,255,0.03)";
+    for (let x = 0; x < c.width; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, c.height); ctx.stroke(); }
+    if (!over) {
+      frame++;
+      if (frame % Math.max(10, 24 - Math.floor(score / 150)) === 0) {
+        blocks.push({ x: Math.random() * (c.width - 36) + 18, y: -20, w: 24 + Math.random() * 28, h: 12, v: 3.6 + score / 240 });
+      }
+      score++;
+      document.getElementById("sc").textContent = Math.floor(score / 5);
+    }
+    ctx.fillStyle = "#f4f4f6";
+    ctx.beginPath();
+    ctx.arc(player.x, player.y, player.r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#f43f5e";
+    for (let i = blocks.length - 1; i >= 0; i--) {
+      const b = blocks[i];
+      if (!over) b.y += b.v;
+      ctx.fillRect(b.x - b.w / 2, b.y, b.w, b.h);
+      if (Math.abs(player.x - b.x) < b.w / 2 + player.r - 2 && Math.abs(player.y - (b.y + b.h / 2)) < b.h / 2 + player.r - 2) {
+        over = true;
+        best = Math.max(best, Math.floor(score / 5));
+        document.getElementById("hi").textContent = best;
+      }
+      if (b.y > c.height + 20) blocks.splice(i, 1);
+    }
+    if (over) {
+      ctx.fillStyle = "rgba(9,10,15,0.82)";
+      ctx.fillRect(0, 0, c.width, c.height);
+      ctx.fillStyle = "#fff";
+      ctx.font = "700 20px system-ui";
+      ctx.textAlign = "center";
+      ctx.fillText("GAME OVER", c.width / 2, c.height / 2 - 8);
+      ctx.fillStyle = "#9ca3af";
+      ctx.font = "500 13px system-ui";
+      ctx.fillText("Klik di sini untuk main lagi", c.width / 2, c.height / 2 + 20);
+    }
+    requestAnimationFrame(loop);
+  }
+  loop();
+</script>
+</body>
+</html>

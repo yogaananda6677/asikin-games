@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <title>ASIKIN GAMES</title>
+  <link rel="icon" type="image/png" href="assets/img/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    (function() {
+      const saved = localStorage.getItem("asikin-color-scheme");
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      const theme = saved || (prefersDark ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+      document.querySelector('meta[name="color-scheme"]').content = theme;
+    })();
+  </script>
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/catalog.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-left">
+      <a href="index.html" class="brand" aria-label="ASIKIN GAMES Home">
+        <img src="assets/img/logo.png" alt="ASIKIN GAMES" class="brand-logo" />
+      </a>
+    </div>
+
+    <div class="search-container">
+      <span class="search-icon" id="searchIconSlot"></span>
+      <input
+        type="text"
+        id="searchInput"
+        class="search-input"
+        placeholder="Cari judul game atau kategori..."
+        autocomplete="off"
+      />
+      <kbd class="search-kbd">/</kbd>
+    </div>
+
+    <div class="topbar-right">
+      <button
+        type="button"
+        id="themeToggleBtn"
+        class="icon-button"
+        aria-label="Ganti Mode Tampilan"
+        title="Mode Gelap / Terang"
+      ></button>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="nav-group">
+        <div class="nav-label">Directory</div>
+        <button type="button" class="nav-item active" data-filter="ALL">
+          <span class="nav-item-left">
+            <span class="icon-slot" data-icon="grid"></span>
+            <span>Semua Katalog</span>
+          </span>
+          <span class="nav-badge" id="count-ALL">0</span>
+        </button>
+        <button type="button" class="nav-item" data-filter="FEATURED">
+          <span class="nav-item-left">
+            <span class="icon-slot" data-icon="spark"></span>
+            <span>Pilihan Utama</span>
+          </span>
+          <span class="nav-badge" id="count-FEATURED">0</span>
+        </button>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-label">Genre</div>
+        <button type="button" class="nav-item" data-filter="Arcade"><span class="nav-item-left"><span>Arcade</span></span><span class="nav-badge" id="count-Arcade">0</span></button>
+        <button type="button" class="nav-item" data-filter="Action"><span class="nav-item-left"><span>Action</span></span><span class="nav-badge" id="count-Action">0</span></button>
+        <button type="button" class="nav-item" data-filter="Puzzle"><span class="nav-item-left"><span>Puzzle</span></span><span class="nav-badge" id="count-Puzzle">0</span></button>
+        <button type="button" class="nav-item" data-filter="Racing"><span class="nav-item-left"><span>Racing</span></span><span class="nav-badge" id="count-Racing">0</span></button>
+        <button type="button" class="nav-item" data-filter="Casual"><span class="nav-item-left"><span>Casual</span></span><span class="nav-badge" id="count-Casual">0</span></button>
+        <button type="button" class="nav-item" data-filter="Sports"><span class="nav-item-left"><span>Sports</span></span><span class="nav-badge" id="count-Sports">0</span></button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <section class="stage-card">
+        <div class="stage-viewport" id="stageViewport">
+          <div class="stage-idle" id="stageIdle">
+            <div class="idle-grid-bg"></div>
+            <div class="idle-content">
+              <img src="assets/img/logo.png" alt="ASIKIN GAMES" style="height:64px;width:auto;margin-bottom:14px;object-fit:contain" />
+              <h2 id="idleTitle">Pilih game untuk mulai bermain</h2>
+              <p id="idleDesc">Klik salah satu card game di bawah untuk memuat permainan langsung di layar ini.</p>
+            </div>
+          </div>
+          <iframe
+            id="gameFrame"
+            class="game-frame"
+            src="about:blank"
+            title="Game Stage Viewport"
+            allowfullscreen
+          ></iframe>
+        </div>
+
+        <div class="stage-bar">
+          <div class="stage-meta">
+            <div class="stage-code" id="activeCode">--</div>
+            <div class="stage-text">
+              <h1 id="activeTitle">Belum ada game dipilih</h1>
+              <p id="activeCategory">Pilih dari katalog di bawah untuk memulai</p>
+            </div>
+          </div>
+
+          <div class="stage-actions">
+            <button type="button" class="action-btn" id="reloadGameBtn" title="Muat Ulang Frame">
+              <span class="icon-slot" data-icon="reload"></span>
+              <span>Reload</span>
+            </button>
+            <button type="button" class="action-btn primary" id="fullscreenGameBtn" title="Layar Penuh">
+              <span class="icon-slot" data-icon="fullscreen"></span>
+              <span>Fullscreen</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="catalog-section" id="catalog">
+        <div class="catalog-header">
+          <h2 id="sectionHeading">Semua Katalog Game</h2>
+          <span class="catalog-subtitle" id="sectionCountText">4 judul tersedia</span>
+        </div>
+        <div class="cards-grid" id="cardsGrid"></div>
+      </section>
+    </main>
+
+    <aside class="right-panel">
+      <div class="panel-card">
+        <div class="panel-header">
+          <h3>Rekomendasi</h3>
+          <span class="panel-tag">Pilihan</span>
+        </div>
+        <div class="recommended-list" id="recommendedList"></div>
+      </div>
+    </aside>
+  </div>
+
+  <script src="assets/js/icons.js"></script>
+  <script src="assets/js/theme.js"></script>
+  <script src="assets/js/store.js"></script>
+  <script src="assets/js/catalog.js"></script>
+</body>
+</html>

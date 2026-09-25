@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Catalog Manager — ASIKIN GAMES</title>
+  <link rel="icon" type="image/png" href="../assets/img/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    (function() {
+      const saved = localStorage.getItem("asikin-color-scheme");
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      const theme = saved || (prefersDark ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+      document.querySelector('meta[name="color-scheme"]').content = theme;
+    })();
+  </script>
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/catalog.css" />
+  <link rel="stylesheet" href="../assets/css/admin.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-left">
+      <a href="../index.html" class="brand">
+        <span class="brand-mark"></span>
+        <span class="brand-name">ASIKIN</span>
+        <span class="brand-tag">CONSOLE</span>
+      </a>
+    </div>
+
+    <div class="topbar-right">
+      <a href="../index.html" class="ghost-link">
+        <span>Lihat Katalog Publik</span>
+        <span class="icon-slot" data-icon="arrowUpRight"></span>
+      </a>
+      <button type="button" id="themeToggleBtn" class="icon-button" aria-label="Mode Gelap / Terang"></button>
+      <button type="button" id="logoutBtn" class="ghost-link">
+        <span class="icon-slot" data-icon="logout"></span>
+        <span>Keluar</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="admin-shell">
+    <!-- Form Input Card Game Baru -->
+    <section class="admin-panel">
+      <div class="panel-title-row">
+        <h2 id="formHeading">Tambah Card Game Baru</h2>
+        <button type="button" id="cancelEditBtn" class="sm-btn" style="display:none">Batal Edit</button>
+      </div>
+
+      <form id="gameForm">
+        <input type="hidden" id="editId" value="" />
+        <input type="hidden" id="existingCoverUrl" value="" />
+
+        <div class="form-field">
+          <label for="inpTitle">Judul Game *</label>
+          <input type="text" id="inpTitle" class="form-input" placeholder="Masukkan nama game" required />
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-field">
+            <label for="inpCategory">Kategori *</label>
+            <select id="inpCategory" class="form-select">
+              <option value="Arcade">Arcade</option>
+              <option value="Action">Action</option>
+              <option value="Puzzle">Puzzle</option>
+              <option value="Racing">Racing</option>
+              <option value="Casual">Casual</option>
+              <option value="Sports">Sports</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="inpCode">Inisial (Opsional)</label>
+            <input type="text" id="inpCode" class="form-input mono" maxlength="3" placeholder="Auto" />
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="inpCoverFile">Upload Gambar Cover Card (Wajib) *</label>
+          <label
+            for="inpCoverFile"
+            id="uploadDropzone"
+            style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:16px;border:1.5px dashed var(--border-strong);border-radius:var(--radius-md);background:var(--bg-subtle);cursor:pointer;text-align:center;overflow:hidden;position:relative;min-height:130px"
+          >
+            <img
+              id="coverPreviewImg"
+              src=""
+              alt="Preview Cover"
+              style="display:none;width:100%;height:140px;object-fit:cover;border-radius:6px"
+            />
+            <div id="uploadPromptText">
+              <div style="font-weight:700;font-size:12.5px;color:var(--text-primary)">Klik untuk pilih file gambar (PNG / JPG / WEBP)</div>
+              <div style="font-size:11.5px;color:var(--text-tertiary);margin-top:2px">Gambar akan otomatis ditampilkan di katalog</div>
+            </div>
+          </label>
+          <input type="file" id="inpCoverFile" accept="image/*" style="display:none" />
+        </div>
+
+        <div class="form-field">
+          <label for="inpUrl">URL Embed Game (Iframe) *</label>
+          <input type="url" id="inpUrl" class="form-input mono" placeholder="https://..." required />
+        </div>
+
+        <div class="form-field">
+          <label for="inpDesc">Deskripsi Singkat</label>
+          <textarea id="inpDesc" class="form-textarea" placeholder="Ringkasan singkat mengenai game ini..."></textarea>
+        </div>
+
+        <label class="checkbox-row">
+          <input type="checkbox" id="inpFeatured" checked />
+          <span>Tampilkan juga di bagian Rekomendasi / Pilihan Utama</span>
+        </label>
+
+        <div id="formAlert" class="auth-error"></div>
+
+        <button type="submit" id="submitGameBtn" class="btn-full">Simpan Card ke Katalog</button>
+      </form>
+    </section>
+
+    <!-- Tabel Daftar Game di data/games.json -->
+    <section class="admin-panel">
+      <div class="admin-toolbar">
+        <div>
+          <h2 style="font-size:15.5px;font-weight:700">Daftar Katalog Aktif</h2>
+          <span id="totalGamesBadge" style="font-size:12px;color:var(--text-tertiary)">0 item</span>
+        </div>
+
+        <div class="toolbar-btns">
+          <label class="ghost-link" style="cursor:pointer">
+            <span class="icon-slot" data-icon="upload"></span>
+            <span>Import JSON</span>
+            <input type="file" id="importJsonInput" accept=".json" style="display:none" />
+          </label>
+          <button type="button" id="exportJsonBtn" class="ghost-link">
+            <span class="icon-slot" data-icon="download"></span>
+            <span>Export games.json</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Cover &amp; Judul</th>
+              <th>Kategori</th>
+              <th>URL Game</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="adminTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="../assets/js/icons.js"></script>
+  <script src="../assets/js/theme.js"></script>
+  <script src="../assets/js/store.js"></script>
+  <script src="../assets/js/admin.js"></script>
+</body>
+</html>
