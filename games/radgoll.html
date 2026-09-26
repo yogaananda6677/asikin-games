@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Stickman Spider-Parkour</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #111;
+      overflow: hidden;
+      font-family: sans-serif;
+      user-select: none;
+    }
+    #gameCanvas {
+      display: block;
+      margin: 0 auto;
+      background: #87CEEB;
+    }
+    #ui {
+      position: absolute;
+      top: 12px;
+      left: 20px;
+      color: #fff;
+      font-size: 14px;
+      text-shadow: 1px 1px 3px #000;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="ui">
+    <b>Kontrol:</b> [A] / [D] = Gerak Kiri / Kanan | [W] / [Space] = Lompat | <b>Klik Kiri Mouse</b> = Tembak Jaring / Ayunan<br>
+    <i>Tip: Tembakkan jaring ke langit-langit atau platform di atas untuk berayun melewati jurang!</i>
+  </div>
+  <canvas id="gameCanvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    const keys = {};
+    const mouse = { x: 0, y: 0, isDown: false };
+
+    window.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
+    window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+    window.addEventListener('mousemove', e => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+    window.addEventListener('mousedown', e => {
+      if (e.button === 0) {
+        mouse.isDown = true;
+        player.shootWeb(mouse.x - camera.x, mouse.y - camera.y);
+      }
+    });
+    window.addEventListener('mouseup', e => {
+      if (e.button === 0) {
+        mouse.isDown = false;
+        player.releaseWeb();
+      }
+    });
+
+    // Level & Environment Data
+    const level = {
+      platforms: [
+        { x: 0, y: 550, w: 500, h: 200 },       // Start platform
+        { x: 200, y: 180, w: 400, h: 40 },     // Ceiling for swing
+        { x: 650, y: 550, w: 300, h: 200 },     // Platform 2
+        { x: 800, y: 150, w: 500, h: 40 },     // High ceiling
+        { x: 1100, y: 500, w: 400, h: 250 },    // Platform 3
+        { x: 1400, y: 200, w: 450, h: 40 },    // Ceiling 3
+        { x: 1700, y: 520, w: 500, h: 230 },    // Platform 4
+        { x: 2000, y: 160, w: 600, h: 40 },    // Ceiling 4
+        { x: 2400, y: 550, w: 700, h: 200 },    // Platform 5 (Goal)
+      ],
+      spikes: [
+        { x: 800, y: 530, w: 60, h: 20 },
+        { x: 1250, y: 480, w: 90, h: 20 },
+        { x: 1950, y: 500, w: 80, h: 20 }
+      ],
+      fallingPipes: [
+        { x: 1200, y: 100, w: 30, h: 100, vy: 0, triggered: false, startY: 100 },
+        { x: 1850, y: 80, w: 35, h: 120, vy: 0, triggered: false, startY: 80 }
+      ],
+      checkpoints: [
+        { x: 700, y: 490, reached: false },
+        { x: 1750, y: 460, reached: false }
+      ]
+    };
+
+    const camera = { x: 0, y: 0 };
+    const GRAVITY = 0.5;
+
+    const player = {
+      x: 100,
+      y: 450,
+      w: 20,
+      h: 50,
+      vx: 0,
+      vy: 0,
+      speed: 5,
+      isGrounded: false,
+      respawnX: 100,
+      respawnY: 450,
+      
+      // Web Mechanics
+      webActive: false,
+      hookX: 0,
+      hookY: 0,
+      ropeLength: 0,
+
+      reset() {
+        this.x = this.respawnX;
+        this.y = this.respawnY;
+        this.vx = 0;
+        this.vy = 0;
+        this.releaseWeb();
+        for (let pipe of level.fallingPipes) {
+          pipe.y = pipe.startY;
+          pipe.vy = 0;
+          pipe.triggered = false;
+        }
+      },
+
+      shootWeb(targetX, targetY) {
+        // Cek platform ceiling yang bisa dikaitkan jaring
+        for (let p of level.platforms) {
+          if (targetX >= p.x && targetX <= p.x + p.w &&
+              targetY >= p.y && targetY <= p.y + p.h) {
+            this.hookX = targetX;
+            this.hookY = targetY;
+            this.webActive = true;
+            this.ropeLength = Math.hypot(this.x - this.hookX, this.y - this.hookY);
+            return;
+          }
+        }
+      },
+
+      releaseWeb() {
+        this.webActive = false;
+      },
+
+      update() {
+        // Kontrol Horizontal
+        if (keys['a'] || keys['arrowleft']) {
+          this.vx -= this.webActive ? 0.4 : 0.8;
+        }
+        if (keys['d'] || keys['arrowright']) {
+          this.vx += this.webActive ? 0.4 : 0.8;
+        }
+
+        // Lompat / Tendangan ayunan
+        if ((keys['w'] || keys[' '] || keys['arrowup']) && this.isGrounded) {
+          this.vy = -12;
+          this.isGrounded = false;
+        }
+
+        // Terapkan Gaya Pegas Spider-Swing
+        if (this.webActive) {
+          const dx = this.x - this.hookX;
+          const dy = this.y - this.hookY;
+          const dist = Math.hypot(dx, dy);
+
+          if (dist > this.ropeLength) {
+            const angle = Math.atan2(dy, dx);
+            const tension = (dist - this.ropeLength) * 0.1;
+            this.vx -= Math.cos(angle) * tension;
+            this.vy -= Math.sin(angle) * tension;
+          }
+          this.vx *= 0.99; // Air resistance ringan saat mengayun
+        } else {
+          this.vx *= 0.85; // Friksi lantai/udara normal
+        }
+
+        this.vy += GRAVITY;
+        this.x += this.vx;
+        this.y += this.vy;
+
+        // Cek collision platform
+        this.isGrounded = false;
+        for (let p of level.platforms) {
+          if (this.x + this.w > p.x && this.x - this.w < p.x + p.w &&
+              this.y + this.h > p.y && this.y - this.h < p.y + p.h) {
+            
+            // Jatuh menapak di atas platform
+            if (this.vy > 0 && (this.y - this.vy + this.h) <= p.y + 10) {
+              this.y = p.y - this.h;
+              this.vy = 0;
+              this.isGrounded = true;
+            }
+          }
+        }
+
+        // Deteksi Checkpoint
+        for (let cp of level.checkpoints) {
+          if (Math.hypot(this.x - cp.x, this.y - cp.y) < 50) {
+            cp.reached = true;
+            this.respawnX = cp.x;
+            this.respawnY = cp.y - 20;
+          }
+        }
+
+        // Deteksi Rintangan: Duri
+        for (let s of level.spikes) {
+          if (this.x + 10 > s.x && this.x - 10 < s.x + s.w &&
+              this.y + this.h > s.y && this.y - this.h < s.y + s.h) {
+            this.reset();
+          }
+        }
+
+        // Deteksi Jatuh ke Jurang
+        if (this.y > 820) {
+          this.reset();
+        }
+      },
+
+      draw() {
+        // Tali Jaring (Web)
+        if (this.webActive) {
+          ctx.beginPath();
+          ctx.moveTo(this.x + camera.x, this.y - 15);
+          ctx.lineTo(this.hookX + camera.x, this.hookY);
+          ctx.strokeStyle = '#FFFFFF';
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
+        }
+
+        const px = this.x + camera.x;
+        const py = this.y;
+
+        // Stickman Body
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 3.5;
+
+        // Kepala
+        ctx.beginPath();
+        ctx.arc(px, py - 32, 8, 0, Math.PI * 2);
+        ctx.fillStyle = '#000';
+        ctx.fill();
+        ctx.stroke();
+
+        // Badan
+        ctx.beginPath();
+        ctx.moveTo(px, py - 24);
+        ctx.lineTo(px, py);
+        ctx.stroke();
+
+        // Kaki (animasi sederhana berdasarkan kecepatan)
+        const walkCycle = Math.sin(Date.now() * 0.015) * 12 * (Math.abs(this.vx) > 0.5 ? 1 : 0);
+        ctx.beginPath();
+        ctx.moveTo(px, py);
+        ctx.lineTo(px - 8 + (this.isGrounded ? walkCycle : 0), py + 25);
+        ctx.moveTo(px, py);
+        ctx.lineTo(px + 8 - (this.isGrounded ? walkCycle : 0), py + 25);
+        ctx.stroke();
+
+        // Tangan
+        ctx.beginPath();
+        if (this.webActive) {
+          // Pose menembak jaring ke hook
+          const angle = Math.atan2(this.hookY - (py - 15), (this.hookX + camera.x) - px);
+          ctx.moveTo(px, py - 18);
+          ctx.lineTo(px + Math.cos(angle) * 16, py - 18 + Math.sin(angle) * 16);
+        } else {
+          ctx.moveTo(px - 10, py - 6);
+          ctx.lineTo(px, py - 18);
+          ctx.lineTo(px + 10, py - 6);
+        }
+        ctx.stroke();
+      }
+    };
+
+    function updateHazards() {
+      // Pipa Jatuh (Falling Pipes)
+      for (let pipe of level.fallingPipes) {
+        // Trigger jika stickman berada dekat di bawahnya
+        if (!pipe.triggered && Math.abs(player.x - pipe.x) < 120 && player.y > pipe.y) {
+          pipe.triggered = true;
+        }
+
+        if (pipe.triggered) {
+          pipe.vy += 0.4;
+          pipe.y += pipe.vy;
+        }
+
+        // Collision player dengan pipa
+        if (player.x + player.w > pipe.x && player.x - player.w < pipe.x + pipe.w &&
+            player.y + player.h > pipe.y && player.y - player.h < pipe.y + pipe.h) {
+          player.reset();
+        }
+      }
+    }
+
+    function drawWorld() {
+      // Platform
+      ctx.fillStyle = '#2d3436';
+      for (let p of level.platforms) {
+        ctx.fillRect(p.x + camera.x, p.y, p.w, p.h);
+        // Highlight tepi atas
+        ctx.fillStyle = '#00b894';
+        ctx.fillRect(p.x + camera.x, p.y, p.w, 6);
+        ctx.fillStyle = '#2d3436';
+      }
+
+      // Checkpoint (Bendera)
+      for (let cp of level.checkpoints) {
+        const flagX = cp.x + camera.x;
+        // Tiang
+        ctx.strokeStyle = '#636e72';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(flagX, cp.y + 60);
+        ctx.lineTo(flagX, cp.y);
+        ctx.stroke();
+
+        // Kain Bendera
+        ctx.fillStyle = cp.reached ? '#00e676' : '#d63031';
+        ctx.beginPath();
+        ctx.moveTo(flagX, cp.y);
+        ctx.lineTo(flagX + 25, cp.y + 12);
+        ctx.lineTo(flagX, cp.y + 24);
+        ctx.fill();
+      }
+
+      // Duri (Spikes)
+      ctx.fillStyle = '#d63031';
+      for (let s of level.spikes) {
+        const count = Math.floor(s.w / 15);
+        for (let i = 0; i < count; i++) {
+          ctx.beginPath();
+          ctx.moveTo(s.x + i * 15 + camera.x, s.y + s.h);
+          ctx.lineTo(s.x + i * 15 + 7.5 + camera.x, s.y);
+          ctx.lineTo(s.x + (i + 1) * 15 + camera.x, s.y + s.h);
+          ctx.fill();
+        }
+      }
+
+      // Falling Pipes
+      for (let pipe of level.fallingPipes) {
+        ctx.fillStyle = '#e17055';
+        ctx.fillRect(pipe.x + camera.x, pipe.y, pipe.w, pipe.h);
+        // Garis aksen pipa
+        ctx.strokeStyle = '#d35400';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(pipe.x + camera.x, pipe.y, pipe.w, pipe.h);
+      }
+    }
+
+    function gameLoop() {
+      // Logika
+      player.update();
+      updateHazards();
+
+      // Kamera scrolling halus mengikuti player
+      const targetCamX = -player.x + canvas.width * 0.35;
+      camera.x += (targetCamX - camera.x) * 0.08;
+      const targetCamY = canvas.height < 640 ? Math.max(canvas.height - 660, Math.min(0, -player.y + canvas.height * 0.65)) : 0;
+      camera.y += (targetCamY - camera.y) * 0.1;
+
+      // Background Sky Gradient
+      let grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      grad.addColorStop(0, '#4b79a1');
+      grad.addColorStop(1, '#283e51');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Render dengan offset vertikal kamera
+      ctx.save();
+      ctx.translate(0, camera.y);
+      drawWorld();
+      player.draw();
+      ctx.restore();
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
+  </script>
+</body>
+</html>
