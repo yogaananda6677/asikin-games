@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="100%" height="100%">
+  <defs>
+    <radialGradient id="corridor" cx="50%" cy="46%" r="65%">
+      <stop offset="0%" stop-color="#1b261e"/>
+      <stop offset="55%" stop-color="#0a0e0b"/>
+      <stop offset="100%" stop-color="#030504"/>
+    </radialGradient>
+    <radialGradient id="redGlow" cx="50%" cy="42%" r="35%">
+      <stop offset="0%" stop-color="#8a2320" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#8a2320" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Bunker Corridor Background -->
+  <rect width="600" height="450" fill="url(#corridor)"/>
+
+  <!-- Perspective Corridor Lines -->
+  <g stroke="#2c352e" stroke-width="2" opacity="0.75">
+    <line x1="0" y1="0" x2="210" y2="120"/>
+    <line x1="600" y1="0" x2="390" y2="120"/>
+    <line x1="0" y1="450" x2="210" y2="295"/>
+    <line x1="600" y1="450" x2="390" y2="295"/>
+    <rect x="210" y="120" width="180" height="175" fill="#060807" stroke="#39413c" stroke-width="2"/>
+  </g>
+
+  <!-- Quarantine Door & Red Warning Light -->
+  <circle cx="300" cy="190" r="140" fill="url(#redGlow)"/>
+  <rect x="252" y="138" width="96" height="156" fill="#141915" stroke="#5d7a66" stroke-width="2"/>
+  <rect x="288" y="104" width="24" height="7" fill="#d63031"/>
+  <text x="300" y="168" text-anchor="middle" fill="#b04a42" font-family="monospace" font-weight="700" font-size="11" letter-spacing="2">KARANTINA</text>
+  <text x="300" y="182" text-anchor="middle" fill="#a9c9b2" font-family="monospace" font-size="8" letter-spacing="1.5">— SEGEL 04 —</text>
+
+  <!-- Silhouette of "SUNYI" Entity in the Dark -->
+  <g fill="#020302" stroke="#8a2320" stroke-width="1" opacity="0.92">
+    <ellipse cx="300" cy="202" rx="11" ry="14"/>
+    <path d="M282,218 C286,214 314,214 318,218 L324,275 L276,275 Z"/>
+    <circle cx="295" cy="200" r="2" fill="#e17055"/>
+    <circle cx="305" cy="200" r="2" fill="#e17055"/>
+  </g>
+
+  <!-- Blood Scrawl on Wall -->
+  <text x="72" y="195" fill="#8a2320" font-family="monospace" font-weight="700" font-size="13" transform="rotate(-8 72 195)" opacity="0.85">JANGAN JAWAB</text>
+  <text x="435" y="205" fill="#8a2320" font-family="monospace" font-weight="700" font-size="13" transform="rotate(6 435 205)" opacity="0.85">DIA MENDENGAR</text>
+
+  <!-- Title Frame (Phosphor Terminal Style) -->
+  <rect x="24" y="332" width="552" height="94" fill="#070908" stroke="#5d7a66" stroke-width="2"/>
+  <rect x="30" y="338" width="540" height="82" fill="none" stroke="#2c352e" stroke-width="1"/>
+  <text x="50" y="362" fill="#5d7a66" font-family="monospace" font-size="10" letter-spacing="3.5">FORMA-11 // SEKTOR 4 // SURVIVAL HORROR 3D</text>
+  <text x="50" y="394" fill="#dfe8dd" font-family="monospace" font-weight="900" font-size="28" letter-spacing="4">PANCARAN</text>
+  <rect x="275" y="374" width="275" height="24" fill="none" stroke="#8a2320" stroke-width="1.8"/>
+  <text x="412" y="390" text-anchor="middle" fill="#b04a42" font-family="monospace" font-weight="700" font-size="11" letter-spacing="2">JANGAN BERSUARA</text>
+  <text x="50" y="412" fill="#a9c9b2" font-family="monospace" font-size="11" letter-spacing="1.5">REKUIEM UNTUK STASIUN HALILINTAR — BABAK 1</text>
+</svg>

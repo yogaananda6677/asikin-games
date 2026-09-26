@@ -59,7 +59,7 @@
     window.addEventListener('mousedown', e => {
       if (e.button === 0) {
         mouse.isDown = true;
-        player.shootWeb(mouse.x - camera.x, mouse.y - camera.y);
+        player.shootWeb(mouse.x - camera.x, mouse.y);
       }
     });
     window.addEventListener('mouseup', e => {
@@ -97,7 +97,7 @@
       ]
     };
 
-    const camera = { x: 0, y: 0 };
+    const camera = { x: 0 };
     const GRAVITY = 0.5;
 
     const player = {
@@ -124,11 +124,6 @@
         this.vx = 0;
         this.vy = 0;
         this.releaseWeb();
-        for (let pipe of level.fallingPipes) {
-          pipe.y = pipe.startY;
-          pipe.vy = 0;
-          pipe.triggered = false;
-        }
       },
 
       shootWeb(targetX, targetY) {
@@ -218,7 +213,7 @@
         }
 
         // Deteksi Jatuh ke Jurang
-        if (this.y > 820) {
+        if (this.y > canvas.height + 150) {
           this.reset();
         }
       },
@@ -301,6 +296,13 @@
     }
 
     function drawWorld() {
+      // Background Sky Gradient
+      let grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      grad.addColorStop(0, '#4b79a1');
+      grad.addColorStop(1, '#283e51');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
       // Platform
       ctx.fillStyle = '#2d3436';
       for (let p of level.platforms) {
@@ -363,22 +365,10 @@
       // Kamera scrolling halus mengikuti player
       const targetCamX = -player.x + canvas.width * 0.35;
       camera.x += (targetCamX - camera.x) * 0.08;
-      const targetCamY = canvas.height < 640 ? Math.max(canvas.height - 660, Math.min(0, -player.y + canvas.height * 0.65)) : 0;
-      camera.y += (targetCamY - camera.y) * 0.1;
 
-      // Background Sky Gradient
-      let grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      grad.addColorStop(0, '#4b79a1');
-      grad.addColorStop(1, '#283e51');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Render dengan offset vertikal kamera
-      ctx.save();
-      ctx.translate(0, camera.y);
+      // Render
       drawWorld();
       player.draw();
-      ctx.restore();
 
       requestAnimationFrame(gameLoop);
     }
