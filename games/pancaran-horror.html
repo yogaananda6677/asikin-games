@@ -78,81 +78,225 @@
     align-items:center;justify-content:center;flex-direction:column;text-align:center;cursor:pointer}
   .hidden{display:none !important}
   .frame{border:1px solid #2c352e;outline:1px solid #1a211c;outline-offset:6px;
-    padding:46px 60px;max-width:640px;background:#070908}
+    padding:40px 52px;max-width:660px;background:#070908}
   .formcode{font-size:10px;letter-spacing:.4em;color:var(--phos-dim);margin-bottom:18px}
-  h1.big{font-family:'Special Elite',monospace;font-size:64px;letter-spacing:.12em;
+  h1.big{font-family:'Special Elite',monospace;font-size:60px;letter-spacing:.12em;
     color:#dfe8dd;font-weight:400;line-height:1}
-  .subtitle{font-size:11px;letter-spacing:.34em;color:var(--phos-dim);margin-top:10px}
+  .subtitle{font-size:11px;letter-spacing:.3em;color:var(--phos-dim);margin-top:10px}
   .stamp{display:inline-block;margin-top:18px;padding:4px 12px;border:2px solid var(--blood);
-    color:#b04a42;font-size:12px;letter-spacing:.3em;transform:rotate(-4deg);opacity:.85}
-  .ctrl{margin-top:26px;font-size:11px;line-height:2;letter-spacing:.12em;color:var(--phos-dim)}
+    color:#b04a42;font-size:11px;letter-spacing:.26em;transform:rotate(-3deg);opacity:.9}
+  .ctrl{margin-top:22px;font-size:11px;line-height:2;letter-spacing:.1em;color:var(--phos-dim)}
   .ctrl b{color:var(--phos);font-weight:500}
-  .enter{margin-top:30px;font-size:12px;letter-spacing:.3em;color:#e6ffe9;animation:pulse 2.2s infinite}
+  .enter{margin-top:22px;font-size:12px;letter-spacing:.3em;color:#e6ffe9;animation:pulse 2.2s infinite}
   @keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
-  .warn{margin-top:22px;font-size:9px;letter-spacing:.14em;color:#4a5a4f;line-height:1.7}
-  .btn{pointer-events:auto;margin-top:26px;background:none;border:1px solid var(--phos-dim);
-    color:var(--phos);font-family:inherit;font-size:12px;letter-spacing:.26em;padding:10px 26px;cursor:pointer}
+  .warn{margin-top:18px;font-size:9.5px;letter-spacing:.12em;color:#5d7a66;line-height:1.7}
+  .btn{pointer-events:auto;margin-top:22px;background:none;border:1px solid var(--phos-dim);
+    color:var(--phos);font-family:inherit;font-size:12px;letter-spacing:.24em;padding:10px 26px;cursor:pointer}
   .btn:hover{background:var(--phos);color:#0a0d0a}
 
-  /* ── panel dokumen ── */
+  /* ── panel dokumen & pilihan cerita ── */
   #notePanel{position:fixed;inset:0;z-index:48;display:flex;align-items:center;justify-content:center;
-    background:rgba(0,0,0,.55)}
-  .paper{width:min(560px,92vw);background:var(--paper);color:var(--paper-ink);
-    font-family:'Special Elite',monospace;padding:26px 34px 20px;transform:rotate(-.6deg);
-    box-shadow:0 24px 60px rgba(0,0,0,.85);border:1px solid #a89c7c}
+    background:rgba(0,0,0,.75);pointer-events:auto}
+  .paper{width:min(620px,94vw);max-height:90vh;overflow-y:auto;background:var(--paper);color:var(--paper-ink);
+    font-family:'Special Elite',monospace;padding:24px 32px 20px;transform:rotate(-.4deg);
+    box-shadow:0 24px 60px rgba(0,0,0,.9);border:2px solid #8a7b58}
   .paper-head{display:flex;justify-content:space-between;font-size:10px;letter-spacing:.2em;
-    border-bottom:1px solid #7a6f52;padding-bottom:8px;margin-bottom:14px;color:#54492f}
-  .paper-title{font-size:15px;letter-spacing:.1em;margin-bottom:12px;color:#20180d}
-  .paper-body{font-size:13px;line-height:1.85;white-space:pre-line;color:#332a19}
-  .paper-foot{margin-top:18px;font-size:10px;letter-spacing:.24em;color:#54492f;
+    border-bottom:1px solid #7a6f52;padding-bottom:8px;margin-bottom:12px;color:#54492f}
+  .paper-title{font-size:16px;letter-spacing:.08em;margin-bottom:10px;color:#20180d;font-weight:700}
+  .paper-body{font-size:12.5px;line-height:1.75;white-space:pre-line;color:#332a19}
+  .choice-box{margin-top:16px;border-top:1px dashed #7a6f52;padding-top:12px;display:flex;flex-direction:column;gap:8px;font-family:'IBM Plex Mono',monospace}
+  .choice-label{font-size:10px;letter-spacing:.18em;color:#6e2a26;font-weight:700;margin-bottom:2px}
+  .choice-btn{text-align:left;background:#231e16;color:#e8dfc8;border:1px solid #5c4e38;padding:9px 12px;
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;cursor:pointer;transition:all .15s}
+  .choice-btn:hover{background:#8a2320;color:#fff;border-color:#ff7675;transform:translateX(4px)}
+  .paper-foot{margin-top:14px;font-size:10px;letter-spacing:.24em;color:#54492f;
     border-top:1px solid #7a6f52;padding-top:8px;font-family:'IBM Plex Mono',monospace;text-align:right}
+
+  /* ── Agen Raka Info, Quickbar Counter & Peringatan Setan ── */
+  #agentCard{position:absolute;right:18px;top:14px;background:rgba(6,10,8,.85);border:1px solid var(--phos-dim);
+    padding:10px 14px;text-align:right;pointer-events:auto;min-width:240px}
+  #agentName{font-size:11px;font-weight:700;letter-spacing:.15em;color:#e6ffe9}
+  #agentSub{font-size:9.5px;letter-spacing:.14em;color:var(--phos-dim);margin-top:2px}
+  #agentStats{display:flex;justify-content:flex-end;gap:10px;margin-top:8px;font-size:10.5px;font-weight:700}
+  .stat-pill{padding:2px 7px;border:1px solid rgba(169,201,178,.35);background:rgba(15,24,18,.8)}
+  .stat-money{color:#facc15;border-color:rgba(250,204,21,.45)}
+  .stat-docs{color:#38bdf8;border-color:rgba(56,189,248,.45)}
+  .stat-lvl{color:#4ade80;border-color:rgba(74,222,128,.45)}
+
+  #ghostWarn{position:absolute;top:58px;left:50%;transform:translateX(-50%);background:rgba(120,12,12,.92);
+    border:1px solid #ff5252;color:#ffecec;padding:6px 18px;font-size:11px;font-weight:700;letter-spacing:.2em;
+    text-shadow:0 0 8px #000;animation:warnPulse .6s infinite alternate;display:none}
+  @keyframes warnPulse{from{opacity:.55;transform:translateX(-50%) scale(.98)}to{opacity:1;transform:translateX(-50%) scale(1.03)}}
+
+  #quickBar{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:8px;pointer-events:auto}
+  .qslot{background:rgba(6,10,8,.88);border:1px solid var(--phos-dim);padding:6px 11px;font-size:10px;
+    color:var(--phos);cursor:pointer;display:flex;flex-direction:column;align-items:center;min-width:92px;transition:all .15s}
+  .qslot:hover{border-color:#e6ffe9;background:rgba(25,42,32,.95);transform:translateY(-2px)}
+  .qslot b{font-size:11px;color:#fff;margin-bottom:2px}
+  .qslot .qcnt{color:#facc15;font-weight:700}
+  .qslot.shop-btn{border-color:#facc15;background:rgba(40,32,8,.88);color:#fde047}
+
+  /* ── Modal Toko Spiritual (Shop) ── */
+  #shopPanel{position:fixed;inset:0;z-index:49;background:rgba(0,0,0,.8);display:flex;align-items:center;
+    justify-content:center;pointer-events:auto}
+  .shop-box{width:min(620px,94vw);background:#080c09;border:2px solid var(--phos);padding:26px 32px;color:var(--phos);
+    box-shadow:0 0 50px rgba(0,0,0,.95)}
+  .shop-head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--phos-dim);padding-bottom:10px;margin-bottom:16px}
+  .shop-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .shop-item{border:1px solid #2c3e32;background:#0d1410;padding:12px;display:flex;flex-direction:column;justify-content:space-between;gap:8px}
+  .shop-item h4{font-size:12px;color:#e6ffe9;letter-spacing:.1em}
+  .shop-item p{font-size:10px;color:var(--phos-dim);line-height:1.5}
+  .shop-buy{background:#182b20;border:1px solid var(--phos);color:#e6ffe9;padding:7px 10px;font-family:inherit;
+    font-size:10.5px;font-weight:700;letter-spacing:.14em;cursor:pointer}
+  .shop-buy:hover{background:var(--phos);color:#060907}
+
+  /* ── Jumpscare Fullscreen Overlay ── */
+  #jumpscareOverlay{position:fixed;inset:0;z-index:47;background:radial-gradient(circle,rgba(140,0,0,.85),#000 85%);
+    display:none;align-items:center;justify-content:center;flex-direction:column;pointer-events:auto}
+  #holyEffect{position:fixed;inset:0;z-index:46;pointer-events:none;background:radial-gradient(circle,rgba(56,189,248,.65),transparent 75%);opacity:0;transition:opacity .25s}
 </style>
 </head>
 <body>
 
 <!-- lapisan efek -->
-<div id="vigBase"></div><div id="vig"></div><div id="flash"></div>
+<div id="vigBase"></div><div id="vig"></div><div id="flash"></div><div id="holyEffect"></div>
 <canvas id="grain" width="160" height="90"></canvas>
 <div id="blackout"></div>
+
+<!-- Jumpscare Visual Overlay + Tombol Counter Cepat -->
+<div id="jumpscareOverlay">
+  <svg viewBox="0 0 320 320" width="300" height="300" style="filter:drop-shadow(0 0 28px #ff0000)">
+    <ellipse cx="160" cy="160" rx="95" ry="128" fill="#c8cfc4" stroke="#2d0808" stroke-width="6"/>
+    <path d="M60,110 Q30,220 45,310 L95,310 Q85,200 105,100 Z" fill="#080808"/>
+    <path d="M260,110 Q290,220 275,310 L225,310 Q235,200 215,100 Z" fill="#080808"/>
+    <path d="M80,50 Q160,15 240,50 Q275,130 250,240 L220,130 Q160,95 100,130 L70,240 Q45,130 80,50 Z" fill="#0a0a0a"/>
+    <ellipse cx="122" cy="150" rx="22" ry="16" fill="#050505"/>
+    <ellipse cx="198" cy="150" rx="22" ry="16" fill="#050505"/>
+    <circle cx="122" cy="150" r="8" fill="#ff1e1e"/>
+    <circle cx="198" cy="150" r="8" fill="#ff1e1e"/>
+    <path d="M118,166 L122,215 M198,166 L194,220" stroke="#8a0808" stroke-width="4"/>
+    <ellipse cx="160" cy="228" rx="38" ry="44" fill="#120202" stroke="#5c0606" stroke-width="4"/>
+    <path d="M132,205 L188,205 M130,248 L190,248" stroke="#d8d2bd" stroke-width="3" stroke-dasharray="6 5"/>
+  </svg>
+  <div style="color:#ff4d4d;font-size:20px;font-weight:900;letter-spacing:.25em;margin-top:8px;text-shadow:0 0 12px #000" id="jumpscareTitle">ARWAH BANGSAL MENYERANGMU!</div>
+  <button type="button" class="btn" id="counterNowBtn" style="background:#0ea5e9;color:#fff;border-color:#fff;font-weight:700;margin-top:12px">
+    [TEKAN 1 / KLIK] SIRAM AIR SUCI! (COUNTER)
+  </button>
+</div>
 
 <!-- HUD -->
 <div id="hud" class="hidden">
   <div id="crosshair"></div>
   <div id="prompt"></div>
-  <div id="objective"><span class="tag">TUJUAN //</span><span id="objText"></span></div>
+  <div id="objective"><span class="tag">MISI RAKA //</span><span id="objText"></span></div>
+  <div id="ghostWarn">⚠ TANDA KEHADIRAN: SUARA GUMAMAN &amp; HAWA DINGIN MENDEKAT!</div>
+
+  <!-- Info Karakter Utama: Agen Raka Wiratama -->
+  <div id="agentCard">
+    <div id="agentName">AGEN RAKA WIRATAMA [GAGAK-07]</div>
+    <div id="agentSub">INVESTIGATOR DOKUMEN RAHASIA NEGARA</div>
+    <div id="agentStats">
+      <span class="stat-pill stat-lvl" id="lvlBadge">LVL 1 / 3</span>
+      <span class="stat-pill stat-docs" id="docBadge">DOKUMEN: 0 / 3</span>
+      <span class="stat-pill stat-money" id="moneyBadge">Rp 500</span>
+    </div>
+    <div id="shieldStatus" style="font-size:10px;color:#38bdf8;margin-top:5px;display:none">🛡 PERISAI GARAM RUQYAH AKTIF</div>
+  </div>
+
   <div id="notify"></div>
   <div id="vitals">
     <div class="vrow"><span class="vlab">PIKIRAN</span><div class="vbar"><div id="sanFill"></div></div></div>
     <div class="vrow"><span class="vlab">SENTER</span><div class="vbar"><div id="batFill"></div></div></div>
   </div>
+
+  <!-- Quick-Slot Counter Hantu & Shop -->
+  <div id="quickBar">
+    <div class="qslot" onclick="useHolyWater()"><b>[1] AIR SUCI</b><span>Stun &amp; Usir Hantu (<span class="qcnt" id="cntHoly">2</span>)</span></div>
+    <div class="qslot" onclick="useSaltShield()"><b>[2] GARAM RUQYAH</b><span>Perisai 14 dtk (<span class="qcnt" id="cntSalt">1</span>)</span></div>
+    <div class="qslot" onclick="useBatteryPack()"><b>[3] BATERAI UV</b><span>Isi Senter (<span class="qcnt" id="cntBat">1</span>)</span></div>
+    <div class="qslot" onclick="useCoffeeCalm()"><b>[4] KOPI TENANG</b><span>Pulihkan Pikiran (<span class="qcnt" id="cntCof">1</span>)</span></div>
+    <div class="qslot shop-btn" onclick="toggleShop()"><b>[B] BUKA SHOP</b><span>Beli Alat Pengusir</span></div>
+  </div>
+
   <div id="noiseWrap"><span class="vlab">SUARA</span><div class="vbar" id="noiBar"><div id="noiFill" style="width:0%"></div></div></div>
 </div>
 
-<!-- panel dokumen -->
+<!-- Modal Toko Spiritual & Logistik -->
+<div id="shopPanel" class="hidden">
+  <div class="shop-box">
+    <div class="shop-head">
+      <div>
+        <div style="font-size:10px;letter-spacing:.25em;color:var(--phos-dim)">POS LOGISTIK &amp; SPIRITUAL // AGEN RAKA</div>
+        <div style="font-size:18px;font-weight:700;color:#e6ffe9">TOKO PENANGKAL &amp; COUNTER HANTU</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:13px;font-weight:700;color:#facc15" id="shopMoneyText">DANA: Rp 500</div>
+        <div style="font-size:10px;color:var(--phos-dim)">[ B / ESC ] TUTUP TOKO</div>
+      </div>
+    </div>
+    <div class="shop-grid">
+      <div class="shop-item">
+        <div>
+          <h4>1. AIR SUCI / TIRTA RUQYAH</h4>
+          <p>Siram ke arah hantu (Tombol [1]). Langsung membakar, mementalkan, dan melumpuhkan semua hantu selama 10 detik + memulihkan Pikiran.</p>
+        </div>
+        <button type="button" class="shop-buy" onclick="buyShopItem('holy')">BELI — Rp 150</button>
+      </div>
+      <div class="shop-item">
+        <div>
+          <h4>2. GARAM RUQYAH &amp; RAJAH</h4>
+          <p>Aktifkan lingkaran pelindung (Tombol [2]) selama 14 detik. Hantu tidak bisa menyentuhmu dan otomatis terpental saat mendekat.</p>
+        </div>
+        <button type="button" class="shop-buy" onclick="buyShopItem('salt')">BELI — Rp 200</button>
+      </div>
+      <div class="shop-item">
+        <div>
+          <h4>3. BATERAI SENTER UV</h4>
+          <p>Mengisi daya senter +65% (Tombol [3]) dan memancarkan kilatan UV yang memperlambat gerakan Kuntilanak &amp; Sunyi.</p>
+        </div>
+        <button type="button" class="shop-buy" onclick="buyShopItem('bat')">BELI — Rp 100</button>
+      </div>
+      <div class="shop-item">
+        <div>
+          <h4>4. KOPI HITAM &amp; PENENANG</h4>
+          <p>Memulihkan Pikiran/Sanity +45% seketika (Tombol [4]) agar pandangan kembali jernih dan detak jantung stabil.</p>
+        </div>
+        <button type="button" class="shop-buy" onclick="buyShopItem('coffee')">BELI — Rp 120</button>
+      </div>
+    </div>
+    <div style="margin-top:16px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:10px;color:var(--phos-dim)">Tip: Ambil Dokumen Rahasia &amp; pilih keputusan cerita untuk mendapat tambahan dana Rp!</span>
+      <button type="button" class="btn" style="margin-top:0;padding:8px 18px" onclick="toggleShop()">KEMBALI BERGERAK</button>
+    </div>
+  </div>
+</div>
+
+<!-- panel dokumen + pilihan cabang cerita -->
 <div id="notePanel" class="hidden">
   <div class="paper">
-    <div class="paper-head"><span>STASIUN HALILINTAR — ARSIP INTERNAL</span><span id="paperRef"></span></div>
+    <div class="paper-head"><span>BERKAS RAHASIA NEGARA — AGEN RAKA WIRATAMA</span><span id="paperRef"></span></div>
     <div class="paper-title" id="paperTitle"></div>
     <div class="paper-body" id="paperBody"></div>
-    <div class="paper-foot">[ E ] TUTUP BERKAS</div>
+    <div class="choice-box" id="choiceBox"></div>
+    <div class="paper-foot">[ PILIH KEPUTUSAN DI ATAS ATAU TEKAN E UNTUK TUTUP ]</div>
   </div>
 </div>
 
 <!-- layar judul -->
 <div id="title" class="screen">
   <div class="frame">
-    <div class="formcode">FORMA-11 / BERKAS AKSES / SEKTOR 4</div>
+    <div class="formcode">OPERASI GAGAK-07 // AGEN RAKA WIRATAMA // 3 LEVEL</div>
     <h1 class="big">PANCARAN</h1>
-    <div class="subtitle">REKUIEM UNTUK STASIUN HALILINTAR — PROTOTIPE BABAK 1</div>
-    <div class="stamp">RAHASIA — JANGAN JAWAB SUARA ITU</div>
+    <div class="subtitle">MISI DOKUMEN RAHASIA STASIUN HALILINTAR — FULL EDITION</div>
+    <div class="stamp">3 LEVEL · MULTI-PILIHAN CERITA · SHOP COUNTER HANTU</div>
     <div class="ctrl">
-      <b>WASD</b> gerak &nbsp;·&nbsp; <b>MOUSE / PANAH</b> lihat &nbsp;·&nbsp; <b>SHIFT</b> lari (berisik)<br>
-      <b>C / CTRL</b> jongkok (senyap) &nbsp;·&nbsp; <b>E</b> interaksi &nbsp;·&nbsp; <b>F</b> senter
+      <b>WASD</b> gerak &nbsp;·&nbsp; <b>MOUSE / PANAH</b> lihat &nbsp;·&nbsp; <b>SHIFT</b> lari &nbsp;·&nbsp; <b>C</b> jongkok<br>
+      <b>[1]</b> Siram Air Suci (Counter Hantu) &nbsp;·&nbsp; <b>[2]</b> Perisai Garam &nbsp;·&nbsp; <b>[B]</b> Toko Spiritual
     </div>
-    <button type="button" class="btn" id="startBtn">MASUK KE STASIUN (KLIK / ENTER)</button>
+    <button type="button" class="btn" id="startBtn">MULAI MISI AGEN RAKA (KLIK / ENTER)</button>
     <div class="enter" style="margin-top:14px">— KLIK DI MANA SAJA UNTUK MASUK —</div>
-    <div class="warn">Gunakan headphone. "Sunyi" buta dan berburu lewat suara.<br>
-      Mengandung flicker cahaya dan jumpscare. Dianjurkan main dalam gelap.</div>
+    <div class="warn">Dengarkan senandung gumaman hantu &amp; musik peringatan saat setan mendekat.<br>
+      Kumpulkan ke-3 Dokumen Rahasia dan tentukan sendiri jalan ceritamu!</div>
   </div>
 </div>
 
@@ -172,20 +316,20 @@
   <div class="frame">
     <div class="formcode" style="color:#6e2a26">LAPORAN INSIDEN / 218</div>
     <h1 class="big" style="color:#b04a42;font-size:40px">PADUAN SUARA MENERIMAMU</h1>
-    <div class="subtitle">PIKIRAN LARAS HABIS. IA BERHENTI MENJAWAB.</div>
-    <button class="btn" id="deathBtn">COBA LAGI</button>
+    <div class="subtitle">PIKIRAN AGEN RAKA HABIS. GUNAKAN AIR SUCI [1] ATAU GARAM [2] SAAT DIKEJAR!</div>
+    <button class="btn" id="deathBtn">COBA LAGI DARI AWAL</button>
   </div>
 </div>
 
 <!-- layar akhir babak -->
 <div id="endScreen" class="screen hidden">
   <div class="frame">
-    <div class="formcode">LAPORAN PERJALANAN / BABAK 1</div>
-    <h1 class="big" style="font-size:38px">SEGEL 04 TERBACA</h1>
-    <div class="subtitle">PROTOTIPE SELESAI — BABAK 1 DARI 8</div>
+    <div class="formcode" id="endCode">LAPORAN AKHIR OPERASI GAGAK-07</div>
+    <h1 class="big" style="font-size:34px" id="endTitle">MISI SELESAI</h1>
+    <div class="subtitle" id="endSub">SELURUH DOKUMEN RAHASIA TELAH DIAMANKAN</div>
     <div class="ctrl" id="endStats"></div>
-    <div class="subtitle" style="margin-top:16px;color:#7d9a86">LANJUTAN: BABAK 2 — LANTAI −1, SAYAP KELUARGA</div>
-    <button class="btn" id="endBtn">KEMBALI KE PERMUKAAN</button>
+    <div class="subtitle" style="margin-top:16px;color:#7d9a86" id="endEpilogue"></div>
+    <button class="btn" id="endBtn">MAINKAN LAGI (PILIH JALUR CERITA LAIN)</button>
   </div>
 </div>
 
@@ -200,15 +344,18 @@ const show=el=>{if(!el)return;el.classList.remove('hidden');el.style.display='';
 const hide=el=>{if(!el)return;el.classList.add('hidden');};
 
 /* ═══════════════════════════ STATE ═══════════════════════════ */
-let state='title';           // title | playing | paused | reading | dead | end
+let state='title';           // title | playing | paused | reading | shop | dead | end
 let cutscene=false;          // bekukan gameplay saat cutscene jumpscare
 let t=0, last=performance.now(), frame=0, playT0=0;
 let shake=0, bobPhase=0, bobAmp=0, stepAcc=0;
-let hasKey=false, notesRead=0;
+let hasKey=false, notesRead=0, currentLevel=1;
 let currentTarget=null, noteOpenedAt=0;
+let storyChoices=[];
 
 const player={x:0,z:-1.4,yaw:Math.PI,pitch:0,eye:1.62,vx:0,vz:0,
-  flash:true,battery:100,sanity:92,crouch:false,noiseRadius:1.0};
+  flash:true,battery:100,sanity:96,crouch:false,noiseRadius:1.0,
+  money:500,holyWater:2,saltShield:1,batteryPack:1,coffeeCalm:1,
+  shieldT:0,stunAuraT:0};
 
 const keys={};
 const colliders=[];          // {minX,maxX,minZ,maxZ,active}
@@ -526,71 +673,142 @@ const doorMesh=new THREE.Mesh(new THREE.BoxGeometry(1.9,3.05,.14),
 doorMesh.position.set(0,1.525,22); doorMesh.castShadow=true; scene.add(doorMesh);
 const door={open:false,mesh:doorMesh,col:addCollider(-0.98,0.98,21.86,22.14)};
 
-/* ═══════════════════════════ ITEM & INTERAKSI ═══════════════════════════ */
+/* ═══════════════════════════ ITEM, DOKUMEN RAHASIA & CABANG CERITA ═══════════════════════════ */
+function advanceToLevel(lvl,msg){
+  if(lvl>currentLevel){
+    currentLevel=lvl;
+    if($('lvlBadge'))$('lvlBadge').textContent=`LVL ${currentLevel} / 3`;
+    player.money+=200;
+    notify(`★ NAIK KE LEVEL ${currentLevel}: ${msg} (+Rp 200)`);
+    if(lvl===2){
+      lamps.forEach(l=>{l.chaos=Math.min(.9,l.chaos+.25);});
+      ghostKunti.active=true; ghostKunti.group.visible=true;
+    }else if(lvl===3){
+      ghostGuard.active=true; ghostGuard.group.visible=true;
+    }
+  }
+}
+
 const notes={
-  n1:{ref:'SURAT/04-B',title:'MEMO INTERNAL — EDARAN MALAM',body:
-`Dari: Keamanan Sektor (a.n. B.)
-Kepada: seluruh petugas shift malam.
+  n1:{ref:'DOKUMEN-RAHASIA #01 // LEVEL 1',title:'BERKAS PROYEK PANCARAN — EKSPERIMEN FREKUENSI',body:
+`[KLASIFIKASI: SANGAT RAHASIA — TARGET UTAMA AGEN RAKA]
+Dari: Direktur Riset Stasiun Halilintar (Dr. B.)
+Kepada: Pengawas Sektor 4
 
-Mulai malam ini larangan berbicara di
-Lorong Sektor 4 diberlakukan KETAT.
-Bukan karena disiplin. Mereka mendengar
-bukan dengan telinga.
+Kami menemukan bahwa gelombang frekuensi 19.4 Hz di bawah
+tanah tidak hanya memengaruhi saraf manusia—tetapi membuka
+celah bagi entitas tak kasatmata yang kami sebut "SUNYI"
+dan "SUSTER BANGSAL".
 
-Tiga hal:
-1. Jangan jawab suara yang memanggil namamu.
-2. Jangan menghitung jeritan. Yang menghitung
-   akan dihitang balik.
-3. Lampu hijau Pos Jaga harus tetap menyala.
-   Selama hijau, kita dianggap "perabot."
+Mereka selalu mendengung dan bergumam sebelum menyerang.
+Satu-satunya penangkal fisik yang terbukti membakar jaringan
+ectoplasma mereka adalah AIR SUCI (Tirta Ruqyah) dan LINGKARAN
+GARAM yang disiapkan di Pos Logistik [Tekan B].
 
-— B.`},
-  n2:{ref:'SUBJEK/00',title:'BERKAS SUBJEK 00 — PROTOKOL BALIAN',body:
-`Status: DIJALANKAN, 2005.
+AGEN RAKA, APA TINDAKANMU TERHADAP DOKUMEN #1 INI?`,
+  choices:[
+    {label:'[A] Enkripsi & Simpan ke Drive Rahasia Negara (+Rp 300, Pikiran +15%)',fn:()=>{
+      player.money+=300; player.sanity=Math.min(100,player.sanity+15);
+      storyChoices.push('Enkripsi Bukti #1');
+      notify('Keputusan A: Bukti dienkripsi (+Rp 300, Pikiran +15%)');
+    }},
+    {label:'[B] Kirim Salinan ke Markas Intelijen (+Rp 450, memancing Hantu mendekat!)',fn:()=>{
+      player.money+=450; storyChoices.push('Transmisi Intelijen #1');
+      notify('Keputusan B: Dana Rp 450 diterima! Awas, sinyal memancing hantu!');
+      if(!enemy.active)spawnEnemy();
+    }},
+    {label:'[C] Bacakan Doa Pelindung & Ambil Air Suci Cadangan (+1 Air Suci & +1 Garam)',fn:()=>{
+      player.holyWater++; player.saltShield++; storyChoices.push('Ritual Pelindung #1');
+      notify('Keputusan C: +1 Air Suci & +1 Garam Ruqyah diperoleh!');
+    }}
+  ]},
+  n2:{ref:'DOKUMEN-RAHASIA #02 // LEVEL 2',title:'DAFTAR KORBAN BANGSAL & PROTOKOL SUBJEK 00',body:
+`[KLASIFIKASI: SANGAT RAHASIA — BUKTI KUNCI LEVEL 2]
+Catatan Otopsi & Eksperimen Bangsal Isolasi:
 
-Ingatan ditulis ulang. Nama dipertahankan,
-silangan dipindahkan. Subjek akan dibebaskan
-ke permukaan tanpa pernah tahu bahwa ia
-pernah tinggal di sini.
+Sebanyak 217 relawan dan pasien kehilangan kesadaran setelah
+mendengar senandung gumaman perempuan di lorong barat.
+Subjek ke-218 adalah keluarga kandungmu sendiri, Raka.
 
-Satu kegagalan pada berkas ini: kami tidak
-juga menghapus satu nama. Anak yang kedua.
-Kami biarkan — Dr. S. bersikeras.
+Di ruang sebelah, Kunci Karantina disimpan di atas meja arsip.
+Namun begitu kau membuka akses ke Sektor Barat, Level 2
+(Bangsal Medis & Lorong Disonansi) akan aktif sepenuhnya.
 
-Kadang aku berpikir, justru nama itulah
-yang kelak membawanya pulang.
+PILIH KEPUTUSAN CERITA AGEN RAKA UNTUK LANJUT KE LEVEL 2:`,
+  choices:[
+    {label:'[A] Doakan Arwah Korban & Segel Rak Arsip (+1 Air Suci, Pikiran +20%, Masuk Level 2)',fn:()=>{
+      player.holyWater++; player.sanity=Math.min(100,player.sanity+20);
+      storyChoices.push('Doa Arwah Bangsal');
+      advanceToLevel(2,'BANGSAL MEDIS & LORONG DISONANSI');
+    }},
+    {label:'[B] Bongkar Brankas Dana Gelap Direktur (+Rp 550 & +1 Baterai UV, Jumpscare!)',fn:()=>{
+      player.money+=550; player.batteryPack++;
+      storyChoices.push('Bongkar Dana Gelap');
+      advanceToLevel(2,'BANGSAL MEDIS & LORONG DISONANSI');
+      setTimeout(()=>triggerJumpscarePopup('SUSTER BANGSAL MUNCUL DARI BALIK RAK!'),400);
+    }},
+    {label:'[C] Aktifkan Detektor Gelombang Hantu (+Rp 350 & +1 Kopi Tenang, Masuk Level 2)',fn:()=>{
+      player.money+=350; player.coffeeCalm++;
+      storyChoices.push('Detektor Gelombang');
+      advanceToLevel(2,'BANGSAL MEDIS & LORONG DISONANSI');
+    }}
+  ]},
+  n3:{ref:'DOKUMEN-RAHASIA #03 // LEVEL 3',title:'MASTER REKAMAN INTI REAKTOR — HARI 411',body:
+`[KLASIFIKASI: DOKUMEN TERAKHIR — INTI STASIUN HALILINTAR]
+Seluruh 3 Dokumen Rahasia kini berada di tangan Agen Raka!
 
-— Arsiparis Sekt. 2`},
-  n3:{ref:'RESONANSI/411',title:'CATATAN RESONANSI — HARI 411',body:
-`Paduan suara bertambah dua suara malam ini.
-Sangkar bernapas lebih cepat. Dr. B. menyebut
-ini transendensi. Saya menyebutnya kunjungan.
+Catatan Terakhir Kepala Teknisi:
+"Paduan suara di balik SEGEL 04 di dinding barat sudah menunggu.
+Jika kau memiliki Air Suci, kau bisa menghancurkan segel itu
+dan memusnahkan kutukan stasiun ini. Atau kau bisa membawa
+ketiga berkas ini kabur ke dunia nyata sebagai peniup peluit!"
 
-Spesimen 3 dan 4 tidak lagi mengendap.
-Mereka menunggu seseorang lewat lorong barat.
-Bukan staf. Bukan kami.
+PILIH PERSIAPAN TERAKHIR MENUJU PUNCAK LEVEL 3 (SEGEL 04):`,
+  choices:[
+    {label:'[A] Siapkan Konferensi Pers & Bukti Hukum (+Rp 450, Pikiran +25%, Masuk Level 3)',fn:()=>{
+      player.money+=450; player.sanity=Math.min(100,player.sanity+25);
+      storyChoices.push('Jalur Hukum & Publik');
+      advanceToLevel(3,'INTI REAKTOR & ALTAR SEGEL 04');
+      setObjective(OBJ[5]);
+    }},
+    {label:'[B] Siapkan Persenjataan Eksorsisme Penuh (+2 Air Suci & +1 Garam, Masuk Level 3)',fn:()=>{
+      player.holyWater+=2; player.saltShield++;
+      storyChoices.push('Jalur Eksorsisme Suci');
+      advanceToLevel(3,'INTI REAKTOR & ALTAR SEGEL 04');
+      setObjective(OBJ[5]);
+    }},
+    {label:'[C] Sadap Frekuensi Reaktor untuk Kendali Penuh (+Rp 650, Masuk Level 3)',fn:()=>{
+      player.money+=650;
+      storyChoices.push('Jalur Penguasa Sinyal');
+      advanceToLevel(3,'INTI REAKTOR & ALTAR SEGEL 04');
+      setObjective(OBJ[5]);
+    }}
+  ]},
+  seal:{ref:'PUNCAK CERITA // LEVEL 3 — SEGEL 04',title:'PENENTUAN AKHIR MISI AGEN RAKA WIRATAMA',body:
+`Kau berdiri tepat di depan SEGEL 04 di Dinding Barat.
+Ketiga Dokumen Rahasia Proyek Pancaran ada di dalam tasmu.
+Suara gumaman dan langkah kaki para entitas mengepung ruangan.
 
-Ada yang dijanjikan akan kembali.
-Segel keempat mulai terbaca dari sisi dalam.
-
-Jika kau yang membaca ini: jangan berhenti
-di lorong disonansi. Jangan berhenti
-membaca namamu sendiri.`},
-  seal:{ref:'KISI/LOG-04',title:'PERMUKAAN KISI — SEGEL 04',body:
-`Terdapat tulisan pada logam yang tidak
-dapat dihasilkan alat mana pun:
-
-    KAMI MENGHITUNG HARI.
-    KAMI MENGHITUNG NAMA.
-    NAMA KE-218 TELAH KEMBALI KE PINTU.
-
-Sinyal di telapak tanganmu berdenyut
-seirama dengan dinding.
-
-Lorong ini hanya babak pertama.
-
-        — [ PROTOTIPE SELESAI ] —
-`, ending:true}
+Sebagai Agen Raka Wiratama, tentukan AKHIR CERITA (ENDING)
+dari Operasi Gagak-07 sekarang:`,
+  ending:true,
+  choices:[
+    {label:'[ENDING 1 — SANG PENIUP PELUIT] Kabur ke Permukaan & Bongkar Semua Dokumen ke Publik!',fn:()=>finishWithEnding(
+      'ENDING 1 // SANG PENIUP PELUIT (TRUE WHISTLEBLOWER)',
+      'RAKA MEMBONGKAR RAHASIA STASIUN HALILINTAR KE DUNIA NYATA',
+      'Ketiga Dokumen Rahasia berhasil disiarkan secara nasional. Proyek Pancaran ditutup paksa dan para pelaku ditangkap.'
+    )},
+    {label:'[ENDING 2 — EKSORSISME TIRTA SUCI] Siramkan Air Suci ke Segel 04 & Musnahkan Semua Hantu!',fn:()=>finishWithEnding(
+      'ENDING 2 // PENYUCIAN ABADI (HOLY EXORCIST)',
+      'SEGEL 04 HANCUR & SELURUH ENTITAS TERBAKAR CAHAYA SUCI',
+      'Dengan Air Suci dan Garam Ruqyah, Agen Raka menyegel celah dimensi bawah tanah selamanya. Arwah korban akhirnya tenang.'
+    )},
+    {label:'[ENDING 3 — PENGUASA FREKUENSI BARU] Ambil Alih Sinyal Stasiun Halilintar dari Balik Bayangan!',fn:()=>finishWithEnding(
+      'ENDING 3 // SANG PENGENDALI BAYANGAN (DARK SOVEREIGN)',
+      'AGEN RAKA MENGUASAI FREKUENSI 19.4 Hz STASIUN HALILINTAR',
+      'Alih-alih menyerahkan dokumen, Raka menggunakan rahasia stasiun untuk mengendalikan entitas Sunyi di bawah perintahnya.'
+    )}
+  ]}
 };
 const noteTxShared=noteTexture();
 function makeInteract(groupOrMesh,entry){
@@ -600,18 +818,18 @@ function makeInteract(groupOrMesh,entry){
   return e;
 }
 function makeNoteMesh(x,y,z,rot){
-  const m=new THREE.Mesh(new THREE.PlaneGeometry(.3,.4),
-    new THREE.MeshStandardMaterial({map:noteTxShared,roughness:1}));
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(.34,.44),
+    new THREE.MeshStandardMaterial({map:noteTxShared,roughness:.8,emissive:0x3a2e14,emissiveIntensity:.35}));
   m.rotation.x=-Math.PI/2; m.rotation.z=rot; m.position.set(x,y,z);
   m.receiveShadow=true; scene.add(m); return m;
 }
 const note1Mesh=makeNoteMesh(0.9,0.82,-2.55,.3);
-makeInteract(note1Mesh,{label:'BACA CATATAN',use:()=>openNote(notes.n1,note1Mesh)});
+makeInteract(note1Mesh,{label:'AMBIL DOKUMEN RAHASIA #1 (POS JAGA)',use:()=>openNote(notes.n1,note1Mesh)});
 const note2Mesh=makeNoteMesh(-6.3,1.72,11.0,-.4);
-makeInteract(note2Mesh,{label:'BACA BERKAS',use:()=>openNote(notes.n2,note2Mesh)});
+makeInteract(note2Mesh,{label:'AMBIL DOKUMEN RAHASIA #2 (ARSIP LEVEL 2)',use:()=>openNote(notes.n2,note2Mesh)});
 const note3Mesh=makeNoteMesh(-25.4,0.82,23.2,.2);
-makeInteract(note3Mesh,{label:'BACA CATATAN',use:()=>openNote(notes.n3,note3Mesh)});
-makeInteract(sealMesh,{label:'PERIKSA SEGEL 04',use:()=>openNote(notes.seal,sealMesh)});
+makeInteract(note3Mesh,{label:'AMBIL DOKUMEN RAHASIA #3 (INTI LEVEL 3)',use:()=>openNote(notes.n3,note3Mesh)});
+makeInteract(sealMesh,{label:'PERIKSA SEGEL 04 (PILIH ENDING MISI)',use:()=>openNote(notes.seal,sealMesh)});
 
 /* kunci */
 const keyGroup=new THREE.Group();
@@ -623,9 +841,9 @@ const keyGroup=new THREE.Group();
   const t2=new THREE.Mesh(new THREE.BoxGeometry(.02,.035,.02),km); t2.position.set(.11,-.025,0); keyGroup.add(t2);
 }
 keyGroup.position.set(-10.2,.98,12.1); scene.add(keyGroup);
-const keyEntry=makeInteract(keyGroup,{label:'AMBIL KUNCI KARANTINA',use:pickKey});
+const keyEntry=makeInteract(keyGroup,{label:'AMBIL KUNCI KARANTINA (+Rp 200)',use:pickKey});
 
-/* baterai */
+/* baterai & koper uang operasional */
 const batteries=[];
 function makeBattery(x,y,z){
   const g=new THREE.Group();
@@ -636,17 +854,18 @@ function makeBattery(x,y,z){
     new THREE.MeshStandardMaterial({color:0xb08a3e,metalness:.7,roughness:.4}));
   cap.position.y=.085; g.add(cap);
   g.position.set(x,y,z); scene.add(g);
-  const e=makeInteract(g,{label:'AMBIL BATERAI',use(){
+  const e=makeInteract(g,{label:'AMBIL BATERAI & DANA (+Rp 150)',use(){
     e.enabled=false; scene.remove(g);
     player.battery=Math.min(100,player.battery+55);
-    pickupSound(); notify('BATERAI +55%');
+    player.money+=150;
+    pickupSound(); notify('BATERAI +55% & DANA +Rp 150');
   }});
   batteries.push({g,baseY:y,ph:Math.random()*6});
 }
 makeBattery(12.6,.72,27);
 makeBattery(-27.9,.72,28.9);
 
-/* ═══════════════════════════ MUSUH "SUNYI" ═══════════════════════════ */
+/* ═══════════════════════════ MUSUH 1: "SUNYI" & HANTU TAMBAHAN ═══════════════════════════ */
 const NODES=[[-8,13],[-3,13],[-1,13],[0,8],[0,14],[0,20],[0,24],[0,27],[-8,27],[-14,27],[-19.5,27]];
 function regionOf(x,z){
   if(x>-13.4&&x<-2.6&&z>9.6&&z<16.4)return 'AR';
@@ -661,7 +880,7 @@ function buildPath(a,b){const s=b>a?1:-1,p=[];for(let i=a+s;i!==b+s;i+=s)p.push(
 
 const enemy={active:false,state:'idle',group:null,parts:null,
   pi:2,pd:1,path:null,face:0,phase:0,lastKnown:{x:0,z:0},
-  searchT:0,atkCd:0,invulnT:0,dormantT:0,chirpT:2,stepT:0,warned:false};
+  searchT:0,atkCd:0,invulnT:0,dormantT:0,chirpT:2,stepT:0,warned:false,stunT:0};
 (function buildSunyi(){
   const g=new THREE.Group();
   const skin=new THREE.MeshStandardMaterial({color:0x8e9388,roughness:.95});
@@ -677,7 +896,7 @@ const enemy={active:false,state:'idle',group:null,parts:null,
   mouth.position.set(0,1.79,.155); g.add(mouth);
   for(let i=-1;i<=1;i++){const s=new THREE.Mesh(new THREE.BoxGeometry(.012,.05,.012),dark);
     s.position.set(i*.047,1.79,.158); g.add(s);}
-  const eyeM=new THREE.MeshStandardMaterial({color:0x0b0c0a,roughness:1});
+  const eyeM=new THREE.MeshStandardMaterial({color:0xff1e1e,emissive:0xff0000,emissiveIntensity:1.2});
   const ey1=new THREE.Mesh(new THREE.SphereGeometry(.033,8,6),eyeM); ey1.position.set(.056,1.93,.138); g.add(ey1);
   const ey2=ey1.clone(); ey2.position.x=-.056; g.add(ey2);
   const armG=new THREE.CylinderGeometry(.045,.034,1.05,6);
@@ -689,6 +908,50 @@ const enemy={active:false,state:'idle',group:null,parts:null,
   g.visible=false; scene.add(g);
   enemy.group=g; enemy.parts={head,armL,armR};
 })();
+
+/* HANTU 2: KUNTILANAK SUSTER BANGSAL (Melayang & Bergumam) */
+const ghostKunti={active:true,group:null,x:0,z:16.5,stunT:0,atkCd:0,wpIdx:0,
+  wps:[[0,15],[-6,13],[0,25],[-12,27],[6,26]]};
+(function buildKunti(){
+  const g=new THREE.Group();
+  const dress=new THREE.MeshStandardMaterial({color:0xd8ddd6,roughness:.9,transparent:true,opacity:.88});
+  const hairMat=new THREE.MeshStandardMaterial({color:0x090a09,roughness:1});
+  const eyeRed=new THREE.MeshBasicMaterial({color:0xff2222});
+  const robe=new THREE.Mesh(new THREE.ConeGeometry(.38,1.55,10),dress);
+  robe.position.y=1.0; g.add(robe);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(.16,10,8),dress);
+  head.position.y=1.86; g.add(head);
+  const hair=new THREE.Mesh(new THREE.CylinderGeometry(.18,.24,.85,10),hairMat);
+  hair.position.set(0,1.62,.02); g.add(hair);
+  const e1=new THREE.Mesh(new THREE.SphereGeometry(.026,6,6),eyeRed); e1.position.set(.055,1.87,.15); g.add(e1);
+  const e2=e1.clone(); e2.position.x=-.055; g.add(e2);
+  const light=new THREE.PointLight(0x991111,.6,4.5); light.position.set(0,1.7,0); g.add(light);
+  g.position.set(ghostKunti.x,0.2,ghostKunti.z);
+  scene.add(g); ghostKunti.group=g;
+})();
+
+/* HANTU 3: POCONG PENJAGA SEGEL MERAH (Lompat Patroli Sektor Barat) */
+const ghostGuard={active:true,group:null,x:-22,z:24,stunT:0,atkCd:0,wpIdx:0,
+  wps:[[-22,21],[-26,24],[-22,28],[-15,27]]};
+(function buildGuard(){
+  const g=new THREE.Group();
+  const shroud=new THREE.MeshStandardMaterial({color:0xc9c4b5,roughness:.95});
+  const faceDark=new THREE.MeshStandardMaterial({color:0x1a1412,roughness:1});
+  const eyeGlow=new THREE.MeshBasicMaterial({color:0xff3838});
+  const body=new THREE.Mesh(new THREE.CylinderGeometry(.2,.14,1.65,10),shroud);
+  body.position.y=.95; g.add(body);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(.17,10,8),shroud);
+  head.position.y=1.86; g.add(head);
+  const face=new THREE.Mesh(new THREE.SphereGeometry(.13,8,8),faceDark);
+  face.position.set(0,1.86,.06); g.add(face);
+  const e1=new THREE.Mesh(new THREE.SphereGeometry(.028,6,6),eyeGlow); e1.position.set(.05,1.88,.17); g.add(e1);
+  const e2=e1.clone(); e2.position.x=-.05; g.add(e2);
+  const topKnot=new THREE.Mesh(new THREE.ConeGeometry(.08,.22,6),shroud);
+  topKnot.position.y=2.08; g.add(topKnot);
+  g.position.set(ghostGuard.x,0,ghostGuard.z);
+  scene.add(g); ghostGuard.group=g;
+})();
+
 function faceToward(e,tx,tz,dt){
   const a=Math.atan2(tx-e.group.position.x,tz-e.group.position.z);
   let d=Math.atan2(Math.sin(a-e.face),Math.cos(a-e.face));
@@ -702,7 +965,7 @@ function enemyMove(e,tx,tz,speed,dt){
   const step=Math.min(d,speed*dt);
   let nx=g.position.x+dx/d*step,nz=g.position.z+dz/d*step;
   [nx,nz]=resolveCircle(nx,nz,.35);
-  if(nx>SAFE.minX-.6&&nx<SAFE.maxX+.6&&nz>SAFE.minZ-.6&&nz<SAFE.maxZ+.6)return false; // dilarang masuk zona aman
+  if(nx>SAFE.minX-.6&&nx<SAFE.maxX+.6&&nz>SAFE.minZ-.6&&nz<SAFE.maxZ+.6)return false;
   g.position.x=nx; g.position.z=nz;
   faceToward(e,g.position.x+dx,g.position.z+dz,dt);
   return d-step<0.06;
@@ -711,22 +974,207 @@ function spawnEnemy(){
   enemy.active=true; enemy.group.visible=true;
   enemy.group.position.set(-2,0,13.2);
   enemy.face=Math.atan2(-1,0); enemy.group.rotation.y=enemy.face;
-  enemy.state='dormant'; enemy.dormantT=3.5; enemy.path=null;
+  enemy.state='dormant'; enemy.dormantT=2.5; enemy.path=null;
   chirpSound(spatialOf(enemy.group.position));
 }
-function enemyAttack(){
+
+let jumpscareTimer=null;
+function triggerJumpscarePopup(titleText){
+  const ov=$('jumpscareOverlay');
+  if(!ov)return;
+  if($('jumpscareTitle'))$('jumpscareTitle').textContent=titleText||'DIA MENYERANGMU!';
+  ov.style.display='flex';
+  scareSound(); shriekSound(); shake=1.2; flashDmg(.9);
+  if(jumpscareTimer)clearTimeout(jumpscareTimer);
+  jumpscareTimer=setTimeout(()=>{ov.style.display='none';},1650);
+}
+
+/* ═══════════════════════════ COUNTER HANTU & SHOP SPIRITUAL ═══════════════════════════ */
+function holySplashSound(){
+  if(!AC)return;
+  playNoise({dur:.65,vol:.6,freq:1900,f1:420,type:'bandpass',q:1.2});
+  playTone({wave:'triangle',f0:587.33,f1:880,dur:.45,vol:.35});
+  playTone({wave:'sine',f0:1174.66,f1:1760,dur:.55,vol:.28,at:.06});
+}
+function useHolyWater(){
+  if(player.holyWater<=0){
+    notify('Air Suci habis! Tekan [B] untuk beli di Toko Spiritual.');
+    return;
+  }
+  player.holyWater--;
+  holySplashSound();
+  const hf=$('holyEffect');
+  if(hf){hf.style.opacity=1;setTimeout(()=>hf.style.opacity=0,420);}
+  if($('jumpscareOverlay'))$('jumpscareOverlay').style.display='none';
+  player.sanity=Math.min(100,player.sanity+22);
+  shake=.45;
+  let hitCount=0;
+  /* Stun & mental semua hantu di sekitar Raka */
+  if(enemy.active){
+    const d=Math.hypot(enemy.group.position.x-player.x,enemy.group.position.z-player.z);
+    if(d<11||enemy.state==='chase'){
+      enemy.stunT=10; enemy.state='patrol'; enemy.invulnT=6;
+      enemy.group.position.set(-14,0,27);
+      hitCount++;
+    }
+  }
+  [ghostKunti,ghostGuard].forEach(gh=>{
+    if(!gh.active)return;
+    const d=Math.hypot(gh.group.position.x-player.x,gh.group.position.z-player.z);
+    if(d<11){
+      gh.stunT=10;
+      const wp=gh.wps[0];
+      gh.group.position.set(wp[0],gh.group.position.y,wp[1]);
+      hitCount++;
+    }
+  });
+  if(hitCount>0){
+    player.money+=100;
+    notify(`✨ COUNTER BERHASIL! ${hitCount} Hantu terbakar Air Suci & lumpuh 10 dtk! (+Rp 100)`);
+  }else{
+    notify('✨ Air Suci disiramkan! Pikiran +22% & area sekitar disucikan.');
+  }
+  updateHUD();
+}
+function useSaltShield(){
+  if(player.saltShield<=0){
+    notify('Garam Ruqyah habis! Tekan [B] untuk beli di Toko Spiritual.');
+    return;
+  }
+  player.saltShield--;
+  player.shieldT=14;
+  holySplashSound();
+  notify('🛡 PERISAI GARAM RUQYAH AKTIF (14 Detik) — Hantu tidak bisa menyentuhmu!');
+  updateHUD();
+}
+function useBatteryPack(){
+  if(player.batteryPack<=0){
+    notify('Baterai UV cadangan habis! Tekan [B] untuk beli di Toko.');
+    return;
+  }
+  player.batteryPack--;
+  player.battery=Math.min(100,player.battery+65);
+  player.flash=true;
+  pickupSound();
+  notify('🔦 BATERAI UV TERPASANG (+65% Daya Senter)');
+  updateHUD();
+}
+function useCoffeeCalm(){
+  if(player.coffeeCalm<=0){
+    notify('Kopi Hitam & Penenang habis! Tekan [B] untuk beli di Toko.');
+    return;
+  }
+  player.coffeeCalm--;
+  player.sanity=Math.min(100,player.sanity+45);
+  pickupSound();
+  notify('☕ KOPI & PENENANG DIMINUM (+45% Pikiran Jernih)');
+  updateHUD();
+}
+function toggleShop(){
+  const sp=$('shopPanel');
+  if(!sp)return;
+  if(state==='shop'){
+    hide(sp);
+    state='playing';
+    tryPointerLock();
+  }else if(state==='playing'||state==='paused'){
+    state='shop';
+    try{document.exitPointerLock&&document.exitPointerLock();}catch(e){}
+    hide($('pause'));
+    if($('shopMoneyText'))$('shopMoneyText').textContent='DANA: Rp '+player.money;
+    show(sp);
+  }
+}
+function buyShopItem(type){
+  const prices={holy:150,salt:200,bat:100,coffee:120};
+  const cost=prices[type]||150;
+  if(player.money<cost){
+    rattleSound();
+    notify('Dana Rp tidak cukup! Ambil Dokumen Rahasia atau counter hantu untuk tambahan Rp.');
+    return;
+  }
+  player.money-=cost;
+  if(type==='holy'){player.holyWater++;notify('Dibeli: +1 Air Suci / Tirta Ruqyah');}
+  else if(type==='salt'){player.saltShield++;notify('Dibeli: +1 Garam Ruqyah Pelindung');}
+  else if(type==='bat'){player.batteryPack++;notify('Dibeli: +1 Baterai Senter UV');}
+  else if(type==='coffee'){player.coffeeCalm++;notify('Dibeli: +1 Kopi Hitam & Penenang');}
+  pickupSound();
+  if($('shopMoneyText'))$('shopMoneyText').textContent='DANA: Rp '+player.money;
+  updateHUD();
+}
+if($('counterNowBtn'))$('counterNowBtn').addEventListener('click',e=>{e.stopPropagation();useHolyWater();});
+
+function enemyAttack(attackerName){
+  if(player.shieldT>0){
+    useHolyWater();
+    notify('🛡 PERISAI GARAM MEMENTALKAN SERANGAN HANTU!');
+    return;
+  }
   if(enemy.atkCd>0||enemy.invulnT>0)return;
-  enemy.atkCd=3;
-  player.sanity=Math.max(0,player.sanity-35);
-  flashDmg(.85); shake=1; shriekSound();
-  // Sunyi "melepas genggaman" — mundur ke titik jauh
+  enemy.atkCd=3.5;
+  player.sanity=Math.max(0,player.sanity-28);
+  triggerJumpscarePopup((attackerName||'SUNYI')+' MENYERGAPMU! TEKAN [1] AIR SUCI!');
   let bi=0,bd=-1;
   NODES.forEach((n,i)=>{const d=(n[0]-player.x)**2+(n[1]-player.z)**2;if(d>bd){bd=d;bi=i;}});
-  enemy.group.position.set(NODES[bi][0],0,NODES[bi][1]);
-  enemy.state='patrol'; enemy.path=null; enemy.pi=bi; enemy.invulnT=2;
+  if(enemy.active){
+    enemy.group.position.set(NODES[bi][0],0,NODES[bi][1]);
+    enemy.state='patrol'; enemy.path=null; enemy.pi=bi; enemy.invulnT=2.5;
+  }
 }
+
+function updateExtraGhosts(dt){
+  if(player.shieldT>0)player.shieldT=Math.max(0,player.shieldT-dt);
+  [ghostKunti,ghostGuard].forEach((gh,idx)=>{
+    if(!gh.active||!gh.group)return;
+    gh.atkCd=Math.max(0,gh.atkCd-dt);
+    if(gh.stunT>0){
+      gh.stunT-=dt;
+      gh.group.rotation.y+=dt*8;
+      return;
+    }
+    const g=gh.group;
+    const d=Math.hypot(player.x-g.position.x,player.z-g.position.z);
+    const inSafe=insideBox(player.x,player.z,SAFE);
+    let tx,tz,spd;
+    if(!inSafe&&d<8.5){
+      tx=player.x; tz=player.z;
+      spd=(idx===0?2.45:2.1)*(player.flash&&d<5?0.65:1); // senter UV memperlambat hantu
+    }else{
+      const wp=gh.wps[gh.wpIdx];
+      tx=wp[0]; tz=wp[1]; spd=1.15;
+      if(Math.hypot(tx-g.position.x,tz-g.position.z)<.6){
+        gh.wpIdx=(gh.wpIdx+1)%gh.wps.length;
+      }
+    }
+    const dx=tx-g.position.x,dz=tz-g.position.z,dist=Math.hypot(dx,dz);
+    if(dist>.05){
+      g.position.x+=dx/dist*spd*dt;
+      g.position.z+=dz/dist*spd*dt;
+      g.rotation.y=Math.atan2(dx,dz);
+    }
+    /* animasi melayang kuntilanak vs lompat pocong */
+    if(idx===0)g.position.y=0.22+Math.sin(t*3.2)*.16;
+    else g.position.y=Math.abs(Math.sin(t*5.5))*.32;
+
+    if(!inSafe&&d<1.25&&gh.atkCd<=0){
+      gh.atkCd=4.0;
+      if(player.shieldT>0){
+        gh.stunT=8;
+        holySplashSound();
+        notify('🛡 PERISAI GARAM MEMBAKAR '+(idx===0?'SUSTER KUNTILANAK!':'PENJAGA SEGEL!'));
+      }else{
+        enemyAttack(idx===0?'SUSTER BANGSAL':'PENJAGA SEGEL MERAH');
+        const wp=gh.wps[0];
+        g.position.set(wp[0],g.position.y,wp[1]);
+      }
+    }
+  });
+}
+
 function updateEnemy(dt){
+  updateExtraGhosts(dt);
   if(!enemy.active||cutscene)return;
+  if(enemy.stunT>0){enemy.stunT-=dt;enemy.group.rotation.y+=dt*6;return;}
   const g=enemy.group, e=enemy;
   e.atkCd=Math.max(0,e.atkCd-dt); e.invulnT=Math.max(0,e.invulnT-dt);
   const px=player.x,pz=player.z;
@@ -752,7 +1200,6 @@ function updateEnemy(dt){
   else if(e.state==='chase'){
     const lk=e.lastKnown;
     if(canHear&&d<hear){lk.x=px;lk.z=pz;}
-    // routing
     let tx=lk.x,tz=lk.z;
     if(regionOf(g.position.x,g.position.z)!==regionOf(lk.x,lk.z)){
       if(!e.path||!e.path.length){
@@ -762,13 +1209,13 @@ function updateEnemy(dt){
       if(Math.hypot(g.position.x-n[0],g.position.z-n[1])<.55){e.path.shift();n=e.path.length?NODES[e.path[0]]:null;}
       if(n){tx=n[0];tz=n[1];}
     }
-    enemyMove(e,tx,tz,3.8,dt);
+    enemyMove(e,tx,tz,3.6,dt);
     e.parts.head.rotation.z=Math.sin(t*5)*.1;
     e.stepT-=dt;
     if(e.stepT<=0){e.stepT=.32;const s=spatialOf(g.position);playNoise({dur:.1,vol:.5*s.vol+.05,freq:220,pan:s.pan});}
     e.chirpT-=dt;
     if(e.chirpT<=0){e.chirpT=1.3;chirpSound(spatialOf(g.position));}
-    if(d<1.15)enemyAttack();
+    if(d<1.15)enemyAttack('ENTITAS SUNYI');
     else if(Math.hypot(g.position.x-lk.x,g.position.z-lk.z)<.6&&d>=hear){e.state='search';e.searchT=2.4;}
   }
   else if(e.state==='search'){
@@ -777,7 +1224,6 @@ function updateEnemy(dt){
     if(canHear&&(d<hear||d<1.7)){startChase();}
     else if(e.searchT<=0){e.state='patrol';e.pi=nearestNode(g.position.x,g.position.z);e.path=null;}
   }
-  /* animasi tubuh */
   const moving=e.state==='patrol'||e.state==='chase';
   e.phase+=dt*(e.state==='chase'?9:4)*(moving?1:.15);
   g.position.y=Math.abs(Math.sin(e.phase))*.045;
@@ -787,7 +1233,7 @@ function updateEnemy(dt){
   function startChase(){
     e.state='chase'; e.lastKnown={x:px,z:pz}; e.path=null; e.chirpT=0;
     chirpSound(spatialOf(g.position));
-    if(!e.warned){e.warned=true;notify('IA MENDENGARMU.');}
+    if(!e.warned){e.warned=true;notify('⚠ IA MENDENGARMU! TEKAN [1] UNTUK SIRAM AIR SUCI!');}
     playTone({wave:'square',f0:180,f1:90,dur:.25,vol:.18});
   }
 }
@@ -815,16 +1261,52 @@ function resolveCircle(px,pz,r){
   return[px,pz];
 }
 
-/* ═══════════════════════════ AUDIO (Web Audio API) ═══════════════════════════ */
+/* ═══════════════════════════ AUDIO: SENANDUNG GUMAMAN & MUSIK SETAN DATANG ═══════════════════════════ */
 let AC=null,master,sfx,amb,whisperGain,whisperBP,droneO1;
-let whisperBurst=0,nextBeat=0,dirT=12;
+let whisperBurst=0,nextBeat=0,dirT=12,humT=1.5,humIdx=0,horrorChordT=0;
+/* Melodi senandung gumaman perempuan (skala pelog/minor mistis) */
+const HUM_MELODY=[440,466.16,349.23,329.63,293.66,329.63,277.18,293.66,220];
+
+function playHumVocal(freq,dur,vol,pan){
+  if(!AC)return;
+  const t0=AC.currentTime;
+  const osc=AC.createOscillator(); osc.type='sawtooth';
+  osc.frequency.setValueAtTime(freq,t0);
+  /* vibrato senandung manusia */
+  const vib=AC.createOscillator(); vib.frequency.value=5.4;
+  const vg=AC.createGain(); vg.gain.value=4.2;
+  vib.connect(vg); vg.connect(osc.frequency);
+  /* filter formant vokal "Hmm / Ahh" */
+  const f1=AC.createBiquadFilter(); f1.type='bandpass'; f1.frequency.value=560; f1.Q.value=4.5;
+  const f2=AC.createBiquadFilter(); f2.type='bandpass'; f2.frequency.value=1180; f2.Q.value=5.0;
+  const g=AC.createGain();
+  g.gain.setValueAtTime(.0001,t0);
+  g.gain.linearRampToValueAtTime(Math.max(.005,vol),t0+0.18);
+  g.gain.exponentialRampToValueAtTime(.0001,t0+dur);
+  osc.connect(f1); osc.connect(f2);
+  f1.connect(g); f2.connect(g);
+  outChain(g,pan||0,amb);
+  osc.start(t0); vib.start(t0);
+  osc.stop(t0+dur+.05); vib.stop(t0+dur+.05);
+}
+
+function playApproachingHorrorMusic(intensity){
+  if(!AC)return;
+  /* Gesekan string minor disonan + lonceng keramat saat tanda setan datang */
+  const v=clamp(intensity*.16,0.03,0.18);
+  playTone({wave:'sawtooth',f0:110,f1:103.8,dur:.65,vol:v,dist:true});
+  playTone({wave:'triangle',f0:233.08,f1:220,dur:.6,vol:v*.8,at:.08});
+  if(intensity>0.55){
+    playTone({wave:'sine',f0:880,f1:830.6,dur:.45,vol:v*.45,at:.15});
+  }
+}
+
 function initAudio(){
   if(AC)return;
   AC=new (window.AudioContext||window.webkitAudioContext)();
   master=AC.createGain();master.gain.value=.85;master.connect(AC.destination);
   amb=AC.createGain();amb.gain.value=.7;amb.connect(master);
   sfx=AC.createGain();sfx.gain.value=1;sfx.connect(master);
-  /* drone bawah tanah */
   droneO1=AC.createOscillator();droneO1.type='sine';droneO1.frequency.value=46;
   const o2=AC.createOscillator();o2.type='sine';o2.frequency.value=57.3;
   const lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=180;
@@ -833,12 +1315,10 @@ function initAudio(){
   const lfo=AC.createOscillator();lfo.frequency.value=.07;
   const lg=AC.createGain();lg.gain.value=.022;lfo.connect(lg);lg.connect(og.gain);
   droneO1.start();o2.start();lfo.start();
-  /* noise tekstur */
   const ns=AC.createBufferSource();ns.buffer=sharedNoise();ns.loop=true;
   const nlp=AC.createBiquadFilter();nlp.type='lowpass';nlp.frequency.value=300;
   const ng=AC.createGain();ng.gain.value=.05;
   ns.connect(nlp);nlp.connect(ng);ng.connect(amb);ns.start();
-  /* rantai bisikan */
   const ws=AC.createBufferSource();ws.buffer=sharedNoise();ws.loop=true;
   whisperBP=AC.createBiquadFilter();whisperBP.type='bandpass';whisperBP.frequency.value=800;whisperBP.Q.value=7;
   whisperGain=AC.createGain();whisperGain.gain.value=0;
@@ -905,7 +1385,7 @@ function footstep(run){
   playNoise({dur:.08,vol:run?.16:.09,freq:run?430:300,q:.6});
   playNoise({dur:.05,vol:.03,freq:150,at:.012});
 }
-function chirpSound(s){ // kokokan ekolokasi Sunyi
+function chirpSound(s){
   const v=.14*s.vol+.015;
   playTone({wave:'sine',f0:1500,f1:640,dur:.22,vol:v,pan:s.pan});
   playTone({wave:'sine',f0:2300,f1:900,dur:.16,vol:v*.4,pan:s.pan,at:.03});
@@ -965,25 +1445,74 @@ function duckAmbient(){
   amb.gain.setTargetAtTime(.12,t0,.05);
   amb.gain.setTargetAtTime(.7,t0+1.4,.6);
 }
+function nearestGhostDistance(){
+  let minD=999,nearestPos=null;
+  if(enemy.active&&enemy.stunT<=0){
+    const d=Math.hypot(enemy.group.position.x-player.x,enemy.group.position.z-player.z);
+    if(d<minD){minD=d;nearestPos=enemy.group.position;}
+  }
+  [ghostKunti,ghostGuard].forEach(gh=>{
+    if(gh.active&&gh.stunT<=0&&gh.group){
+      const d=Math.hypot(gh.group.position.x-player.x,gh.group.position.z-player.z);
+      if(d<minD){minD=d;nearestPos=gh.group.position;}
+    }
+  });
+  return {minD,nearestPos};
+}
+
 function updateAudioFrame(dt){
   if(!AC)return;
-  /* bisikan naik saat sanity turun */
   const low=1-player.sanity/100;
   whisperBurst=Math.max(0,whisperBurst-dt*.8);
   const base=player.sanity<55?(1-player.sanity/55)*.028:0;
   whisperGain.gain.value=base+whisperBurst*.05;
   whisperBP.frequency.value=520+Math.sin(t*.7)*280+Math.sin(t*1.9)*160;
-  /* detak jantung */
-  if((player.sanity<45||(enemy.active&&enemy.state==='chase'))&&state==='playing'){
-    if(t>nextBeat){heartbeatSound(enemy.state==='chase'?.34:.22);nextBeat=t+(enemy.state==='chase'?.5:lerp(1.05,.55,low));}
+
+  /* Cek jarak hantu terdekat untuk Dengungan Gumaman & Musik Tanda Setan Datang */
+  const {minD,nearestPos}=nearestGhostDistance();
+  const warnBanner=$('ghostWarn');
+  if(state==='playing'&&minD<13.5){
+    const danger=clamp(1-(minD/13.5),0.1,1);
+    if(warnBanner){
+      warnBanner.style.display='block';
+      warnBanner.textContent=`⚠ TANDA SETAN MENDEKAT! [JARAK: ${minD.toFixed(1)}m] — SIAPKAN [1] AIR SUCI!`;
+    }
+    horrorChordT-=dt;
+    if(horrorChordT<=0){
+      horrorChordT=lerp(1.3,0.42,danger);
+      playApproachingHorrorMusic(danger);
+    }
+    if(t>nextBeat){
+      heartbeatSound(lerp(.18,.42,danger));
+      nextBeat=t+lerp(.85,.36,danger);
+    }
+  }else{
+    if(warnBanner)warnBanner.style.display='none';
+    if(player.sanity<45&&state==='playing'&&t>nextBeat){
+      heartbeatSound(.22); nextBeat=t+lerp(1.05,.55,low);
+    }
   }
+
+  /* Dengungan lagu bergumam perempuan ("Hmm... na-na...") setiap beberapa detik */
+  if(state==='playing'){
+    humT-=dt;
+    if(humT<=0){
+      const sp=nearestPos?spatialOf(nearestPos):{pan:Math.sin(t*.5)*.6,vol:.25};
+      const freq=HUM_MELODY[humIdx%HUM_MELODY.length];
+      humIdx++;
+      const dur=rand(.85,1.45);
+      playHumVocal(freq,dur,clamp(sp.vol*.22+.03,.04,.22),sp.pan);
+      humT=dur+rand(.15,.65);
+    }
+  }
+
   /* kokokan Sunyi saat patroli */
   if(enemy.active&&(enemy.state==='patrol'||enemy.state==='dormant')){
     enemy.chirpT-=dt;
     if(enemy.chirpT<=0){enemy.chirpT=rand(5,8.5);chirpSound(spatialOf(enemy.group.position));}
   }
-  /* "sutradara" — suara lingkungan acak */
-  if(state==='playing'&&!cutscene&&!(enemy.active&&enemy.state==='chase')){
+  /* suara lingkungan acak */
+  if(state==='playing'&&!cutscene&&minD>=13.5){
     dirT-=dt;
     if(dirT<=0){
       dirT=rand(18,42);
@@ -1107,29 +1636,29 @@ triggers.push(
 function pickKey(){
   if(!keyEntry.enabled)return;
   keyEntry.enabled=false;scene.remove(keyGroup);
-  hasKey=true;pickupSound();
-  notify('KUNCI KARANTINA diperoleh.');
+  hasKey=true; player.money+=200; pickupSound();
+  notify('KUNCI KARANTINA diperoleh (+Rp 200).');
   setObjective(OBJ[2]);
   triggerScareA();
 }
 function useDoor(){
   if(!hasKey){
     rattleSound();
-    notify('Tersegel dari utara. Butuh KUNCI KARANTINA.');
+    notify('Tersegel dari utara. Ambil KUNCI KARANTINA di Ruang Arsip.');
     if(objIdx===0)setObjective(OBJ[1]);
   }else if(!door.open){
     door.open=true;door.col.active=false;
     doorSound();shake=.35;
     setObjective(OBJ[3]);
-    notify('Segel 04 dilewati. Empat dari sebelas.');
+    advanceToLevel(2,'LORONG DISONANSI & BANGSAL MEDIS');
+    notify('Pintu Karantina Terbuka! Memasuki Area Level 2.');
   }
 }
-makeInteract(doorMesh,{label:'PERIKSA PINTU',use:useDoor});
+makeInteract(doorMesh,{label:'BUKA PINTU KARANTINA (MENUJU LEVEL 2)',use:useDoor});
 
 /* ═══════════════════════════ UPDATE PEMAIN ═══════════════════════════ */
 function updatePlayer(dt){
   if(cutscene){player.noiseRadius=.8;return;}
-  /* rotasi kamera via tombol panah sebagai fallback selain mouse */
   const turnSpd=1.85;
   if(keys.ArrowLeft)player.yaw+=turnSpd*dt;
   if(keys.ArrowRight)player.yaw-=turnSpd*dt;
@@ -1163,44 +1692,58 @@ function updatePlayer(dt){
 
   if(player.flash&&player.battery>0){
     const wasLow=player.battery<25;
-    player.battery=Math.max(0,player.battery-dt*.45);
-    if(!wasLow&&player.battery<25)notify('Baterai senter lemah.');
-    if(player.battery===0)notify('Senter mati. Total.');
+    player.battery=Math.max(0,player.battery-dt*.38);
+    if(!wasLow&&player.battery<25)notify('Baterai senter lemah! Tekan [3] atau buka Shop [B].');
+    if(player.battery===0)notify('Senter mati! Tekan [3] untuk pasang Baterai UV.');
   }
   /* sanity */
   let drain=0;
   for(const z of sanZones)if(insideBox(player.x,player.z,z))drain=Math.max(drain,z.rate);
   const inSafe=insideBox(player.x,player.z,SAFE);
-  const regen=drain>0?0:(inSafe?3:(player.flash?.5:.15));
-  player.sanity=clamp(player.sanity+(regen-drain)*dt,0,100);
-  if(enemy.active&&!cutscene){
+  const regen=(player.shieldT>0)?4:(drain>0?0:(inSafe?3:(player.flash?.5:.15)));
+  player.sanity=clamp(player.sanity+(regen-(player.shieldT>0?0:drain))*dt,0,100);
+  if(enemy.active&&!cutscene&&player.shieldT<=0){
     const d=Math.hypot(enemy.group.position.x-player.x,enemy.group.position.z-player.z);
-    if(d<7)player.sanity=Math.max(0,player.sanity-dt*(7-d)*.55);
-    if(enemy.state==='chase')player.sanity=Math.max(0,player.sanity-dt*1.6);
+    if(d<7)player.sanity=Math.max(0,player.sanity-dt*(7-d)*.45);
+    if(enemy.state==='chase')player.sanity=Math.max(0,player.sanity-dt*1.3);
   }
   if(player.sanity<=0)die();
-  /* trigger sekali-pakai */
   for(const tg of triggers)if(!tg.fired&&insideBox(player.x,player.z,tg)){tg.fired=true;tg.fn();}
-  /* falsescare saat sanity rendah */
   if(player.sanity<35&&Math.random()<dt*.06){whisperBurst=1;playNoise({dur:.3,vol:.1,freq:900,type:'bandpass',pan:rand(-1,1)});}
 }
 function die(){
   state='dead';try{document.exitPointerLock&&document.exitPointerLock();}catch(e){}
-  hide($('hud'));
+  hide($('hud'));hide($('shopPanel'));
+  if($('jumpscareOverlay'))$('jumpscareOverlay').style.display='none';
   if(AC){droneO1.frequency.linearRampToValueAtTime(18,AC.currentTime+2.5);whisperGain.gain.value=.06;}
   show($('death'));
 }
-function startEnding(){
+function finishWithEnding(code,title,epilogue){
   state='end';cutscene=true;try{document.exitPointerLock&&document.exitPointerLock();}catch(e){}
-  hide($('notePanel'));hide($('hud'));
+  hide($('notePanel'));hide($('hud'));hide($('shopPanel'));
+  if($('jumpscareOverlay'))$('jumpscareOverlay').style.display='none';
   $('blackout').style.opacity=1;
   if(AC){droneO1.frequency.linearRampToValueAtTime(22,AC.currentTime+3);whisperGain.gain.value=.02;}
   const secs=Math.floor((performance.now()-playT0)/1000);
+  if($('endCode'))$('endCode').textContent=code||'LAPORAN AKHIR OPERASI GAGAK-07';
+  if($('endTitle'))$('endTitle').textContent=title||'MISI AGEN RAKA SELESAI';
+  if($('endEpilogue'))$('endEpilogue').textContent=epilogue||'';
+  const choicesText=storyChoices.length?storyChoices.join(' → '):'Jalur Standar Investigasi';
   $('endStats').innerHTML=
-    `DOKUMEN DIBACA ......... ${notesRead} / 3<br>`+
-    `SANITY AKHIR ........... ${Math.round(player.sanity)}%<br>`+
-    `WAKTU DI BAWAH ......... ${String(Math.floor(secs/60)).padStart(2,'0')}:${String(secs%60).padStart(2,'0')}`;
-  setTimeout(()=>{show($('endScreen'));$('blackout').style.opacity=0;},2100);
+    `AGEN PELAKSANA ......... RAKA WIRATAMA [GAGAK-07]<br>`+
+    `LEVEL TERCAPAI ......... LEVEL ${currentLevel} / 3<br>`+
+    `DOKUMEN RAHASIA ........ ${notesRead} / 3 BERKAS DIAMANKAN<br>`+
+    `KEPUTUSAN CERITA ....... ${choicesText}<br>`+
+    `SISA DANA &amp; SANITY ..... Rp ${player.money} · ${Math.round(player.sanity)}%<br>`+
+    `WAKTU OPERASI .......... ${String(Math.floor(secs/60)).padStart(2,'0')}:${String(secs%60).padStart(2,'0')}`;
+  setTimeout(()=>{show($('endScreen'));$('blackout').style.opacity=0;},1600);
+}
+function startEnding(){
+  finishWithEnding(
+    'ENDING // MISI DOKUMEN RAHASIA SELESAI',
+    'SEGEL 04 & BERKAS PANCARAN DIAMANKAN',
+    'Agen Raka berhasil menuntaskan penyelidikan di Stasiun Halilintar.'
+  );
 }
 
 /* ═══════════════════════════ KAMERA / SENTER / LAMPU ═══════════════════════════ */
@@ -1258,11 +1801,21 @@ function updateHUD(){
   batFill.style.width=player.battery+'%';
   batFill.classList.toggle('low',player.battery<25);
   noiFill.style.width=Math.round(player.noiseRadius/15*100)+'%';
-  noFillColor();
-  function noFillColor(){noiFill.style.background=(enemy.active&&enemy.state==='chase')?'#a8322c':'#7d9a86';}
+  noiFill.style.background=(enemy.active&&enemy.state==='chase')?'#a8322c':'#7d9a86';
   noiBar.classList.toggle('hot',enemy.active&&enemy.state==='chase');
   $('vig').style.opacity=Math.pow(1-player.sanity/100,1.4)*.9;
   $('grain').style.opacity=.35+.55*(1-player.sanity/100);
+  if($('lvlBadge'))$('lvlBadge').textContent=`LVL ${currentLevel} / 3`;
+  if($('docBadge'))$('docBadge').textContent=`DOKUMEN: ${Math.min(3,notesRead)} / 3`;
+  if($('moneyBadge'))$('moneyBadge').textContent=`Rp ${player.money}`;
+  if($('cntHoly'))$('cntHoly').textContent=player.holyWater;
+  if($('cntSalt'))$('cntSalt').textContent=player.saltShield;
+  if($('cntBat'))$('cntBat').textContent=player.batteryPack;
+  if($('cntCof'))$('cntCof').textContent=player.coffeeCalm;
+  if($('shieldStatus')){
+    $('shieldStatus').style.display=player.shieldT>0?'block':'none';
+    if(player.shieldT>0)$('shieldStatus').textContent=`🛡 PERISAI GARAM AKTIF (${Math.ceil(player.shieldT)} dtk)`;
+  }
 }
 /* raycast interaksi */
 const raycaster=new THREE.Raycaster();
@@ -1280,22 +1833,57 @@ function updateInteract(){
     break;
   }
 }
-/* dokumen */
+/* dokumen & pilihan cerita interaktif */
 function openNote(n,mesh){
-  if(n.ending){notesRead+= (mesh.userData.read?0:1);mesh.userData.read=true;}
-  else if(!mesh.userData.read){mesh.userData.read=true;notesRead++;}
-  state='reading';paperSound();
+  if(!mesh.userData.read){
+    mesh.userData.read=true;
+    if(!n.ending)notesRead++;
+    player.money+=150;
+    notify('📁 Dokumen Rahasia Diamankan! (+Rp 150)');
+  }
+  state='reading';
+  try{document.exitPointerLock&&document.exitPointerLock();}catch(e){}
+  paperSound();
   $('paperRef').textContent=n.ref;
   $('paperTitle').textContent=n.title;
   $('paperBody').textContent=n.body;
+  const cb=$('choiceBox');
+  if(cb){
+    cb.innerHTML='';
+    if(n.choices&&n.choices.length){
+      const lbl=document.createElement('div');
+      lbl.className='choice-label';
+      lbl.textContent='PILIH TINDAKAN / JALUR CERITA AGEN RAKA (KLIK SALAH SATU):';
+      cb.appendChild(lbl);
+      n.choices.forEach(ch=>{
+        const btn=document.createElement('button');
+        btn.type='button';
+        btn.className='choice-btn';
+        btn.textContent=ch.label;
+        btn.onclick=ev=>{
+          ev.stopPropagation();
+          if(ch.fn)ch.fn();
+          updateHUD();
+          if(!n.ending){
+            hide($('notePanel'));
+            state='playing';
+            tryPointerLock();
+          }
+        };
+        cb.appendChild(btn);
+      });
+    }
+  }
   show($('notePanel'));
   noteOpenedAt=performance.now();
   $('notePanel')._onClose=n.ending?startEnding:null;
+  updateHUD();
 }
 function closeNote(){
   hide($('notePanel'));
   const cb=$('notePanel')._onClose;$('notePanel')._onClose=null;
-  if(cb)cb();else state='playing';
+  if(cb)cb();
+  else{state='playing';tryPointerLock();}
 }
 
 /* ═══════════════════════════ GRAIN ═══════════════════════════ */
@@ -1338,12 +1926,13 @@ function enterGame(ev){
   state='playing';
   hide($('title'));
   hide($('pause'));
+  hide($('shopPanel'));
   show($('hud'));
   if(wasTitle||!playT0){
     playT0=performance.now();
     if(objIdx<0){
       setObjective(OBJ[0]);
-      notify('Pos Jaga 1 — Lantai −1. Lampu hijau menyala.');
+      notify('Misi Dimulai: Ambil 3 Dokumen Rahasia! Tekan [B] untuk Toko Air Suci.');
     }
   }
   window.focus();
@@ -1369,15 +1958,29 @@ addEventListener('keydown',e=>{
     enterGame(e);
     return;
   }
-  if(e.code==='KeyP'&&state==='playing'){
-    state='paused';
-    try{document.exitPointerLock&&document.exitPointerLock();}catch(err){}
-    show($('pause'));
+  if(e.code==='KeyB'){
+    toggleShop();
     return;
   }
-  if(e.code==='KeyF'&&state==='playing'&&!cutscene){
-    player.flash=!player.flash;
-    playNoise({dur:.03,vol:.12,freq:2500,type:'highpass'});
+  if(state==='shop'&&e.code==='Escape'){
+    toggleShop();
+    return;
+  }
+  if(state==='playing'){
+    if(e.code==='Digit1')useHolyWater();
+    else if(e.code==='Digit2')useSaltShield();
+    else if(e.code==='Digit3')useBatteryPack();
+    else if(e.code==='Digit4')useCoffeeCalm();
+    else if(e.code==='KeyP'){
+      state='paused';
+      try{document.exitPointerLock&&document.exitPointerLock();}catch(err){}
+      show($('pause'));
+      return;
+    }
+    else if(e.code==='KeyF'&&!cutscene){
+      player.flash=!player.flash;
+      playNoise({dur:.03,vol:.12,freq:2500,type:'highpass'});
+    }
   }
   if(e.code==='KeyE'){
     if(state==='reading'){if(performance.now()-noteOpenedAt>250)closeNote();}
@@ -1410,8 +2013,7 @@ document.addEventListener('pointerlockchange',()=>{
       state='playing';hide($('title'));hide($('pause'));show($('hud'));
     }
   }else{
-    if(state==='reading')closeNote();
-    else if(state==='playing'){state='paused';show($('pause'));}
+    if(state==='playing'){state='paused';show($('pause'));}
   }
 });
 

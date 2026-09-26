@@ -53,36 +53,6 @@
     "description": "Pertarungan Stickman 1 vs 1 brutal di lima arena! Susun atributmu, baca gaya lawan AI tiga tingkat, dan tutup combo dengan ultimate."
   },
   {
-    "id": "pancaran-horror",
-    "title": "PANCARAN: Stasiun Halilintar",
-    "category": "Action",
-    "code": "PH",
-    "coverUrl": "/uploads/cover-pancaran-horror.svg",
-    "url": "games/pancaran-horror.html",
-    "featured": true,
-    "description": "Game 3D Psychological Survival Horror! Jelajahi bunker bawah tanah Stasiun Halilintar dengan sentermu, temukan Kunci Karantina & Segel 04, dan jangan berisik—entitas 'Sunyi' buta namun memburu lewat suara."
-  },
-  {
-    "id": "zai-k1e5u85gutp0",
-    "title": "Spider-Parkour Arena (Z.ai)",
-    "category": "Action",
-    "code": "SP",
-    "coverUrl": "/uploads/cover-zai-k1e5u85gutp0.svg",
-    "url": "https://chat.z.ai/space/k1e5u85gutp0-art",
-    "featured": true,
-    "description": "Berayun dengan jaring laba-laba melewati rintangan jurang, duri tajam, dan pipa jatuh di arena parkour Z.ai!"
-  },
-  {
-    "id": "stickman-spider-parkour",
-    "title": "Stickman Spider-Parkour",
-    "category": "Action",
-    "code": "RP",
-    "coverUrl": "/uploads/cover-spider-parkour.svg",
-    "url": "games/radgoll.html",
-    "featured": true,
-    "description": "Game parkour ayunan jaring Stickman! Tembakkan jaring ke langit-langit dengan klik mouse, hindari pipa jatuh & duri, dan capai bendera checkpoint."
-  },
-  {
     "id": "dead-outpost",
     "title": "Dead Outpost: Tactical Vanguard",
     "category": "Action",
