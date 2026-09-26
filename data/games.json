@@ -1,5 +1,35 @@
 [
   {
+    "id": "pancaran-horror",
+    "title": "PANCARAN: Stasiun Halilintar",
+    "category": "Action",
+    "code": "PH",
+    "coverUrl": "/uploads/cover-pancaran-horror.svg",
+    "url": "games/pancaran-horror.html",
+    "featured": true,
+    "description": "Game 3D Psychological Survival Horror (3 Level & Multi-Ending)! Sebagai Agen Raka Wiratama, kumpulkan 3 Dokumen Rahasia, tentukan pilihan cerita, beli Air Suci & Garam Ruqyah di Toko Spiritual [B], dan counter 3 entitas hantu!"
+  },
+  {
+    "id": "stickman-spider-parkour",
+    "title": "Stickman Spider-Parkour",
+    "category": "Action",
+    "code": "RP",
+    "coverUrl": "/uploads/cover-spider-parkour.svg",
+    "url": "games/radgoll.html",
+    "featured": true,
+    "description": "Game parkour ayunan jaring Stickman! Tembakkan jaring ke langit-langit dengan klik mouse, hindari pipa jatuh & duri, dan capai bendera checkpoint."
+  },
+  {
+    "id": "zai-k1e5u85gutp0",
+    "title": "Spider-Parkour Arena (Z.ai)",
+    "category": "Action",
+    "code": "SP",
+    "coverUrl": "/uploads/cover-zai-k1e5u85gutp0.svg",
+    "url": "https://chat.z.ai/space/k1e5u85gutp0-art",
+    "featured": true,
+    "description": "Berayun dengan jaring laba-laba melewati rintangan jurang, duri tajam, dan pipa jatuh di arena parkour Z.ai!"
+  },
+  {
     "id": "game-1790340569228",
     "title": "Mendaki dengan Matematika",
     "category": "Arcade",
