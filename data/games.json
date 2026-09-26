@@ -43,14 +43,14 @@
     "description": "Belajar kosakata dan menyusun kata Bahasa Inggris seru lewat petualangan edukatif bersama burung hantu pintar di Wordy Woods."
   },
   {
-    "id": "zai-w1h5q8dgjku1",
-    "title": "Arcade Quest Z",
-    "category": "Arcade",
-    "code": "AQ",
-    "coverUrl": "/uploads/cover-zai-arena.svg",
+    "id": "stickman-fighter-zai",
+    "title": "Stickman Fighter",
+    "category": "Action",
+    "code": "SF",
+    "coverUrl": "/uploads/cover-stickman-fighter.svg",
     "url": "https://chat.z.ai/space/w1h5q8dgjku1-art",
     "featured": true,
-    "description": "Mainkan game interaktif seru dari Z.ai Space langsung di panggung utama ASIKIN GAMES."
+    "description": "Pertarungan Stickman 1 vs 1 brutal di lima arena! Susun atributmu, baca gaya lawan AI tiga tingkat, dan tutup combo dengan ultimate."
   },
   {
     "id": "kebun-bahagia",
