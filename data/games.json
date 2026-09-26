@@ -53,6 +53,16 @@
     "description": "Simulator berkebun seru! Cangkul tanah, siram tanaman, tanam gandum hingga stroberi, pasang sprinkler otomatis, dan raih panen raya."
   },
   {
+    "id": "chefs-rush",
+    "title": "Chef's Rush: Cute Kitchen Mania",
+    "category": "Arcade",
+    "code": "CR",
+    "coverUrl": "/uploads/cover-chefs-rush.svg",
+    "url": "games/chefs-rush.html",
+    "featured": true,
+    "description": "Simulator memasak cepat & imut! Pilih Chef favoritmu, masak Nasi Goreng Spesial, Ramen Tokyo, hingga Wagyu Steak sebelum pelanggan kehabisan kesabaran."
+  },
+  {
     "id": "neon-tetris",
     "title": "Neon Tetris",
     "category": "Puzzle",

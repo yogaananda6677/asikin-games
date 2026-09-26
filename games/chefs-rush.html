@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Chef's Rush: Cute Kitchen Mania</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            fredoka: ['"Fredoka"', 'cursive'],
+            quicksand: ['"Quicksand"', 'sans-serif'],
+          },
+          colors: {
+            brandCream: '#FFF8E7',
+            brandOrange: '#FF8A3D',
+            brandYellow: '#FFC837',
+            brandRed: '#FF4D4D',
+            brandPink: '#FF70A6',
+            brandTeal: '#2EC4B6',
+            brandDark: '#2B2D42',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+    body { font-family: 'Quicksand', sans-serif; background: radial-gradient(circle at 50% 10%, #FFF3D6 0%, #FFE3B3 60%, #FFD18C 100%); min-height: 100vh; color: #2B2D42; }
+    .font-chubby { font-family: 'Fredoka', cursive; }
+    .btn-cute { transition: all 0.12s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 5px 0 rgba(0,0,0,0.18); }
+    .btn-cute:active { transform: translateY(4px); box-shadow: 0 1px 0 rgba(0,0,0,0.18); }
+    .btn-cute:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: 0 3px 0 rgba(0,0,0,0.1); }
+    .cute-card { transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .cute-card:hover { transform: translateY(-4px); }
+    @keyframes sizzlePan {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      20% { transform: translate(-1.5px, -1px) rotate(-1deg); }
+      40% { transform: translate(1.5px, 1px) rotate(1deg); }
+      60% { transform: translate(-1.5px, 1px) rotate(-0.5deg); }
+      80% { transform: translate(1.5px, -1px) rotate(0.5deg); }
+    }
+    .animate-sizzle { animation: sizzlePan 0.16s infinite; }
+    @keyframes floatUpFade {
+      0% { opacity: 0; transform: translateY(10px) scale(0.85); }
+      20% { opacity: 1; transform: translateY(0) scale(1.1); }
+      80% { opacity: 1; transform: translateY(-35px) scale(1); }
+      100% { opacity: 0; transform: translateY(-55px) scale(0.9); }
+    }
+    .pop-badge { position: absolute; pointer-events: none; font-family: 'Fredoka', cursive; animation: floatUpFade 1.1s forwards ease-out; z-index: 100; }
+  </style>
+</head>
+<body class="flex flex-col items-center justify-start p-2 sm:p-4 min-h-screen">
+
+  <script>
+    const SVGIcons = {
+      coin: (s = 20) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#FFC837" stroke="#D97706" stroke-width="2"/><circle cx="12" cy="12" r="7.5" fill="#FFE066" stroke="#D97706" stroke-width="1.2" stroke-dasharray="2 2"/><path d="M12 7V17M9.5 9.5C9.5 8.2 10.5 7.5 12 7.5C13.5 7.5 14.5 8.5 14.5 9.8C14.5 11.5 12 11.5 12 12.8C12 14.2 13.2 14.8 14.5 14.5" stroke="#B45309" stroke-width="2" stroke-linecap="round"/></svg>`,
+      star: (s = 20, fill = '#FFC837') => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="${fill}"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="#D97706" stroke-width="1.5" stroke-linejoin="round"/></svg>`,
+      starEmpty: (s = 20) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="#E2E8F0"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="#94A3B8" stroke-width="1.5" stroke-linejoin="round"/></svg>`,
+      soundOn: (s = 20) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`,
+      soundOff: (s = 20) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>`,
+      knife: (s = 32) => `<svg width="${s}" height="${s}" viewBox="0 0 40 40" fill="none"><path d="M7 33L14 26L12 24L5 31C4.4 31.6 4.4 32.4 5 33C5.6 33.6 6.4 33.6 7 33Z" fill="#78350F" stroke="#451A03" stroke-width="1.5"/><path d="M13 25L32 6C34.5 12 30 22 22 24L13 25Z" fill="#E2E8F0" stroke="#475569" stroke-width="2"/><circle cx="15" cy="23" r="1.5" fill="#94A3B8"/></svg>`,
+      pan: (s = 36) => `<svg width="${s}" height="${s}" viewBox="0 0 44 44" fill="none"><ellipse cx="20" cy="24" rx="14" ry="11" fill="#475569" stroke="#1E293B" stroke-width="2"/><ellipse cx="20" cy="23" rx="11" ry="8" fill="#64748B"/><path d="M33 21L42 16" stroke="#9A3412" stroke-width="4.5" stroke-linecap="round"/><path d="M33 21L42 16" stroke="#D97706" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+      cleanPlate: (s = 36) => `<svg width="${s}" height="${s}" viewBox="0 0 44 44" fill="none"><ellipse cx="22" cy="24" rx="18" ry="12" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2.5"/><ellipse cx="22" cy="24" rx="13" ry="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/><path d="M14 20C16 18 20 18 22 19" stroke="#94A3B8" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/></svg>`,
+      glassEmpty: (s = 32) => `<svg width="${s}" height="${s}" viewBox="0 0 36 36" fill="none"><path d="M10 8L13 28C13.2 29.5 14.5 30.5 16 30.5H20C21.5 30.5 22.8 29.5 23 28L26 8H10Z" fill="#F0FDF4" stroke="#0D9488" stroke-width="2"/><ellipse cx="18" cy="8" rx="8" ry="3" fill="#CCFBF1" stroke="#0D9488" stroke-width="1.5"/><line x1="16" y1="4" x2="20" y2="18" stroke="#F43F5E" stroke-width="2" stroke-linecap="round"/></svg>`,
+      glassDrinkFilled: (s = 32, liquidColor = '#D97706') => `<svg width="${s}" height="${s}" viewBox="0 0 36 36" fill="none"><path d="M10 8L13 28C13.2 29.5 14.5 30.5 16 30.5H20C21.5 30.5 22.8 29.5 23 28L26 8H10Z" fill="#F8FAFC" stroke="#0D9488" stroke-width="2"/><path d="M11 13L13 28C13.2 29.2 14.3 30 15.6 30H20.4C21.7 30 22.8 29.2 23 28L25 13H11Z" fill="${liquidColor}"/><rect x="15" y="16" width="6" height="5" rx="1" fill="#FFFFFF" opacity="0.5"/><rect x="17" y="23" width="5" height="4" rx="1" fill="#FFFFFF" opacity="0.4"/><ellipse cx="18" cy="8" rx="8" ry="3" fill="#E6FFFA" stroke="#0D9488" stroke-width="1.5"/><line x1="16" y1="4" x2="20" y2="24" stroke="#F43F5E" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+      garnishHerbs: (s = 28) => `<svg width="${s}" height="${s}" viewBox="0 0 32 32" fill="none"><path d="M6 26C12 24 16 18 18 10" stroke="#15803D" stroke-width="2.5" stroke-linecap="round"/><path d="M18 10C16 6 12 5 10 7C8 9 9 13 13 14" fill="#22C55E" stroke="#15803D" stroke-width="1.5"/><path d="M18 10C22 8 26 10 26 13C26 16 22 17 18 15" fill="#4ADE80" stroke="#15803D" stroke-width="1.5"/><path d="M14 19C10 18 8 21 8 23C9 25 12 25 15 22" fill="#22C55E" stroke="#15803D" stroke-width="1.2"/></svg>`,
+      trash: (s = 18) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6V20C19 21.1 18.1 22 17 22H7C5.9 22 5 21.1 5 20V6M8 6V4C8 2.9 8.9 2 10 2H14C15.1 2 16 2.9 16 4V6"/></svg>`,
+      timer: (s = 20) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><polyline points="12 9 12 13 15 15"/><path d="M12 2V5M19 5L17.5 6.5M5 5L6.5 6.5"/></svg>`,
+      shopCart: (s = 20) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M1 1H4L6.68 14.39C6.77 14.85 7.18 15.19 7.65 15.19H19.4C19.84 15.19 20.23 14.88 20.35 14.44L22.5 6.5H5.2"/></svg>`,
+      chefBudi: (s = 80) => `<svg width="${s}" height="${s}" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="46" fill="#FED7AA"/><path d="M32 38C30 25 40 18 50 18C60 18 70 25 68 38H32Z" fill="#FFFFFF" stroke="#475569" stroke-width="2"/><path d="M36 28C38 20 44 14 50 14C56 14 62 20 64 28" fill="#FFFFFF"/><rect x="30" y="36" width="40" height="7" rx="2" fill="#E2E8F0" stroke="#475569" stroke-width="1.5"/><circle cx="50" cy="54" r="22" fill="#FBD38D"/><path d="M30 46Q50 49 70 46L69 50Q50 53 31 50Z" fill="#C2410C"/><circle cx="43" cy="54" r="2.8" fill="#1E293B"/><circle cx="57" cy="54" r="2.8" fill="#1E293B"/><circle cx="38" cy="58" r="3.2" fill="#F87171" opacity="0.6"/><circle cx="62" cy="58" r="3.2" fill="#F87171" opacity="0.6"/><path d="M46 60Q50 64 54 60" stroke="#78350F" stroke-width="2.2" stroke-linecap="round"/><path d="M40 76L50 82L60 76L50 72Z" fill="#DC2626"/></svg>`,
+      chefMei: (s = 80) => `<svg width="${s}" height="${s}" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="46" fill="#FCE7F3"/><circle cx="26" cy="38" r="10" fill="#3B0764"/><circle cx="74" cy="38" r="10" fill="#3B0764"/><circle cx="26" cy="38" r="6" fill="#EC4899"/><circle cx="74" cy="38" r="6" fill="#EC4899"/><path d="M34 32C32 20 42 14 50 14C58 14 68 20 66 32H34Z" fill="#FFFFFF" stroke="#475569" stroke-width="2"/><rect x="32" y="30" width="36" height="6" rx="2" fill="#FBCFE8"/><circle cx="50" cy="53" r="21" fill="#FEE2E2"/><path d="M41 53Q44 49 47 53" stroke="#1E293B" stroke-width="2.5" stroke-linecap="round"/><path d="M53 53Q56 49 59 53" stroke="#1E293B" stroke-width="2.5" stroke-linecap="round"/><circle cx="39" cy="58" r="3.5" fill="#F472B6" opacity="0.7"/><circle cx="61" cy="58" r="3.5" fill="#F472B6" opacity="0.7"/><path d="M47 59Q50 63 53 59" stroke="#9D174D" stroke-width="2" stroke-linecap="round"/><circle cx="50" cy="74" r="3" fill="#DB2777"/><path d="M43 72L50 74L43 76Z" fill="#F43F5E"/><path d="M57 72L50 74L57 76Z" fill="#F43F5E"/></svg>`,
+      chefKenji: (s = 80) => `<svg width="${s}" height="${s}" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="46" fill="#CCFBF1"/><path d="M28 42L36 30L44 34L50 26L58 34L66 30L72 42Z" fill="#1E293B"/><circle cx="50" cy="53" r="21" fill="#FCD34D"/><rect x="29" y="42" width="42" height="7" rx="1.5" fill="#FFFFFF" stroke="#0F766E" stroke-width="1.2"/><circle cx="50" cy="45.5" r="2.5" fill="#EF4444"/><circle cx="43" cy="54" r="2.6" fill="#0F172A"/><circle cx="57" cy="54" r="2.6" fill="#0F172A"/><circle cx="44" cy="53" r="0.8" fill="#FFFFFF"/><circle cx="58" cy="53" r="0.8" fill="#FFFFFF"/><circle cx="38" cy="58" r="3" fill="#FB923C" opacity="0.5"/><circle cx="62" cy="58" r="3" fill="#FB923C" opacity="0.5"/><path d="M46 61Q50 63 54 61" stroke="#9A3412" stroke-width="2.2" stroke-linecap="round"/><path d="M42 74L50 78L58 74" stroke="#0F766E" stroke-width="3" stroke-linecap="round"/></svg>`,
+      customerBoy: (s = 48) => `<svg width="${s}" height="${s}" viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="28" fill="#DBEAFE"/><path d="M16 28C16 18 22 14 30 14C38 14 44 18 44 28" fill="#78350F"/><circle cx="30" cy="32" r="14" fill="#FDE047"/><circle cx="26" cy="32" r="2" fill="#1E293B"/><circle cx="34" cy="32" r="2" fill="#1E293B"/><circle cx="23" cy="36" r="2" fill="#F87171" opacity="0.6"/><circle cx="37" cy="36" r="2" fill="#F87171" opacity="0.6"/><path d="M28 37Q30 40 32 37" stroke="#78350F" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+      customerGirl: (s = 48) => `<svg width="${s}" height="${s}" viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="28" fill="#FCE7F3"/><circle cx="16" cy="24" r="5" fill="#831843"/><circle cx="44" cy="24" r="5" fill="#831843"/><path d="M18 28C18 16 24 14 30 14C36 14 42 16 42 28" fill="#831843"/><circle cx="30" cy="32" r="14" fill="#FED7AA"/><circle cx="26" cy="32" r="2" fill="#1E293B"/><circle cx="34" cy="32" r="2" fill="#1E293B"/><circle cx="23" cy="36" r="2.5" fill="#FB7185" opacity="0.6"/><circle cx="37" cy="36" r="2.5" fill="#FB7185" opacity="0.6"/><path d="M28 37Q30 41 32 37" stroke="#831843" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+      customerCritic: (s = 48) => `<svg width="${s}" height="${s}" viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="28" fill="#EDE9FE"/><path d="M18 26C18 16 24 15 30 15C36 15 42 16 42 26" fill="#475569"/><circle cx="30" cy="32" r="14" fill="#FCD34D"/><circle cx="25" cy="32" r="2" fill="#1E293B"/><circle cx="35" cy="32" r="4.5" stroke="#D97706" stroke-width="1.8" fill="#FEF08A" fill-opacity="0.4"/><circle cx="35" cy="32" r="2" fill="#1E293B"/><path d="M27 38H33" stroke="#475569" stroke-width="2" stroke-linecap="round"/></svg>`,
+      rawChiliVeg: (s = 36) => `<svg width="${s}" height="${s}" viewBox="0 0 40 40" fill="none"><path d="M12 28C10 24 11 16 20 14C23 13 27 15 28 18C28 24 18 29 12 28Z" fill="#DC2626" stroke="#991B1B" stroke-width="1.5"/><path d="M27 17C29 15 32 14 33 11" stroke="#15803D" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="27" cy="27" rx="7" ry="8" fill="#9333EA" stroke="#581C87" stroke-width="1.5"/><path d="M27 19V16" stroke="#15803D" stroke-width="2" stroke-linecap="round"/></svg>`,
+      rawMeatPork: (s = 36) => `<svg width="${s}" height="${s}" viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="20" rx="14" ry="10" fill="#F43F5E" stroke="#BE123C" stroke-width="1.8"/><path d="M12 18Q18 16 26 21" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" opacity="0.8"/><path d="M14 22Q20 23 28 17" stroke="#FFE4E6" stroke-width="1.8" stroke-linecap="round"/></svg>`,
+      rawSteakCut: (s = 36) => `<svg width="${s}" height="${s}" viewBox="0 0 40 40" fill="none"><path d="M10 22C8 14 16 10 24 10C30 10 33 16 32 23C31 28 20 30 13 28C11 27 10 24 10 22Z" fill="#E11D48" stroke="#9F1239" stroke-width="2"/><ellipse cx="24" cy="18" rx="3.5" ry="3.5" fill="#FFF1F2" stroke="#FDA4AF" stroke-width="1.2"/><path d="M15 17Q20 22 28 23" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" opacity="0.85"/></svg>`,
+      nasiGorengPlate: (s = 36) => `<svg width="${s}" height="${s}" viewBox="0 0 44 44" fill="none"><ellipse cx="22" cy="25" rx="18" ry="12" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2"/><ellipse cx="22" cy="24" rx="12" ry="7" fill="#D97706"/><circle cx="17" cy="23" r="1.2" fill="#DC2626"/><circle cx="21" cy="26" r="1.2" fill="#16A34A"/><circle cx="25" cy="22" r="1.2" fill="#FBBF24"/><ellipse cx="23" cy="22" rx="5" ry="3.5" fill="#FFFFFF"/><circle cx="24" cy="21.5" r="2.2" fill="#F59E0B"/></svg>`,
+      ramenBowl: (s = 36) => `<svg width="${s}" height="${s}" viewBox="0 0 44 44" fill="none"><ellipse cx="22" cy="22" rx="16" ry="11" fill="#FEF08A" stroke="#CA8A04" stroke-width="1.8"/><ellipse cx="22" cy="21" rx="13" ry="8" fill="#92400E"/><path d="M14 20Q18 16 22 21Q26 17 30 20" stroke="#FDE047" stroke-width="2.5" stroke-linecap="round"/><circle cx="17" cy="19" r="3.5" fill="#DC2626"/><ellipse cx="26" cy="19" rx="3.5" ry="2.5" fill="#FFFFFF"/><circle cx="26" cy="19" r="1.5" fill="#EA580C"/><path d="M6 22C6 32 14 36 22 36C30 36 38 32 38 22H6Z" fill="#DC2626" stroke="#991B1B" stroke-width="2"/><path d="M12 28H32" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="3 3"/></svg>`,
+      steakCookedPlate: (s = 36) => `<svg width="${s}" height="${s}" viewBox="0 0 44 44" fill="none"><ellipse cx="22" cy="25" rx="18" ry="12" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2"/><path d="M12 24C10 18 17 14 24 14C29 14 32 18 31 23C30 27 20 28 14 27Z" fill="#78350F" stroke="#451A03" stroke-width="1.8"/><line x1="16" y1="17" x2="20" y2="25" stroke="#291203" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="16" x2="25" y2="24" stroke="#291203" stroke-width="2" stroke-linecap="round"/><line x1="26" y1="17" x2="29" y2="23" stroke="#291203" stroke-width="2" stroke-linecap="round"/><line x1="14" y1="26" x2="22" y2="26" stroke="#16A34A" stroke-width="1.5"/></svg>`,
+      burntFoodDish: (s = 36) => `<svg width="${s}" height="${s}" viewBox="0 0 44 44" fill="none"><ellipse cx="22" cy="25" rx="18" ry="12" fill="#CBD5E1" stroke="#64748B" stroke-width="2"/><ellipse cx="22" cy="23" rx="11" ry="6" fill="#18181B" stroke="#000000" stroke-width="1.5"/><path d="M16 15Q14 10 18 8" stroke="#71717A" stroke-width="2" stroke-linecap="round"/><path d="M24 15Q26 9 22 7" stroke="#71717A" stroke-width="2" stroke-linecap="round"/></svg>`,
+      venueKedaiArt: (s = 90) => `<svg width="${s}" height="${s}" viewBox="0 0 100 100" fill="none"><rect x="10" y="45" width="80" height="42" rx="4" fill="#F59E0B" stroke="#B45309" stroke-width="2.5"/><path d="M6 46L16 20H84L94 46H6Z" fill="#EF4444" stroke="#991B1B" stroke-width="2.5"/><path d="M22 20L20 46" stroke="#FFFFFF" stroke-width="4"/><path d="M42 20L40 46" stroke="#FFFFFF" stroke-width="4"/><path d="M62 20L64 46" stroke="#FFFFFF" stroke-width="4"/><path d="M82 20L84 46" stroke="#FFFFFF" stroke-width="4"/><rect x="25" y="55" width="50" height="18" rx="3" fill="#FFFBEB" stroke="#D97706" stroke-width="2"/><text x="50" y="68" font-family="'Fredoka', cursive" font-size="11" font-weight="bold" fill="#92400E" text-anchor="middle">KEDAI</text></svg>`,
+      venueTokyoArt: (s = 90) => `<svg width="${s}" height="${s}" viewBox="0 0 100 100" fill="none"><rect x="15" y="44" width="70" height="44" rx="4" fill="#FFF1F2" stroke="#E11D48" stroke-width="2.5"/><path d="M5 28C25 24 75 24 95 28L88 38H12L5 28Z" fill="#1E293B" stroke="#0F172A" stroke-width="2.5"/><rect x="22" y="38" width="16" height="18" fill="#E11D48"/><rect x="42" y="38" width="16" height="18" fill="#E11D48"/><rect x="62" y="38" width="16" height="18" fill="#E11D48"/><circle cx="50" cy="46" r="3" fill="#FFFFFF"/><text x="50" y="72" font-family="'Fredoka', cursive" font-size="11" font-weight="bold" fill="#9F1239" text-anchor="middle">RAMEN 88</text></svg>`,
+      venueBistroArt: (s = 90) => `<svg width="${s}" height="${s}" viewBox="0 0 100 100" fill="none"><rect x="14" y="42" width="72" height="46" rx="5" fill="#EEF2FF" stroke="#4338CA" stroke-width="2.5"/><path d="M10 22H90L85 42H15L10 22Z" fill="#312E81" stroke="#1E1B4B" stroke-width="2"/><path d="M25 22L23 42" stroke="#C7D2FE" stroke-width="5"/><path d="M45 22L45 42" stroke="#C7D2FE" stroke-width="5"/><path d="M65 22L67 42" stroke="#C7D2FE" stroke-width="5"/><path d="M42 56L46 52L50 56L54 52L58 56V60H42V56Z" fill="#F59E0B" stroke="#B45309" stroke-width="1.2"/><text x="50" y="74" font-family="'Fredoka', cursive" font-size="10" font-weight="bold" fill="#312E81" text-anchor="middle">ROYALE</text></svg>`
+    };
+
+    class PureAudioSynth {
+      constructor() { this.ctx = null; this.muted = false; }
+      ensureContext() {
+        if (!this.ctx) { const AudioContext = window.AudioContext || window.webkitAudioContext; this.ctx = new AudioContext(); }
+        if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+      }
+      playChop() {
+        if (this.muted) return; this.ensureContext(); const t = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
+        osc.type = 'triangle'; osc.frequency.setValueAtTime(450, t); osc.frequency.exponentialRampToValueAtTime(80, t + 0.07);
+        gain.gain.setValueAtTime(0.4, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.07);
+        osc.connect(gain); gain.connect(this.ctx.destination); osc.start(t); osc.stop(t + 0.08);
+      }
+      playSizzle() {
+        if (this.muted) return; this.ensureContext();
+        const bufferSize = this.ctx.sampleRate * 0.12; const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0); for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.22;
+        const noise = this.ctx.createBufferSource(); noise.buffer = buffer;
+        const filter = this.ctx.createBiquadFilter(); filter.type = 'bandpass'; filter.frequency.value = 2600;
+        const gain = this.ctx.createGain(); gain.gain.setValueAtTime(0.25, this.ctx.currentTime); gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.11);
+        noise.connect(filter); filter.connect(gain); gain.connect(this.ctx.destination); noise.start();
+      }
+      playDing() {
+        if (this.muted) return; this.ensureContext(); const t = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
+        osc.type = 'sine'; osc.frequency.setValueAtTime(1318.5, t);
+        gain.gain.setValueAtTime(0.35, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
+        osc.connect(gain); gain.connect(this.ctx.destination); osc.start(t); osc.stop(t + 0.65);
+      }
+      playCoin() {
+        if (this.muted) return; this.ensureContext(); const t = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
+        osc.type = 'sine'; osc.frequency.setValueAtTime(987.77, t); osc.frequency.setValueAtTime(1479.98, t + 0.07);
+        gain.gain.setValueAtTime(0.3, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+        osc.connect(gain); gain.connect(this.ctx.destination); osc.start(t); osc.stop(t + 0.32);
+      }
+      playBurn() {
+        if (this.muted) return; this.ensureContext(); const t = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
+        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(200, t); osc.frequency.linearRampToValueAtTime(70, t + 0.35);
+        gain.gain.setValueAtTime(0.35, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.35);
+        osc.connect(gain); gain.connect(this.ctx.destination); osc.start(t); osc.stop(t + 0.36);
+      }
+      playPour() {
+        if (this.muted) return; this.ensureContext(); const t = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
+        osc.type = 'triangle'; osc.frequency.setValueAtTime(400, t); osc.frequency.linearRampToValueAtTime(800, t + 0.22);
+        gain.gain.setValueAtTime(0.2, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.22);
+        osc.connect(gain); gain.connect(this.ctx.destination); osc.start(t); osc.stop(t + 0.24);
+      }
+      playFanfare() {
+        if (this.muted) return; this.ensureContext();
+        [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+          const t = this.ctx.currentTime + idx * 0.11;
+          const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
+          osc.type = 'triangle'; osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0.28, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+          osc.connect(gain); gain.connect(this.ctx.destination); osc.start(t); osc.stop(t + 0.32);
+        });
+      }
+    }
+    const audio = new PureAudioSynth();
+  </script>
+  <header class="w-full max-w-5xl flex items-center justify-between bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-3xl shadow-lg border-2 border-amber-300 mb-3 z-30">
+    <div class="flex items-center space-x-2.5">
+      <div id="navBrandIcon" class="w-10 h-10 rounded-2xl bg-amber-100 flex items-center justify-center border-2 border-amber-300 shadow-sm"></div>
+      <div>
+        <h1 class="font-chubby text-xl sm:text-2xl text-amber-700 tracking-wide leading-none">CHEF'S RUSH</h1>
+        <p class="text-[11px] font-extrabold text-amber-900/60 uppercase tracking-widest hidden sm:block">Cute Kitchen Simulator</p>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-3">
+      <div class="bg-amber-50 border-2 border-amber-300 px-3 py-1.5 rounded-2xl flex items-center space-x-2 shadow-inner">
+        <span id="navCoinIcon"></span>
+        <span id="globalCoinsText" class="font-chubby text-lg text-amber-900 leading-none">50</span>
+      </div>
+      <button id="soundToggleBtn" onclick="toggleMute()" class="w-10 h-10 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-bold flex items-center justify-center btn-cute shadow">
+        <span id="soundIconWrapper"></span>
+      </button>
+      <button onclick="confirmResetProgress()" class="text-xs bg-stone-100 hover:bg-stone-200 border-2 border-stone-300 text-stone-700 px-3 py-2 rounded-2xl font-bold btn-cute">
+        Restart
+      </button>
+    </div>
+  </header>
+
+  <main class="w-full max-w-5xl flex-1 flex flex-col items-center justify-center relative">
+    <section id="characterScreen" class="w-full bg-white/95 backdrop-blur rounded-3xl p-5 sm:p-8 shadow-xl border-4 border-amber-300 flex flex-col items-center text-center">
+      <div class="inline-flex items-center space-x-1.5 bg-amber-500 text-white font-chubby px-4 py-1.5 rounded-full text-xs uppercase tracking-widest mb-2 shadow">
+        <span>Step 1: Choose Your Chef</span>
+      </div>
+      <h2 class="font-chubby text-3xl sm:text-4xl text-stone-800 mb-1">Pick Your Kitchen Star</h2>
+      <p class="text-stone-600 font-semibold mb-6 max-w-lg text-sm">Every master chef commands their own special culinary advantage!</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 w-full mb-8">
+        <div id="cardChefBudi" onclick="selectChef('budi')" class="cute-card cursor-pointer bg-amber-50 border-4 border-amber-400 rounded-3xl p-5 flex flex-col items-center shadow-lg group">
+          <div id="avatarBudiSlot" class="mb-2"></div>
+          <h3 class="font-chubby text-2xl text-stone-800 mb-0.5">Chef Budi</h3>
+          <span class="text-xs uppercase font-extrabold px-3 py-0.5 rounded-full bg-orange-200 text-orange-900 mb-2">Street Food Master</span>
+          <p class="text-xs text-stone-600 font-medium mb-3">Trained on bustling night markets! Chops veggies and meats in half the time.</p>
+          <div class="mt-auto w-full bg-orange-100 border border-orange-300 rounded-2xl p-2.5 text-xs text-orange-950 font-bold flex items-center justify-center space-x-1.5">
+            <span class="text-orange-700 font-chubby text-sm">+35% Faster Chopping</span>
+          </div>
+        </div>
+
+        <div id="cardChefMei" onclick="selectChef('mei')" class="cute-card cursor-pointer bg-pink-50 border-4 border-stone-200 rounded-3xl p-5 flex flex-col items-center shadow-lg group">
+          <div id="avatarMeiSlot" class="mb-2"></div>
+          <h3 class="font-chubby text-2xl text-stone-800 mb-0.5">Chef Mei</h3>
+          <span class="text-xs uppercase font-extrabold px-3 py-0.5 rounded-full bg-pink-200 text-pink-900 mb-2">Gourmet Stylist</span>
+          <p class="text-xs text-stone-600 font-medium mb-3">Captivates every guest with adorable presentation. Yields tremendous extra tips!</p>
+          <div class="mt-auto w-full bg-pink-100 border border-pink-300 rounded-2xl p-2.5 text-xs text-pink-950 font-bold flex items-center justify-center space-x-1.5">
+            <span class="text-pink-700 font-chubby text-sm">+40% Tip Coin Bonus</span>
+          </div>
+        </div>
+
+        <div id="cardChefKenji" onclick="selectChef('kenji')" class="cute-card cursor-pointer bg-teal-50 border-4 border-stone-200 rounded-3xl p-5 flex flex-col items-center shadow-lg group">
+          <div id="avatarKenjiSlot" class="mb-2"></div>
+          <h3 class="font-chubby text-2xl text-stone-800 mb-0.5">Chef Kenji</h3>
+          <span class="text-xs uppercase font-extrabold px-3 py-0.5 rounded-full bg-teal-200 text-teal-900 mb-2">Zen Grill Champion</span>
+          <p class="text-xs text-stone-600 font-medium mb-3">Radiates soothing calm. Customers stay remarkably patient while waiting!</p>
+          <div class="mt-auto w-full bg-teal-100 border border-teal-300 rounded-2xl p-2.5 text-xs text-teal-950 font-bold flex items-center justify-center space-x-1.5">
+            <span class="text-teal-700 font-chubby text-sm">+30% Customer Patience</span>
+          </div>
+        </div>
+      </div>
+
+      <button onclick="proceedToVenueSelect()" class="btn-cute bg-amber-500 hover:bg-amber-600 text-white font-chubby text-xl px-10 py-3.5 rounded-2xl shadow-lg flex items-center space-x-2">
+        <span>Proceed to Restaurant Selection</span>
+      </button>
+    </section>
+
+    <section id="venueScreen" class="w-full bg-white/95 backdrop-blur rounded-3xl p-5 sm:p-8 shadow-xl border-4 border-amber-300 flex-col items-center text-center hidden">
+      <div class="flex items-center justify-between w-full mb-3">
+        <button onclick="goToScreen('characterScreen')" class="text-xs font-bold text-stone-600 bg-stone-100 hover:bg-stone-200 px-4 py-2 rounded-xl border border-stone-300 btn-cute">
+          Back to Chefs
+        </button>
+        <span class="bg-amber-500 text-white font-chubby px-4 py-1.5 rounded-full text-xs uppercase tracking-widest shadow">
+          Step 2: Choose Venue
+        </span>
+        <div class="w-20"></div>
+      </div>
+
+      <h2 class="font-chubby text-3xl sm:text-4xl text-stone-800 mb-1">Select Your Restaurant</h2>
+      <p class="text-stone-600 font-semibold mb-6 text-sm">Earn coins to expand from humble street warungs to prestigious bistros!</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 w-full mb-8">
+        <div id="cardVenueKedai" onclick="selectVenue('kedai')" class="cute-card cursor-pointer bg-amber-50 border-4 border-amber-500 rounded-3xl p-5 flex flex-col items-center shadow-lg relative">
+          <div id="venueArtKedaiSlot" class="mb-3"></div>
+          <div class="w-full text-left">
+            <div class="flex items-center justify-between mb-1">
+              <h3 class="font-chubby text-xl text-stone-800">Kedai Nusantara</h3>
+              <span class="text-xs bg-emerald-100 text-emerald-800 font-extrabold px-2 py-0.5 rounded-md">UNLOCKED</span>
+            </div>
+            <p class="text-xs text-stone-600 font-medium mb-3">Traditional cozy warung serving savory fried rice & refreshing sweet iced tea.</p>
+            <div class="bg-white/90 rounded-2xl p-2.5 border border-amber-200 space-y-1 mb-3">
+              <div class="text-[10px] font-extrabold text-stone-400 uppercase tracking-wider">Signature Course:</div>
+              <div class="text-xs font-bold text-stone-700 flex items-center justify-between">
+                <span>Nasi Goreng Spesial</span>
+                <span class="text-amber-600 font-chubby">20 Coins</span>
+              </div>
+            </div>
+            <div class="flex justify-between items-center text-xs text-amber-800 font-bold">
+              <span>Goal: 150 Coins</span>
+              <span class="text-amber-500 font-chubby">★ Casual</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="cardVenueTokyo" onclick="selectVenue('tokyo')" class="cute-card cursor-pointer bg-pink-50/70 border-4 border-stone-200 rounded-3xl p-5 flex flex-col items-center shadow-lg relative">
+          <div id="venueArtTokyoSlot" class="mb-3"></div>
+          <div class="w-full text-left">
+            <div class="flex items-center justify-between mb-1">
+              <h3 class="font-chubby text-xl text-stone-800">Tokyo Bento Bar</h3>
+              <span id="badgeTokyoUnlock" class="text-xs bg-stone-200 text-stone-600 font-extrabold px-2 py-0.5 rounded-md">100 Coins</span>
+            </div>
+            <p class="text-xs text-stone-600 font-medium mb-3">Fast-paced Shibuya ramen counter with bubbling rich broth and iced matcha.</p>
+            <div class="bg-white/90 rounded-2xl p-2.5 border border-pink-200 space-y-1 mb-3">
+              <div class="text-[10px] font-extrabold text-stone-400 uppercase tracking-wider">Signature Course:</div>
+              <div class="text-xs font-bold text-stone-700 flex items-center justify-between">
+                <span>Chashu Tonkotsu Ramen</span>
+                <span class="text-pink-600 font-chubby">32 Coins</span>
+              </div>
+            </div>
+            <div class="flex justify-between items-center text-xs text-pink-800 font-bold">
+              <span>Goal: 280 Coins</span>
+              <span class="text-orange-500 font-chubby">★★ Rush</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="cardVenueBistro" onclick="selectVenue('bistro')" class="cute-card cursor-pointer bg-indigo-50/70 border-4 border-stone-200 rounded-3xl p-5 flex flex-col items-center shadow-lg relative">
+          <div id="venueArtBistroSlot" class="mb-3"></div>
+          <div class="w-full text-left">
+            <div class="flex items-center justify-between mb-1">
+              <h3 class="font-chubby text-xl text-stone-800">Grand Bistro Royale</h3>
+              <span id="badgeBistroUnlock" class="text-xs bg-stone-200 text-stone-600 font-extrabold px-2 py-0.5 rounded-md">300 Coins</span>
+            </div>
+            <p class="text-xs text-stone-600 font-medium mb-3">Luxury French establishment. Elite critics crave sizzling wagyu tenderloin!</p>
+            <div class="bg-white/90 rounded-2xl p-2.5 border border-indigo-200 space-y-1 mb-3">
+              <div class="text-[10px] font-extrabold text-stone-400 uppercase tracking-wider">Signature Course:</div>
+              <div class="text-xs font-bold text-stone-700 flex items-center justify-between">
+                <span>Wagyu Tenderloin Steak</span>
+                <span class="text-indigo-600 font-chubby">48 Coins</span>
+              </div>
+            </div>
+            <div class="flex justify-between items-center text-xs text-indigo-800 font-bold">
+              <span>Goal: 450 Coins</span>
+              <span class="text-red-500 font-chubby">★★★ Master</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-center gap-4">
+        <button onclick="openShopModal()" class="btn-cute bg-emerald-600 hover:bg-emerald-700 text-white font-chubby text-lg px-6 py-3 rounded-2xl shadow-lg flex items-center space-x-2">
+          <span id="btnShopIconSlot"></span>
+          <span>Kitchen Upgrade Shop</span>
+        </button>
+        <button id="btnStartGame" onclick="startKitchenShift()" class="btn-cute bg-amber-500 hover:bg-amber-600 text-white font-chubby text-2xl px-12 py-3 rounded-2xl shadow-lg flex items-center space-x-2">
+          <span>Open Restaurant Shift!</span>
+        </button>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="w-full bg-stone-900 rounded-3xl p-3 sm:p-5 shadow-2xl border-4 border-amber-400 flex flex-col relative overflow-hidden hidden">
+      <div class="w-full bg-stone-800/90 rounded-2xl p-3 border-2 border-stone-700 flex flex-wrap items-center justify-between gap-2 shadow mb-3">
+        <div class="flex items-center space-x-3">
+          <div id="hudChefAvatarContainer" class="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center border-2 border-white shadow"></div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <span id="hudVenueTitle" class="font-chubby text-lg text-amber-300">Kedai Nusantara</span>
+              <span id="hudChefName" class="text-xs bg-amber-700 text-amber-100 font-extrabold px-2 py-0.5 rounded-full">Chef Budi</span>
+            </div>
+            <div class="text-xs text-stone-300 font-medium">Shift Target: <span id="hudShiftTarget" class="text-amber-400 font-bold">150</span> Coins</div>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-2 bg-stone-900/95 px-4 py-2 rounded-2xl border border-stone-600">
+          <span id="hudTimerIconSlot"></span>
+          <div class="flex flex-col items-center">
+            <span id="hudTimer" class="font-chubby text-2xl text-white tracking-wider">60s</span>
+            <span class="text-[9px] text-stone-400 uppercase font-extrabold tracking-widest">Shift Clock</span>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-3">
+          <div class="bg-amber-500/20 border border-amber-400 px-3 py-1.5 rounded-xl text-center">
+            <div class="text-[10px] text-amber-300 uppercase font-extrabold">Revenue</div>
+            <div class="font-chubby text-xl text-amber-300 flex items-center justify-center space-x-1">
+              <span id="hudCoins">0</span>
+              <span id="hudCoinSmallSlot"></span>
+            </div>
+          </div>
+          <div class="bg-red-500/20 border border-red-400 px-3 py-1.5 rounded-xl text-center">
+            <div class="text-[10px] text-red-300 uppercase font-extrabold">Streak</div>
+            <div class="font-chubby text-xl text-red-400">x<span id="hudCombo">1</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="w-full bg-stone-800/80 rounded-2xl p-3 border-2 border-stone-700 mb-3">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs uppercase font-extrabold text-stone-300 tracking-wider flex items-center">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 mr-2 animate-ping"></span>
+            Guest Dining Counter (<span id="customerCount">0</span>/3)
+          </span>
+          <span class="text-xs text-stone-400 font-semibold">Deliver matching cooked meals & drinks!</span>
+        </div>
+        <div id="customerSlotsContainer" class="grid grid-cols-1 sm:grid-cols-3 gap-3 min-h-[140px]"></div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-3 w-full">
+        <div class="md:col-span-3 bg-stone-800/90 rounded-2xl p-3 border-2 border-amber-500/50 flex flex-col justify-between shadow-inner">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="font-chubby text-amber-400 text-sm">1. Prep & Chop</span>
+            <span id="choppingBoardLevelBadge" class="text-[10px] bg-stone-700 text-stone-300 px-2 py-0.5 rounded-full font-bold">Lvl 1</span>
+          </div>
+          <div class="w-full bg-stone-900 rounded-xl p-3 border border-stone-700 flex flex-col items-center justify-center min-h-[125px]">
+            <div id="chopIconVisual" class="transition-transform duration-75 mb-1"></div>
+            <span id="chopItemLabel" class="text-xs font-bold text-stone-300 text-center">Fresh Raw Veggies</span>
+            <div class="w-full bg-stone-700 h-3 rounded-full mt-2 overflow-hidden border border-stone-600">
+              <div id="chopProgressFill" class="bg-amber-400 h-full w-0 transition-all duration-75"></div>
+            </div>
+            <span id="chopStatusText" class="text-[11px] font-bold text-amber-300 mt-1">Tap Chop Button!</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2 mt-2">
+            <button id="btnChopTap" onclick="actionChop()" class="btn-cute bg-amber-500 hover:bg-amber-600 text-white font-chubby py-2 rounded-xl text-xs flex items-center justify-center space-x-1 shadow"><span>Slice & Chop!</span></button>
+            <button id="btnSendToPan" onclick="actionSendChoppedToCooker()" class="btn-cute bg-emerald-600 hover:bg-emerald-700 text-white font-chubby py-2 rounded-xl text-xs flex items-center justify-center space-x-1 shadow disabled:opacity-40" disabled><span>To Stove</span></button>
+          </div>
+        </div>
+
+        <div class="md:col-span-4 bg-stone-800/90 rounded-2xl p-3 border-2 border-red-500/50 flex flex-col justify-between shadow-inner">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="font-chubby text-red-400 text-sm">2. Sizzle Stove</span>
+            <span id="stoveLevelBadge" class="text-[10px] bg-stone-700 text-stone-300 px-2 py-0.5 rounded-full font-bold">Lvl 1</span>
+          </div>
+          <div id="cookerContainer" class="w-full bg-stone-900 rounded-xl p-3 border border-stone-700 flex flex-col items-center justify-center min-h-[125px]">
+            <div id="cookerVisual" class="mb-1"></div>
+            <span id="cookerStatusLabel" class="text-xs font-bold text-stone-300">Stove Pan is Empty</span>
+            <div class="w-full bg-stone-700 h-3 rounded-full mt-2 overflow-hidden border border-stone-600 relative">
+              <div id="cookerProgressFill" class="bg-yellow-400 h-full w-0 transition-all duration-150"></div>
+              <div class="absolute right-4 top-0 bottom-0 w-3 bg-emerald-400 opacity-60"></div>
+            </div>
+            <div class="flex items-center justify-between w-full text-[10px] font-bold text-stone-400 mt-1 px-1">
+              <span>Raw</span><span class="text-emerald-400 font-extrabold uppercase">Golden Perfect</span><span class="text-red-400 uppercase">Burnt</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 mt-2">
+            <button id="btnTakeOffStove" onclick="actionPlateCookedDish()" class="btn-cute bg-orange-500 hover:bg-orange-600 text-white font-chubby py-2 rounded-xl text-xs flex items-center justify-center space-x-1 shadow disabled:opacity-40" disabled><span>Plate Dish</span></button>
+            <button id="btnTrashPan" onclick="actionTrashCooker()" class="btn-cute bg-stone-700 hover:bg-stone-600 text-stone-200 font-chubby py-2 rounded-xl text-xs flex items-center justify-center space-x-1 shadow"><span id="trashIconSlot"></span><span>Discard</span></button>
+          </div>
+        </div>
+
+        <div class="md:col-span-3 bg-stone-800/90 rounded-2xl p-3 border-2 border-emerald-500/50 flex flex-col justify-between shadow-inner">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="font-chubby text-emerald-400 text-sm">3. Serving Plate</span>
+            <span class="text-[10px] bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded-full font-bold">Assembly</span>
+          </div>
+          <div class="w-full bg-stone-900 rounded-xl p-3 border border-stone-700 flex flex-col items-center justify-center min-h-[125px]">
+            <div id="assemblyDishIcon" class="mb-1"></div>
+            <span id="assemblyDishLabel" class="text-xs font-bold text-stone-300 text-center">Clean Plate</span>
+            <span id="assemblyDishDesc" class="text-[10px] text-stone-400 mt-0.5">Ready for delicious food</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2 mt-2">
+            <button id="btnAddGarnish" onclick="actionAddGarnish()" class="btn-cute bg-emerald-600 hover:bg-emerald-700 text-white font-chubby py-2 rounded-xl text-xs flex items-center justify-center space-x-1 shadow"><span>+ Herbs</span></button>
+            <button id="btnClearPlate" onclick="actionClearPlate()" class="btn-cute bg-stone-700 hover:bg-stone-600 text-stone-200 font-chubby py-2 rounded-xl text-xs flex items-center justify-center space-x-1 shadow"><span>Clean</span></button>
+          </div>
+        </div>
+
+        <div class="md:col-span-2 bg-stone-800/90 rounded-2xl p-3 border-2 border-teal-500/50 flex flex-col justify-between shadow-inner">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="font-chubby text-teal-400 text-sm">Drink Tap</span>
+            <span id="drinkMachineBadge" class="text-[10px] bg-stone-700 text-stone-300 px-1.5 py-0.5 rounded-full font-bold">Manual</span>
+          </div>
+          <div class="w-full bg-stone-900 rounded-xl p-2.5 border border-stone-700 flex flex-col items-center justify-center min-h-[125px]">
+            <div id="drinkGlassIcon" class="mb-1"></div>
+            <span id="drinkStatusLabel" class="text-[11px] font-bold text-stone-300 text-center">Empty Glass</span>
+            <div class="w-full bg-stone-700 h-2.5 rounded-full mt-2 overflow-hidden">
+              <div id="drinkFillBar" class="bg-teal-400 h-full w-0 transition-all duration-100"></div>
+            </div>
+          </div>
+          <button id="btnDispenseDrink" onclick="actionDispenseDrink()" class="btn-cute bg-teal-600 hover:bg-teal-700 text-white font-chubby py-2 mt-2 rounded-xl text-xs flex items-center justify-center space-x-1 shadow"><span>Pour Drink</span></button>
+        </div>
+      </div>
+    </section>
+
+    <div id="shiftResultModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+      <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full border-4 border-amber-400 shadow-2xl flex flex-col items-center text-center">
+        <div id="modalStarContainer" class="flex items-center space-x-2 mb-2"></div>
+        <h2 id="modalResultTitle" class="font-chubby text-3xl text-stone-800 mb-1">Shift Finished!</h2>
+        <p id="modalResultSubtitle" class="text-xs font-semibold text-stone-600 mb-4">Your guests thoroughly enjoyed the service!</p>
+        <div class="w-full bg-amber-50 rounded-2xl p-4 border border-amber-200 mb-6 space-y-2 text-xs font-bold text-stone-700">
+          <div class="flex justify-between items-center"><span class="text-stone-500">Patrons Served:</span><span id="resCustomersServed" class="text-stone-900 font-chubby text-sm">0</span></div>
+          <div class="flex justify-between items-center"><span class="text-stone-500">Shift Revenue:</span><span id="resShiftRevenue" class="text-emerald-700 font-chubby text-base">0 Coins</span></div>
+          <div class="flex justify-between items-center"><span class="text-stone-500">Chef Perk Bonus:</span><span id="resPerkBonus" class="text-amber-600 font-chubby text-sm">+0 Coins</span></div>
+          <div class="border-t border-amber-200 pt-2 flex justify-between items-center text-sm"><span class="text-amber-900 font-chubby">Total Bank:</span><span id="resTotalBank" class="text-amber-900 font-chubby text-base">0 Coins</span></div>
+        </div>
+        <div class="grid grid-cols-2 gap-3 w-full">
+          <button onclick="openShopModalFromSummary()" class="btn-cute bg-emerald-600 hover:bg-emerald-700 text-white font-chubby py-3 rounded-2xl text-sm shadow">Upgrade Kitchen</button>
+          <button onclick="returnToVenueSelect()" class="btn-cute bg-amber-500 hover:bg-amber-600 text-white font-chubby py-3 rounded-2xl text-sm shadow">Next Shift</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="shopModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+      <div class="bg-white rounded-3xl p-5 sm:p-7 max-w-lg w-full border-4 border-emerald-400 shadow-2xl flex flex-col max-h-[90vh]">
+        <div class="flex items-center justify-between mb-4 border-b border-stone-200 pb-3">
+          <div class="flex items-center space-x-2.5">
+            <div id="shopHeaderIconSlot"></div>
+            <div>
+              <h2 class="font-chubby text-2xl text-stone-800 leading-none">Kitchen Hardware Shop</h2>
+              <span class="text-xs text-stone-500 font-bold">Invest coins in premium kitchen appliances!</span>
+            </div>
+          </div>
+          <button onclick="closeShopModal()" class="w-8 h-8 rounded-full bg-stone-100 hover:bg-stone-200 font-bold text-stone-600 flex items-center justify-center">✕</button>
+        </div>
+        <div class="flex-1 overflow-y-auto pr-1 space-y-3 mb-4">
+          <div class="bg-stone-50 rounded-2xl p-3 border border-stone-200 flex items-center justify-between">
+            <div class="flex items-center space-x-3"><div id="shopKnifeIcon" class="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center"></div><div><h4 class="font-chubby text-stone-800 text-sm">Damascus Chef Knife</h4><p class="text-xs text-stone-500">Substantially reduces required chops.</p><span id="shopKnifeLvl" class="text-[10px] text-amber-700 font-extrabold uppercase">Lvl 1</span></div></div>
+            <button id="btnBuyKnife" onclick="buyUpgrade('knife')" class="btn-cute bg-amber-500 hover:bg-amber-600 text-white font-chubby text-xs px-4 py-2.5 rounded-xl"><span id="shopKnifePrice">60 Coins</span></button>
+          </div>
+          <div class="bg-stone-50 rounded-2xl p-3 border border-stone-200 flex items-center justify-between">
+            <div class="flex items-center space-x-3"><div id="shopStoveIcon" class="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center"></div><div><h4 class="font-chubby text-stone-800 text-sm">Turbo Induction Stove</h4><p class="text-xs text-stone-500">Accelerated searing + wider safe window.</p><span id="shopStoveLvl" class="text-[10px] text-red-700 font-extrabold uppercase">Lvl 1</span></div></div>
+            <button id="btnBuyStove" onclick="buyUpgrade('stove')" class="btn-cute bg-amber-500 hover:bg-amber-600 text-white font-chubby text-xs px-4 py-2.5 rounded-xl"><span id="shopStovePrice">80 Coins</span></button>
+          </div>
+          <div class="bg-stone-50 rounded-2xl p-3 border border-stone-200 flex items-center justify-between">
+            <div class="flex items-center space-x-3"><div id="shopDrinkIcon" class="w-12 h-12 rounded-xl bg-teal-100 flex items-center justify-center"></div><div><h4 class="font-chubby text-stone-800 text-sm">Automated Drink Fountain</h4><p class="text-xs text-stone-500">Fills drink orders instantaneously.</p><span id="shopDrinkLvl" class="text-[10px] text-teal-700 font-extrabold uppercase">Lvl 1</span></div></div>
+            <button id="btnBuyDrink" onclick="buyUpgrade('drink')" class="btn-cute bg-amber-500 hover:bg-amber-600 text-white font-chubby text-xs px-4 py-2.5 rounded-xl"><span id="shopDrinkPrice">100 Coins</span></button>
+          </div>
+          <div class="bg-stone-50 rounded-2xl p-3 border border-stone-200 flex items-center justify-between">
+            <div class="flex items-center space-x-3"><div id="shopDecorIcon" class="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center"></div><div><h4 class="font-chubby text-stone-800 text-sm">Cozy Lounge Plants</h4><p class="text-xs text-stone-500">Customers wait +25% longer with patience.</p><span id="shopDecorLvl" class="text-[10px] text-emerald-700 font-extrabold uppercase">Lvl 0</span></div></div>
+            <button id="btnBuyDecor" onclick="buyUpgrade('decor')" class="btn-cute bg-amber-500 hover:bg-amber-600 text-white font-chubby text-xs px-4 py-2.5 rounded-xl"><span id="shopDecorPrice">120 Coins</span></button>
+          </div>
+        </div>
+        <button onclick="closeShopModal()" class="w-full btn-cute bg-stone-800 hover:bg-stone-900 text-white font-chubby py-3 rounded-2xl text-sm">Return to Kitchen</button>
+      </div>
+    </div>
+  </main>
+  <script>
+    const CHEF_DATABASE = {
+      budi: { id: 'budi', name: 'Chef Budi', avatarFn: () => SVGIcons.chefBudi(80), miniAvatarFn: () => SVGIcons.chefBudi(42), chopSpeedBonus: 1.35, tipMultiplier: 1.0, patienceBonus: 1.0 },
+      mei: { id: 'mei', name: 'Chef Mei', avatarFn: () => SVGIcons.chefMei(80), miniAvatarFn: () => SVGIcons.chefMei(42), chopSpeedBonus: 1.0, tipMultiplier: 1.4, patienceBonus: 1.0 },
+      kenji: { id: 'kenji', name: 'Chef Kenji', avatarFn: () => SVGIcons.chefKenji(80), miniAvatarFn: () => SVGIcons.chefKenji(42), chopSpeedBonus: 1.0, tipMultiplier: 1.0, patienceBonus: 1.3 }
+    };
+
+    const VENUE_DATABASE = {
+      kedai: { id: 'kedai', name: 'Kedai Nusantara', cost: 0, dishName: 'Nasi Goreng Spesial', rawName: 'Fresh Chilies & Shallots', rawIconFn: () => SVGIcons.rawChiliVeg(38), cookedIconFn: () => SVGIcons.nasiGorengPlate(38), drinkName: 'Sweet Es Teh', drinkColor: '#B45309', dishPrice: 20, drinkPrice: 10, targetCoins: 150, cookDurationSec: 5, burnLimitSec: 9 },
+      tokyo: { id: 'tokyo', name: 'Tokyo Bento Express', cost: 100, dishName: 'Chashu Tonkotsu Ramen', rawName: 'Pork & Scallions', rawIconFn: () => SVGIcons.rawMeatPork(38), cookedIconFn: () => SVGIcons.ramenBowl(38), drinkName: 'Iced Matcha', drinkColor: '#15803D', dishPrice: 32, drinkPrice: 15, targetCoins: 280, cookDurationSec: 4.5, burnLimitSec: 8.5 },
+      bistro: { id: 'bistro', name: 'Grand Bistro Royale', cost: 300, dishName: 'Wagyu Tenderloin Steak', rawName: 'Prime Wagyu Cut', rawIconFn: () => SVGIcons.rawSteakCut(38), cookedIconFn: () => SVGIcons.steakCookedPlate(38), drinkName: 'Royale Mocktail', drinkColor: '#DC2626', dishPrice: 48, drinkPrice: 22, targetCoins: 450, cookDurationSec: 4, burnLimitSec: 7.5 }
+    };
+
+    const CUSTOMER_PROFILES = [
+      { name: 'Student Leo', avatarFn: () => SVGIcons.customerBoy(44), basePatience: 27 },
+      { name: 'Gourmet Nina', avatarFn: () => SVGIcons.customerGirl(44), basePatience: 29 },
+      { name: 'Critic Lord Arthur', avatarFn: () => SVGIcons.customerCritic(44), basePatience: 20 }
+    ];
+
+    let gameState = {
+      coins: 50,
+      unlockedVenues: ['kedai'],
+      selectedChefKey: 'budi',
+      selectedVenueKey: 'kedai',
+      upgrades: { knife: 1, stove: 1, drink: 1, decor: 0 },
+      shiftActive: false,
+      shiftTimeRemaining: 60,
+      shiftEarnings: 0,
+      servedCustomersCount: 0,
+      combo: 1,
+      customers: [],
+      chopProgress: 0,
+      chopDone: false,
+      cookerState: 'empty',
+      cookerSeconds: 0,
+      plateDishReady: false,
+      plateHasGarnish: false,
+      plateIsBurnt: false,
+      drinkState: 'empty'
+    };
+
+    let shiftTimerInterval = null;
+
+    function initStaticGraphics() {
+      document.getElementById('navBrandIcon').innerHTML = SVGIcons.pan(24);
+      document.getElementById('navCoinIcon').innerHTML = SVGIcons.coin(22);
+      document.getElementById('soundIconWrapper').innerHTML = SVGIcons.soundOn(20);
+      document.getElementById('avatarBudiSlot').innerHTML = SVGIcons.chefBudi(84);
+      document.getElementById('avatarMeiSlot').innerHTML = SVGIcons.chefMei(84);
+      document.getElementById('avatarKenjiSlot').innerHTML = SVGIcons.chefKenji(84);
+      document.getElementById('venueArtKedaiSlot').innerHTML = SVGIcons.venueKedaiArt(90);
+      document.getElementById('venueArtTokyoSlot').innerHTML = SVGIcons.venueTokyoArt(90);
+      document.getElementById('venueArtBistroSlot').innerHTML = SVGIcons.venueBistroArt(90);
+      document.getElementById('btnShopIconSlot').innerHTML = SVGIcons.shopCart(20);
+      document.getElementById('hudTimerIconSlot').innerHTML = SVGIcons.timer(22);
+      document.getElementById('hudCoinSmallSlot').innerHTML = SVGIcons.coin(16);
+      document.getElementById('trashIconSlot').innerHTML = SVGIcons.trash(15);
+      document.getElementById('shopHeaderIconSlot').innerHTML = SVGIcons.shopCart(26);
+      document.getElementById('shopKnifeIcon').innerHTML = SVGIcons.knife(28);
+      document.getElementById('shopStoveIcon').innerHTML = SVGIcons.pan(30);
+      document.getElementById('shopDrinkIcon').innerHTML = SVGIcons.glassDrinkFilled(28, '#0D9488');
+      document.getElementById('shopDecorIcon').innerHTML = SVGIcons.garnishHerbs(28);
+      resetChoppingStationVisual(); resetCookerVisual(); resetPlatingVisual(); resetDrinkVisual();
+    }
+
+    function loadSavedGame() {
+      try {
+        const stored = localStorage.getItem('chefs_rush_cute_v2');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          gameState.coins = parsed.coins ?? 50;
+          gameState.unlockedVenues = parsed.unlockedVenues || ['kedai'];
+          gameState.upgrades = parsed.upgrades || gameState.upgrades;
+          gameState.selectedChefKey = parsed.selectedChefKey || 'budi';
+          gameState.selectedVenueKey = parsed.selectedVenueKey || 'kedai';
+        }
+      } catch (err) {}
+      updateCoinHUD();
+      selectChef(gameState.selectedChefKey);
+      selectVenue(gameState.selectedVenueKey);
+      refreshVenueBadges();
+    }
+
+    function saveGame() {
+      try {
+        localStorage.setItem('chefs_rush_cute_v2', JSON.stringify({
+          coins: gameState.coins,
+          unlockedVenues: gameState.unlockedVenues,
+          upgrades: gameState.upgrades,
+          selectedChefKey: gameState.selectedChefKey,
+          selectedVenueKey: gameState.selectedVenueKey
+        }));
+      } catch (err) {}
+    }
+
+    function updateCoinHUD() {
+      const el = document.getElementById('globalCoinsText');
+      if (el) el.innerText = gameState.coins;
+    }
+
+    function goToScreen(screenId) {
+      ['characterScreen', 'venueScreen', 'gameScreen'].forEach(id => document.getElementById(id).classList.add('hidden'));
+      document.getElementById(screenId).classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function selectChef(chefKey) {
+      gameState.selectedChefKey = chefKey;
+      audio.playDing();
+      ['cardChefBudi', 'cardChefMei', 'cardChefKenji'].forEach(id => {
+        const card = document.getElementById(id);
+        if (card) { card.classList.remove('border-amber-500', 'border-pink-500', 'border-teal-500', 'ring-4', 'ring-amber-300'); card.classList.add('border-stone-200'); }
+      });
+      const selectedId = chefKey === 'budi' ? 'cardChefBudi' : chefKey === 'mei' ? 'cardChefMei' : 'cardChefKenji';
+      const el = document.getElementById(selectedId);
+      if (el) { el.classList.remove('border-stone-200'); el.classList.add('border-amber-500', 'ring-4', 'ring-amber-300'); }
+    }
+
+    function proceedToVenueSelect() { audio.playDing(); refreshVenueBadges(); goToScreen('venueScreen'); }
+
+    function refreshVenueBadges() {
+      ['tokyo', 'bistro'].forEach(key => {
+        const venue = VENUE_DATABASE[key];
+        const isUnlocked = gameState.unlockedVenues.includes(key);
+        const badge = document.getElementById(key === 'tokyo' ? 'badgeTokyoUnlock' : 'badgeBistroUnlock');
+        if (badge) {
+          badge.innerText = isUnlocked ? 'UNLOCKED' : `${venue.cost} Coins`;
+          badge.className = isUnlocked ? 'text-xs bg-emerald-100 text-emerald-800 font-extrabold px-2 py-0.5 rounded-md' : 'text-xs bg-stone-200 text-stone-600 font-extrabold px-2 py-0.5 rounded-md';
+        }
+      });
+    }
+
+    function selectVenue(venueKey) {
+      const venue = VENUE_DATABASE[venueKey];
+      if (!gameState.unlockedVenues.includes(venueKey)) {
+        if (gameState.coins >= venue.cost) {
+          gameState.coins -= venue.cost;
+          gameState.unlockedVenues.push(venueKey);
+          audio.playFanfare();
+          spawnPopBadge(`Unlocked ${venue.name}!`, window.innerWidth / 2, window.innerHeight / 2, '#10b981');
+          updateCoinHUD(); saveGame(); refreshVenueBadges();
+        } else {
+          audio.playBurn();
+          spawnPopBadge(`Need ${venue.cost} Coins!`, window.innerWidth / 2, window.innerHeight / 2, '#EF4444');
+          return;
+        }
+      }
+      gameState.selectedVenueKey = venueKey;
+      audio.playDing();
+      ['cardVenueKedai', 'cardVenueTokyo', 'cardVenueBistro'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.classList.remove('border-amber-500', 'border-pink-500', 'border-indigo-500', 'ring-4', 'ring-amber-300'); el.classList.add('border-stone-200'); }
+      });
+      const selId = venueKey === 'kedai' ? 'cardVenueKedai' : venueKey === 'tokyo' ? 'cardVenueTokyo' : 'cardVenueBistro';
+      const el = document.getElementById(selId);
+      if (el) { el.classList.remove('border-stone-200'); el.classList.add('border-amber-500', 'ring-4', 'ring-amber-300'); }
+    }
+
+    function startKitchenShift() {
+      audio.playFanfare();
+      const chef = CHEF_DATABASE[gameState.selectedChefKey];
+      const venue = VENUE_DATABASE[gameState.selectedVenueKey];
+      gameState.shiftActive = true; gameState.shiftTimeRemaining = 60; gameState.shiftEarnings = 0;
+      gameState.servedCustomersCount = 0; gameState.combo = 1; gameState.customers = [];
+      resetChoppingStation(); resetCookerStation(); resetAssemblyStation(); resetDrinkStation();
+      document.getElementById('hudChefAvatarContainer').innerHTML = chef.miniAvatarFn();
+      document.getElementById('hudChefName').innerText = chef.name;
+      document.getElementById('hudVenueTitle').innerText = venue.name;
+      document.getElementById('hudShiftTarget').innerText = venue.targetCoins;
+      document.getElementById('hudCoins').innerText = '0';
+      document.getElementById('hudCombo').innerText = '1';
+      document.getElementById('hudTimer').innerText = `${gameState.shiftTimeRemaining}s`;
+      document.getElementById('chopIconVisual').innerHTML = venue.rawIconFn();
+      document.getElementById('chopItemLabel').innerText = venue.rawName;
+      document.getElementById('choppingBoardLevelBadge').innerText = `Lvl ${gameState.upgrades.knife}`;
+      document.getElementById('stoveLevelBadge').innerText = `Lvl ${gameState.upgrades.stove}`;
+      document.getElementById('drinkMachineBadge').innerText = gameState.upgrades.drink > 1 ? 'Auto Pour' : 'Manual';
+      goToScreen('gameScreen');
+      spawnCustomer(); setTimeout(spawnCustomer, 2200);
+      if (shiftTimerInterval) clearInterval(shiftTimerInterval);
+      shiftTimerInterval = setInterval(gameShiftTick, 1000);
+    }
+
+    function gameShiftTick() {
+      if (!gameState.shiftActive) return;
+      gameState.shiftTimeRemaining--;
+      document.getElementById('hudTimer').innerText = `${gameState.shiftTimeRemaining}s`;
+      if (gameState.shiftTimeRemaining <= 10) document.getElementById('hudTimer').classList.add('text-red-500', 'animate-pulse');
+      else document.getElementById('hudTimer').classList.remove('text-red-500', 'animate-pulse');
+      if (gameState.shiftTimeRemaining <= 0) { finishShift(); return; }
+
+      if (gameState.cookerState === 'cooking') {
+        const venue = VENUE_DATABASE[gameState.selectedVenueKey];
+        const stoveSpeed = gameState.upgrades.stove === 3 ? 1.5 : gameState.upgrades.stove === 2 ? 1.25 : 1.0;
+        gameState.cookerSeconds += 1 * stoveSpeed;
+        const fillPct = Math.min(100, (gameState.cookerSeconds / venue.burnLimitSec) * 100);
+        const fillBar = document.getElementById('cookerProgressFill');
+        fillBar.style.width = `${fillPct}%`;
+
+        if (gameState.cookerSeconds >= venue.burnLimitSec) {
+          gameState.cookerState = 'burnt'; audio.playBurn();
+          document.getElementById('cookerVisual').innerHTML = SVGIcons.burntFoodDish(38);
+          document.getElementById('cookerStatusLabel').innerText = 'BURNT! Dish Ruined';
+          fillBar.className = 'bg-red-600 h-full';
+          document.getElementById('cookerContainer').classList.remove('animate-sizzle');
+          document.getElementById('btnTakeOffStove').disabled = false;
+        } else if (gameState.cookerSeconds >= venue.cookDurationSec) {
+          if (gameState.cookerState !== 'cooked') audio.playDing();
+          gameState.cookerState = 'cooked';
+          document.getElementById('cookerVisual').innerHTML = venue.cookedIconFn();
+          document.getElementById('cookerStatusLabel').innerText = 'Cooked Perfectly! Plate Now';
+          fillBar.className = 'bg-emerald-500 h-full';
+          document.getElementById('btnTakeOffStove').disabled = false;
+        } else audio.playSizzle();
+      }
+
+      for (let i = gameState.customers.length - 1; i >= 0; i--) {
+        const c = gameState.customers[i]; c.currentPatience--;
+        if (c.currentPatience <= 0) {
+          audio.playBurn(); gameState.combo = 1; document.getElementById('hudCombo').innerText = '1';
+          spawnPopBadge('Customer Left Impatiently!', window.innerWidth / 2, 220, '#EF4444');
+          gameState.customers.splice(i, 1);
+        }
+      }
+      renderCustomers();
+      if (gameState.customers.length < 3 && Math.random() < 0.45) spawnCustomer();
+    }
+
+    function spawnCustomer() {
+      if (gameState.customers.length >= 3) return;
+      const profile = CUSTOMER_PROFILES[Math.floor(Math.random() * CUSTOMER_PROFILES.length)];
+      const chef = CHEF_DATABASE[gameState.selectedChefKey];
+      const decorBonus = 1 + (gameState.upgrades.decor * 0.25);
+      const totalPatience = Math.round(profile.basePatience * chef.patienceBonus * decorBonus);
+      const roll = Math.random();
+      gameState.customers.push({
+        id: 'c_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+        name: profile.name, avatarFn: profile.avatarFn, maxPatience: totalPatience, currentPatience: totalPatience,
+        order: { wantsGarnish: roll > 0.4, wantsDrink: roll > 0.6 }
+      });
+      renderCustomers();
+    }
+
+    function renderCustomers() {
+      const container = document.getElementById('customerSlotsContainer');
+      document.getElementById('customerCount').innerText = gameState.customers.length;
+      if (!container) return;
+      const venue = VENUE_DATABASE[gameState.selectedVenueKey];
+      container.innerHTML = '';
+      gameState.customers.forEach((cust, index) => {
+        const pct = Math.max(0, (cust.currentPatience / cust.maxPatience) * 100);
+        const barColor = pct < 30 ? 'bg-red-500' : pct < 60 ? 'bg-amber-400' : 'bg-emerald-500';
+        const card = document.createElement('div');
+        card.className = 'bg-stone-900/95 rounded-2xl p-3 border-2 border-stone-600 flex flex-col justify-between shadow';
+        let wishes = `<span class="bg-amber-950 text-amber-300 px-2 py-0.5 rounded text-[11px] font-bold border border-amber-800 flex items-center space-x-1">${venue.dishName}</span>`;
+        if (cust.order.wantsGarnish) wishes += `<span class="bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded text-[11px] font-bold border border-emerald-800">+ Herbs</span>`;
+        if (cust.order.wantsDrink) wishes += `<span class="bg-teal-950 text-teal-300 px-2 py-0.5 rounded text-[11px] font-bold border border-teal-800">+ ${venue.drinkName}</span>`;
+        card.innerHTML = `<div class="flex items-center justify-between mb-2"><div class="flex items-center space-x-2"><div>${cust.avatarFn()}</div><div><div class="text-xs font-bold text-white">${cust.name}</div><div class="text-[10px] text-stone-400">Order #${index + 1}</div></div></div><button onclick="serveCustomer('${cust.id}')" class="btn-cute bg-emerald-600 hover:bg-emerald-500 text-white font-chubby text-xs px-3 py-1.5 rounded-xl shadow">Serve</button></div><div class="flex flex-wrap gap-1 mb-2">${wishes}</div><div class="w-full bg-stone-700 h-2 rounded-full overflow-hidden"><div class="${barColor} h-full transition-all duration-300" style="width: ${pct}%"></div></div>`;
+        container.appendChild(card);
+      });
+    }
+
+    function serveCustomer(customerId) {
+      const idx = gameState.customers.findIndex(c => c.id === customerId);
+      if (idx === -1) return;
+      const cust = gameState.customers[idx];
+      const venue = VENUE_DATABASE[gameState.selectedVenueKey];
+      const chef = CHEF_DATABASE[gameState.selectedChefKey];
+      if (!gameState.plateDishReady) { audio.playBurn(); spawnPopBadge('Plate is empty! Cook first.', window.innerWidth / 2, 280, '#EF4444'); return; }
+      if (gameState.plateIsBurnt) { audio.playBurn(); spawnPopBadge('Cannot serve burnt food!', window.innerWidth / 2, 280, '#EF4444'); return; }
+      if (cust.order.wantsGarnish && !gameState.plateHasGarnish) { audio.playBurn(); spawnPopBadge('Customer wanted garnish herbs!', window.innerWidth / 2, 280, '#F59E0B'); return; }
+      if (!cust.order.wantsGarnish && gameState.plateHasGarnish) { audio.playBurn(); spawnPopBadge('Customer did not want garnish!', window.innerWidth / 2, 280, '#EF4444'); return; }
+      if (cust.order.wantsDrink && gameState.drinkState !== 'ready') { audio.playBurn(); spawnPopBadge('Drink is not ready yet!', window.innerWidth / 2, 280, '#2EC4B6'); return; }
+
+      audio.playCoin(); audio.playDing();
+      let earned = venue.dishPrice + (cust.order.wantsGarnish ? 12 : 0);
+      if (cust.order.wantsDrink) { earned += venue.drinkPrice; resetDrinkStation(); }
+      const patiencePct = cust.currentPatience / cust.maxPatience;
+      const tip = patiencePct > 0.6 ? Math.round(earned * 0.35 * chef.tipMultiplier) : 0;
+      earned = (earned + tip) * gameState.combo;
+      gameState.coins += earned; gameState.shiftEarnings += earned; gameState.servedCustomersCount++;
+      gameState.combo = Math.min(5, gameState.combo + 1);
+      document.getElementById('hudCoins').innerText = gameState.shiftEarnings;
+      document.getElementById('hudCombo').innerText = gameState.combo;
+      updateCoinHUD();
+      spawnPopBadge(`+${earned} Coins!`, window.innerWidth / 2, 240, '#10B981');
+      gameState.customers.splice(idx, 1); resetAssemblyStation(); renderCustomers();
+    }
+
+    function actionChop() {
+      if (gameState.chopDone) return;
+      audio.playChop();
+      const knifeLvl = gameState.upgrades.knife;
+      const chef = CHEF_DATABASE[gameState.selectedChefKey];
+      const baseStep = knifeLvl === 3 ? 35 : knifeLvl === 2 ? 26 : 18;
+      gameState.chopProgress = Math.min(100, gameState.chopProgress + baseStep * chef.chopSpeedBonus);
+      document.getElementById('chopProgressFill').style.width = `${gameState.chopProgress}%`;
+      const visual = document.getElementById('chopIconVisual');
+      visual.style.transform = 'scale(0.88) rotate(-12deg)';
+      setTimeout(() => visual.style.transform = 'scale(1) rotate(0deg)', 70);
+      if (gameState.chopProgress >= 100) {
+        gameState.chopDone = true; audio.playDing();
+        document.getElementById('chopStatusText').innerText = 'Chopped! Send to Pan';
+        document.getElementById('btnSendToPan').disabled = false;
+        document.getElementById('chopProgressFill').className = 'bg-emerald-400 h-full';
+      }
+    }
+
+    function actionSendChoppedToCooker() {
+      if (!gameState.chopDone) return;
+      if (gameState.cookerState !== 'empty') { audio.playBurn(); spawnPopBadge('Cooker is currently occupied!', window.innerWidth / 2, 340, '#EF4444'); return; }
+      audio.playSizzle(); resetChoppingStation();
+      gameState.cookerState = 'cooking'; gameState.cookerSeconds = 0;
+      document.getElementById('cookerVisual').innerHTML = SVGIcons.pan(38);
+      document.getElementById('cookerContainer').classList.add('animate-sizzle');
+      document.getElementById('cookerStatusLabel').innerText = 'Sizzling on Stove...';
+      document.getElementById('cookerProgressFill').className = 'bg-yellow-400 h-full';
+      document.getElementById('cookerProgressFill').style.width = '0%';
+    }
+
+    function resetChoppingStation() {
+      gameState.chopProgress = 0; gameState.chopDone = false;
+      const f = document.getElementById('chopProgressFill');
+      if (f) { f.style.width = '0%'; f.className = 'bg-amber-400 h-full'; }
+      document.getElementById('chopStatusText').innerText = 'Tap Chop Button!';
+      document.getElementById('btnSendToPan').disabled = true;
+      resetChoppingStationVisual();
+    }
+
+    function resetChoppingStationVisual() {
+      document.getElementById('chopIconVisual').innerHTML = VENUE_DATABASE[gameState.selectedVenueKey || 'kedai'].rawIconFn();
+    }
+
+    function actionPlateCookedDish() {
+      if (gameState.cookerState === 'empty') return;
+      if (gameState.plateDishReady) { audio.playBurn(); spawnPopBadge('Plate already full! Serve or clean it.', window.innerWidth / 2, 340, '#F59E0B'); return; }
+      const venue = VENUE_DATABASE[gameState.selectedVenueKey];
+      audio.playDing();
+      if (gameState.cookerState === 'burnt') {
+        gameState.plateDishReady = true; gameState.plateIsBurnt = true;
+        document.getElementById('assemblyDishIcon').innerHTML = SVGIcons.burntFoodDish(38);
+        document.getElementById('assemblyDishLabel').innerText = 'Burnt Food';
+        document.getElementById('assemblyDishDesc').innerText = 'Must wash with Clean button';
+      } else {
+        gameState.plateDishReady = true; gameState.plateIsBurnt = false;
+        document.getElementById('assemblyDishIcon').innerHTML = venue.cookedIconFn();
+        document.getElementById('assemblyDishLabel').innerText = venue.dishName;
+        document.getElementById('assemblyDishDesc').innerText = 'Cooked! Add herbs or serve';
+      }
+      resetCookerStation();
+    }
+
+    function actionTrashCooker() {
+      if (gameState.cookerState === 'empty') return;
+      audio.playBurn(); resetCookerStation(); spawnPopBadge('Discarded', window.innerWidth / 2, 340, '#78716C');
+    }
+
+    function resetCookerStation() {
+      gameState.cookerState = 'empty'; gameState.cookerSeconds = 0;
+      document.getElementById('cookerContainer').classList.remove('animate-sizzle');
+      resetCookerVisual();
+      document.getElementById('cookerStatusLabel').innerText = 'Stove Pan is Empty';
+      const f = document.getElementById('cookerProgressFill'); f.style.width = '0%'; f.className = 'bg-yellow-400 h-full';
+      document.getElementById('btnTakeOffStove').disabled = true;
+    }
+
+    function resetCookerVisual() { document.getElementById('cookerVisual').innerHTML = SVGIcons.pan(38); }
+
+    function actionAddGarnish() {
+      if (!gameState.plateDishReady || gameState.plateIsBurnt) { audio.playBurn(); spawnPopBadge('Plate cooked meal first!', window.innerWidth / 2, 340, '#F59E0B'); return; }
+      if (gameState.plateHasGarnish) return;
+      audio.playDing(); gameState.plateHasGarnish = true;
+      document.getElementById('assemblyDishDesc').innerText = 'Garnished with Fresh Herbs!';
+      spawnPopBadge('+ Herbs Added!', window.innerWidth / 2, 340, '#10B981');
+    }
+
+    function actionClearPlate() { audio.playDing(); resetAssemblyStation(); spawnPopBadge('Plate Cleaned', window.innerWidth / 2, 340, '#78716C'); }
+
+    function resetAssemblyStation() {
+      gameState.plateDishReady = false; gameState.plateHasGarnish = false; gameState.plateIsBurnt = false;
+      resetPlatingVisual();
+      document.getElementById('assemblyDishLabel').innerText = 'Clean Plate';
+      document.getElementById('assemblyDishDesc').innerText = 'Ready for delicious food';
+    }
+
+    function resetPlatingVisual() { document.getElementById('assemblyDishIcon').innerHTML = SVGIcons.cleanPlate(38); }
+
+    function actionDispenseDrink() {
+      if (gameState.drinkState === 'ready') { spawnPopBadge('Drink already poured!', window.innerWidth / 2, 340, '#2EC4B6'); return; }
+      audio.playPour();
+      const venue = VENUE_DATABASE[gameState.selectedVenueKey];
+      if (gameState.upgrades.drink > 1) {
+        gameState.drinkState = 'ready';
+        document.getElementById('drinkFillBar').style.width = '100%';
+        document.getElementById('drinkGlassIcon').innerHTML = SVGIcons.glassDrinkFilled(36, venue.drinkColor);
+        document.getElementById('drinkStatusLabel').innerText = `${venue.drinkName} Ready`;
+      } else {
+        gameState.drinkState = 'pouring';
+        document.getElementById('drinkStatusLabel').innerText = 'Filling...';
+        let progress = 0;
+        const interval = setInterval(() => {
+          progress += 30; document.getElementById('drinkFillBar').style.width = `${progress}%`;
+          if (progress >= 100) {
+            clearInterval(interval); audio.playDing(); gameState.drinkState = 'ready';
+            document.getElementById('drinkGlassIcon').innerHTML = SVGIcons.glassDrinkFilled(36, venue.drinkColor);
+            document.getElementById('drinkStatusLabel').innerText = `${venue.drinkName} Ready`;
+          }
+        }, 120);
+      }
+    }
+
+    function resetDrinkStation() {
+      gameState.drinkState = 'empty'; resetDrinkVisual();
+      document.getElementById('drinkStatusLabel').innerText = 'Empty Glass';
+      document.getElementById('drinkFillBar').style.width = '0%';
+    }
+
+    function resetDrinkVisual() { document.getElementById('drinkGlassIcon').innerHTML = SVGIcons.glassEmpty(32); }
+
+    function finishShift() {
+      gameState.shiftActive = false;
+      if (shiftTimerInterval) clearInterval(shiftTimerInterval);
+      const venue = VENUE_DATABASE[gameState.selectedVenueKey];
+      const chef = CHEF_DATABASE[gameState.selectedChefKey];
+      const target = venue.targetCoins;
+      const rev = gameState.shiftEarnings;
+      audio.playFanfare(); saveGame();
+      const stars = rev >= target * 1.35 ? 3 : rev >= target ? 2 : 1;
+      let starsHtml = '';
+      for (let i = 0; i < 3; i++) starsHtml += i < stars ? SVGIcons.star(32) : SVGIcons.starEmpty(32);
+      document.getElementById('modalStarContainer').innerHTML = starsHtml;
+      document.getElementById('resCustomersServed').innerText = gameState.servedCustomersCount;
+      document.getElementById('resShiftRevenue').innerText = `${rev} Coins`;
+      const extraPerk = chef.id === 'mei' ? Math.round(rev * 0.28) : 0;
+      document.getElementById('resPerkBonus').innerText = `+${extraPerk} Coins`;
+      document.getElementById('resTotalBank').innerText = `${gameState.coins} Coins`;
+      document.getElementById('shiftResultModal').classList.remove('hidden');
+    }
+
+    function returnToVenueSelect() { document.getElementById('shiftResultModal').classList.add('hidden'); goToScreen('venueScreen'); refreshVenueBadges(); }
+    function openShopModalFromSummary() { document.getElementById('shiftResultModal').classList.add('hidden'); openShopModal(); }
+    function openShopModal() { refreshShopUI(); document.getElementById('shopModal').classList.remove('hidden'); }
+    function closeShopModal() { document.getElementById('shopModal').classList.add('hidden'); }
+
+    function refreshShopUI() {
+      const kLvl = gameState.upgrades.knife;
+      document.getElementById('shopKnifeLvl').innerText = `Lvl ${kLvl} / 3`;
+      const kCost = kLvl === 1 ? 60 : kLvl === 2 ? 140 : 'MAX';
+      document.getElementById('shopKnifePrice').innerText = kCost === 'MAX' ? 'MAXED' : `${kCost} Coins`;
+      document.getElementById('btnBuyKnife').disabled = kCost === 'MAX';
+
+      const sLvl = gameState.upgrades.stove;
+      document.getElementById('shopStoveLvl').innerText = `Lvl ${sLvl} / 3`;
+      const sCost = sLvl === 1 ? 80 : sLvl === 2 ? 170 : 'MAX';
+      document.getElementById('shopStovePrice').innerText = sCost === 'MAX' ? 'MAXED' : `${sCost} Coins`;
+      document.getElementById('btnBuyStove').disabled = sCost === 'MAX';
+
+      const dLvl = gameState.upgrades.drink;
+      document.getElementById('shopDrinkLvl').innerText = `Lvl ${dLvl} / 2`;
+      const dCost = dLvl === 1 ? 100 : 'MAX';
+      document.getElementById('shopDrinkPrice').innerText = dCost === 'MAX' ? 'MAXED' : `${dCost} Coins`;
+      document.getElementById('btnBuyDrink').disabled = dCost === 'MAX';
+
+      const decLvl = gameState.upgrades.decor;
+      document.getElementById('shopDecorLvl').innerText = `Lvl ${decLvl} / 2`;
+      const decCost = decLvl === 0 ? 120 : decLvl === 1 ? 220 : 'MAX';
+      document.getElementById('shopDecorPrice').innerText = decCost === 'MAX' ? 'MAXED' : `${decCost} Coins`;
+      document.getElementById('btnBuyDecor').disabled = decCost === 'MAX';
+    }
+
+    function buyUpgrade(type) {
+      let cost = 0;
+      if (type === 'knife') {
+        cost = gameState.upgrades.knife === 1 ? 60 : gameState.upgrades.knife === 2 ? 140 : 99999;
+        if (gameState.coins >= cost && gameState.upgrades.knife < 3) { gameState.coins -= cost; gameState.upgrades.knife++; onUpgradeSuccess('Chef Knife Upgraded!'); } else audio.playBurn();
+      } else if (type === 'stove') {
+        cost = gameState.upgrades.stove === 1 ? 80 : gameState.upgrades.stove === 2 ? 170 : 99999;
+        if (gameState.coins >= cost && gameState.upgrades.stove < 3) { gameState.coins -= cost; gameState.upgrades.stove++; onUpgradeSuccess('Turbo Stove Upgraded!'); } else audio.playBurn();
+      } else if (type === 'drink') {
+        cost = gameState.upgrades.drink === 1 ? 100 : 99999;
+        if (gameState.coins >= cost && gameState.upgrades.drink < 2) { gameState.coins -= cost; gameState.upgrades.drink++; onUpgradeSuccess('Automatic Drink Tap Installed!'); } else audio.playBurn();
+      } else if (type === 'decor') {
+        cost = gameState.upgrades.decor === 0 ? 120 : gameState.upgrades.decor === 1 ? 220 : 99999;
+        if (gameState.coins >= cost && gameState.upgrades.decor < 2) { gameState.coins -= cost; gameState.upgrades.decor++; onUpgradeSuccess('Cozy Dining Plants Added!'); } else audio.playBurn();
+      }
+    }
+
+    function onUpgradeSuccess(msg) {
+      audio.playFanfare(); updateCoinHUD(); refreshShopUI(); saveGame();
+      spawnPopBadge(msg, window.innerWidth / 2, window.innerHeight / 2, '#10B981');
+    }
+
+    function spawnPopBadge(text, x, y, color = '#FF8A3D') {
+      const el = document.createElement('div');
+      el.className = 'pop-badge'; el.style.left = `${x - 80}px`; el.style.top = `${y - 20}px`;
+      el.style.color = color; el.style.textShadow = '0 2px 8px rgba(0,0,0,0.35)'; el.innerText = text;
+      document.body.appendChild(el); setTimeout(() => el.remove(), 1100);
+    }
+
+    function toggleMute() {
+      audio.muted = !audio.muted;
+      document.getElementById('soundIconWrapper').innerHTML = audio.muted ? SVGIcons.soundOff(20) : SVGIcons.soundOn(20);
+    }
+
+    function confirmResetProgress() {
+      if (document.getElementById('customResetDialog')) return;
+      const modal = document.createElement('div');
+      modal.id = 'customResetDialog';
+      modal.className = 'fixed top-16 right-4 z-50 bg-stone-900 text-white p-4 rounded-3xl border-2 border-amber-400 shadow-2xl flex flex-col space-y-2 text-xs font-bold';
+      modal.innerHTML = `<span>Reset game progress and reset coins to 50?</span><div class="flex space-x-2 pt-1"><button id="btnDoResetConfirm" class="bg-red-500 hover:bg-red-600 px-3 py-1.5 rounded-xl text-white font-chubby">Yes, Reset</button><button id="btnCancelResetConfirm" class="bg-stone-700 hover:bg-stone-600 px-3 py-1.5 rounded-xl text-stone-200 font-chubby">Cancel</button></div>`;
+      document.body.appendChild(modal);
+      document.getElementById('btnDoResetConfirm').onclick = () => { localStorage.removeItem('chefs_rush_cute_v2'); window.location.reload(); };
+      document.getElementById('btnCancelResetConfirm').onclick = () => modal.remove();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => { initStaticGraphics(); loadSavedGame(); });
+  </script>
+</body>
+</html>
