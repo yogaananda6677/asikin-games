@@ -70,11 +70,11 @@ const server = http.createServer((req, res) => {
     if (req.method === "GET") {
       fs.readFile(DATA_FILE, "utf8", (err, content) => {
         if (err) {
-          res.writeHead(200, { "Content-Type": "application/json", "Cache-Control": "no-store" });
+          res.writeHead(200, { "Content-Type": "application/json" });
           res.end("[]");
           return;
         }
-        res.writeHead(200, { "Content-Type": "application/json", "Cache-Control": "no-store" });
+        res.writeHead(200, { "Content-Type": "application/json" });
         res.end(content || "[]");
       });
       return;
@@ -87,20 +87,9 @@ const server = http.createServer((req, res) => {
         try {
           const parsed = JSON.parse(body);
           if (!Array.isArray(parsed)) throw new Error("Invalid array");
-          let existing = [];
-          try {
-            existing = JSON.parse(fs.readFileSync(DATA_FILE, "utf8"));
-          } catch (_) {}
-          const allowDelete = urlObj.searchParams.get("allowDelete") === "1";
-          let finalGames = parsed;
-          if (!allowDelete && Array.isArray(existing) && existing.length > parsed.length) {
-            const incomingIds = new Set(parsed.map(g => g.id));
-            const missingFromIncoming = existing.filter(g => !incomingIds.has(g.id));
-            finalGames = [...parsed, ...missingFromIncoming];
-          }
-          fs.writeFileSync(DATA_FILE, JSON.stringify(finalGames, null, 2), "utf8");
+          fs.writeFileSync(DATA_FILE, JSON.stringify(parsed, null, 2), "utf8");
           res.writeHead(200, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ status: "ok", count: finalGames.length }));
+          res.end(JSON.stringify({ status: "ok", count: parsed.length }));
         } catch (err) {
           res.writeHead(400, { "Content-Type": "application/json" });
           res.end(JSON.stringify({ error: "Invalid JSON payload" }));

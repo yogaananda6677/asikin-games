@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e3c72"/>
+      <stop offset="100%" stop-color="#2a5298"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="450" fill="url(#sky)"/>
+  <g fill="#122444" opacity="0.65">
+    <rect x="30" y="200" width="75" height="250"/>
+    <rect x="125" y="160" width="95" height="290"/>
+    <rect x="245" y="220" width="80" height="230"/>
+    <rect x="355" y="150" width="110" height="300"/>
+    <rect x="485" y="185" width="90" height="265"/>
+  </g>
+  <rect x="150" y="38" width="330" height="32" rx="6" fill="#2d3436"/>
+  <rect x="150" y="38" width="330" height="7" fill="#00e676"/>
+  <rect x="0" y="335" width="185" height="115" fill="#2d3436"/>
+  <rect x="0" y="335" width="185" height="7" fill="#00e676"/>
+  <rect x="405" y="315" width="195" height="135" fill="#2d3436"/>
+  <rect x="405" y="315" width="195" height="7" fill="#00e676"/>
+  <g fill="#ff3b30">
+    <polygon points="120,335 132,310 144,335"/>
+    <polygon points="144,335 156,310 168,335"/>
+    <polygon points="415,315 427,290 439,315"/>
+    <polygon points="439,315 451,290 463,315"/>
+  </g>
+  <line x1="515" y1="315" x2="515" y2="245" stroke="#dfe6e9" stroke-width="5"/>
+  <polygon points="515,245 558,262 515,279" fill="#00e676"/>
+  <circle cx="315" cy="70" r="9" fill="#00e676" stroke="#ffffff" stroke-width="3"/>
+  <line x1="255" y1="195" x2="315" y2="70" stroke="#ffffff" stroke-width="3.5" stroke-dasharray="8 4"/>
+  <g transform="translate(245, 205) rotate(-24)">
+    <circle cx="0" cy="-36" r="14" fill="#e11d48" stroke="#ffffff" stroke-width="2.5"/>
+    <polygon points="-7,-38 -1,-35 -7,-32" fill="#ffffff"/>
+    <polygon points="7,-38 1,-35 7,-32" fill="#ffffff"/>
+    <line x1="0" y1="-22" x2="0" y2="10" stroke="#e11d48" stroke-width="7" stroke-linecap="round"/>
+    <line x1="0" y1="-15" x2="25" y2="-28" stroke="#38bdf8" stroke-width="5.5" stroke-linecap="round"/>
+    <line x1="0" y1="-15" x2="-18" y2="-4" stroke="#38bdf8" stroke-width="5.5" stroke-linecap="round"/>
+    <polyline points="0,10 -16,26 -28,15" fill="none" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="0,10 18,22 10,38" fill="none" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <rect x="24" y="348" width="552" height="78" rx="14" fill="#090d16" fill-opacity="0.9" stroke="#00e676" stroke-width="2.5"/>
+  <text x="46" y="385" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="24" letter-spacing="0.6">STICKMAN SPIDER-PARKOUR</text>
+  <text x="46" y="409" fill="#00e676" font-family="monospace" font-weight="700" font-size="13" letter-spacing="1.4">WEB SWING • 3 LEVELS • AUTO-AIM GRAPPLE</text>
+</svg>

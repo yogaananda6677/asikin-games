@@ -1,59 +1,17 @@
 window.AsikinStore = {
-  STORAGE_KEY: "asikin_catalog_v17",
-
-  REQUIRED_GAMES: [
-    {
-      id: "pancaran-horror",
-      title: "PANCARAN: Stasiun Halilintar",
-      category: "Action",
-      code: "PH",
-      coverUrl: "/uploads/cover-pancaran-horror.svg",
-      url: "games/pancaran-horror.html",
-      featured: true,
-      description: "Game 3D Psychological Survival Horror (3 Level & Multi-Ending)! Sebagai Agen Raka Wiratama, kumpulkan 3 Dokumen Rahasia, tentukan pilihan cerita, beli Air Suci & Garam Ruqyah di Toko Spiritual [B], dan counter 3 entitas hantu!"
-    },
-    {
-      id: "stickman-spider-parkour",
-      title: "Stickman Spider-Parkour",
-      category: "Action",
-      code: "RP",
-      coverUrl: "/uploads/cover-spider-parkour.svg",
-      url: "games/radgoll.html",
-      featured: true,
-      description: "Game parkour ayunan jaring Stickman! Tembakkan jaring ke langit-langit dengan klik mouse, hindari pipa jatuh & duri, dan capai bendera checkpoint."
-    },
-    {
-      id: "zai-k1e5u85gutp0",
-      title: "Spider-Parkour Arena (Z.ai)",
-      category: "Action",
-      code: "SP",
-      coverUrl: "/uploads/cover-zai-k1e5u85gutp0.svg",
-      url: "https://chat.z.ai/space/k1e5u85gutp0-art",
-      featured: true,
-      description: "Berayun dengan jaring laba-laba melewati rintangan jurang, duri tajam, dan pipa jatuh di arena parkour Z.ai!"
-    }
-  ],
-
-  ensureRequiredGames(list) {
-    if (!Array.isArray(list)) return [...this.REQUIRED_GAMES];
-    const existingIds = new Set(list.map(g => g.id));
-    const missing = this.REQUIRED_GAMES.filter(g => !existingIds.has(g.id));
-    if (missing.length === 0) return list;
-    return [...missing, ...list];
-  },
+  STORAGE_KEY: "asikin_catalog_live",
 
   async loadGames(basePath = "") {
-    const bust = "?v=" + Date.now();
-    const jsonCandidates = ["/api/games" + bust, basePath + "data/games.json" + bust];
+    // Always fetch live data/games.json from server first so user edits in Superadmin are never lost
+    const jsonCandidates = ["/api/games", basePath + "data/games.json"];
     for (const endpoint of jsonCandidates) {
       try {
         const res = await fetch(endpoint, { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
-          if (Array.isArray(data) && data.length > 0) {
-            const merged = this.ensureRequiredGames(data);
-            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(merged));
-            return merged;
+          if (Array.isArray(data)) {
+            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
+            return data;
           }
         }
       } catch (_) {}
@@ -63,11 +21,11 @@ window.AsikinStore = {
     if (cached) {
       try {
         const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed)) return this.ensureRequiredGames(parsed);
+        if (Array.isArray(parsed)) return parsed;
       } catch (_) {}
     }
 
-    return [...this.REQUIRED_GAMES];
+    return [];
   },
 
   async saveGames(gamesList) {
