@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Dead Outpost: Tactical Vanguard Remastered</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Orbitron:wght@600;800;900&family=Teko:wght@500;600;700&family=Inter:wght@400;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    * { user-select: none; -webkit-user-select: none; margin: 0; padding: 0; box-sizing: border-box; }
+    body, html { width: 100%; height: 100%; overflow: hidden; background: #020408; font-family: 'Inter', sans-serif; }
+    #gameCanvas { width: 100vw; height: 100vh; display: block; }
+    .font-horror { font-family: 'Creepster', cursive; }
+    .font-teko { font-family: 'Teko', sans-serif; }
+    .font-orbitron { font-family: 'Orbitron', sans-serif; }
+    .font-mono-tech { font-family: 'Share Tech Mono', monospace; }
+    .blood-vignette { box-shadow: inset 0 0 140px rgba(220, 38, 38, 0.85); }
+    .armor-hit-vignette { box-shadow: inset 0 0 70px rgba(56, 189, 248, 0.45); }
+    .glitch-flash { box-shadow: inset 0 0 100px rgba(168, 85, 247, 0.55); }
+    .hitmarker { position: absolute; width: 24px; height: 24px; pointer-events: none; opacity: 0; transition: opacity 0.08s ease-out; }
+    .hitmarker::before, .hitmarker::after { content: ''; position: absolute; background: #38bdf8; }
+    .hitmarker::before { top: 50%; left: 0; width: 100%; height: 2px; transform: translateY(-50%) rotate(45deg); }
+    .hitmarker::after { top: 0; left: 50%; width: 2px; height: 100%; transform: translateX(-50%) rotate(45deg); }
+    .hitmarker.active { opacity: 1; }
+    .scanlines { background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%); background-size: 100% 4px; pointer-events: none; }
+    .sniper-scope { background: radial-gradient(circle at center, transparent 38%, black 40%, black 100%); pointer-events: none; }
+    .menu-card { background: linear-gradient(135deg, rgba(15, 23, 42, 0.75) 0%, rgba(2, 6, 23, 0.9) 100%); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+    .glow-cyan { box-shadow: 0 0 25px rgba(6, 182, 212, 0.35); }
+    .glow-amber { box-shadow: 0 0 25px rgba(245, 158, 11, 0.35); }
+    .glow-rose { box-shadow: 0 0 25px rgba(244, 63, 94, 0.35); }
+    .btn-neon:hover { box-shadow: 0 0 30px rgba(56, 189, 248, 0.6); }
+  </style>
+</head>
+<body class="relative w-full h-full select-none bg-neutral-950 text-neutral-100 overflow-hidden">
+  <canvas id="gameCanvas"></canvas>
+
+  <div class="scanlines absolute inset-0 z-10 pointer-events-none"></div>
+  <div id="damageOverlay" class="absolute inset-0 pointer-events-none transition-opacity duration-150 opacity-0 z-20 blood-vignette"></div>
+  <div id="armorDeflectOverlay" class="absolute inset-0 pointer-events-none transition-opacity duration-100 opacity-0 z-20 armor-hit-vignette"></div>
+  <div id="glitchOverlay" class="absolute inset-0 pointer-events-none transition-opacity duration-100 opacity-0 z-20 glitch-flash"></div>
+
+  <div id="sniperScopeOverlay" class="absolute inset-0 z-20 hidden sniper-scope pointer-events-none flex items-center justify-center">
+    <div class="relative w-80 h-80 rounded-full border border-sky-500/50 pointer-events-none">
+      <div class="absolute w-full h-[1px] bg-sky-500/60 top-1/2 left-0 -translate-y-1/2"></div>
+      <div class="absolute h-full w-[1px] bg-sky-500/60 left-1/2 top-0 -translate-x-1/2"></div>
+      <div class="absolute inset-6 rounded-full border border-sky-500/30"></div>
+      <div class="absolute top-4 left-1/2 -translate-x-1/2 text-[10px] text-sky-400 font-mono-tech tracking-widest font-bold">TACTICAL MIL-DOT 12X</div>
+    </div>
+  </div>
+
+  <div id="crosshairContainer" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-20 flex items-center justify-center">
+    <div id="crosshairDot" class="w-1.5 h-1.5 bg-sky-400 rounded-full shadow-[0_0_8px_#38bdf8]"></div>
+    <div id="crosshairRing" class="absolute w-6 h-6 border border-sky-500/40 rounded-full"></div>
+    <div id="hitmarkerEl" class="hitmarker"></div>
+  </div>
+
+  <div id="bossHudContainer" class="absolute top-4 left-1/2 -translate-x-1/2 z-20 w-11/12 max-w-xl pointer-events-none hidden transition-all duration-300">
+    <div class="bg-black/90 backdrop-blur-md p-3.5 rounded-2xl border-2 border-red-700 shadow-[0_0_35px_rgba(220,38,38,0.5)]">
+      <div class="flex justify-between items-center mb-1">
+        <div class="flex items-center space-x-2">
+          <span class="w-3 h-3 rounded-full bg-red-600 animate-ping"></span>
+          <span class="text-xs font-black tracking-widest text-red-500 font-mono-tech uppercase">MUTANT TITAN NEMESIS [BOSS]</span>
+        </div>
+        <span id="bossHpPercent" class="text-lg font-teko font-bold text-red-400">100%</span>
+      </div>
+      <div class="w-full h-3.5 bg-neutral-900 rounded-full overflow-hidden border border-neutral-800 p-0.5">
+        <div id="bossHpBar" class="h-full bg-gradient-to-r from-red-700 via-rose-600 to-amber-500 transition-all duration-150 w-full rounded-full"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="hudLayer" class="absolute inset-0 pointer-events-none z-20 flex flex-col justify-between p-3 sm:p-5 hidden">
+    <div class="flex items-start justify-between w-full">
+      <div class="flex flex-col space-y-1.5">
+        <div class="flex items-center space-x-3 bg-black/85 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-red-900/60 shadow-lg">
+          <div class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping"></div>
+          <div>
+            <div class="text-[9px] font-extrabold text-red-400 uppercase tracking-widest leading-none font-mono-tech">OUTPOST THREAT</div>
+            <div class="text-2xl font-teko font-bold text-red-500 tracking-wider leading-none">WAVE <span id="hudWaveNum">1</span></div>
+          </div>
+        </div>
+        <div class="flex items-center space-x-2 bg-black/85 px-3 py-1.5 rounded-xl border border-amber-500/40 text-xs font-bold text-amber-300">
+          <span class="text-neutral-400 font-mono-tech">REWARD:</span>
+          <span class="font-teko text-2xl text-amber-400 leading-none">$<span id="hudCredits">500</span></span>
+        </div>
+        <div class="flex items-center space-x-2 bg-black/75 backdrop-blur-sm px-3 py-1 rounded-xl border border-neutral-800 text-xs font-bold text-neutral-300">
+          <span class="text-neutral-500">Zombies:</span>
+          <span id="hudZombiesLeft" class="text-red-400 font-teko text-lg">0</span>
+          <span class="text-neutral-600">|</span>
+          <span class="text-neutral-500">Score:</span>
+          <span id="hudScore" class="text-sky-400 font-teko text-lg">0</span>
+        </div>
+        <div class="flex items-center space-x-2 bg-black/80 px-2.5 py-1 rounded-lg border border-neutral-800 text-[10px] font-mono-tech">
+          <span class="text-amber-400 font-bold">💣 Ranjau [X]: <span id="hudMinesCount" class="text-white">3</span></span>
+          <span class="text-neutral-600">|</span>
+          <span class="text-sky-400 font-bold">🛡️ Turret [T]: <span id="hudTurretCount" class="text-white">1</span></span>
+        </div>
+        <div class="flex items-center space-x-2 bg-black/80 px-2.5 py-1 rounded-lg border border-neutral-800 w-fit">
+          <div id="flashlightIcon" class="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_8px_#f59e0b]"></div>
+          <span class="text-[10px] font-mono-tech text-neutral-300 font-bold">SENTER ULTRA-WIDE [F]:</span>
+          <span id="flashlightStatusText" class="text-[10px] font-mono-tech text-amber-400 font-extrabold">ON</span>
+        </div>
+      </div>
+
+      <div class="flex flex-col space-y-2">
+        <div class="bg-black/85 backdrop-blur-md p-2.5 rounded-2xl border border-cyan-900/80 shadow-xl w-60 sm:w-64">
+          <div class="flex justify-between items-center mb-1">
+            <div class="flex items-center space-x-1.5">
+              <span class="text-base">🪖</span>
+              <div>
+                <div class="text-[9px] font-black text-cyan-400 font-mono-tech leading-none">SQUAD REKAN</div>
+                <div class="text-xs font-bold text-neutral-100">Sgt. Ramirez</div>
+              </div>
+            </div>
+            <span id="soldierStatusBadge" class="text-[9px] font-black px-1.5 py-0.5 rounded bg-cyan-900/80 text-cyan-300 font-mono-tech border border-cyan-700/50">ASSAULT</span>
+          </div>
+          <div class="w-full h-1.5 bg-neutral-900 rounded-full overflow-hidden border border-neutral-800">
+            <div id="soldierHpBar" class="h-full bg-gradient-to-r from-cyan-600 to-cyan-400 transition-all duration-150 w-full"></div>
+          </div>
+          <div class="flex justify-between items-center text-[9px] text-neutral-400 font-mono-tech mt-1">
+            <span>Status: <span id="soldierActionText" class="text-cyan-300 font-bold">Covering</span></span>
+            <span class="text-amber-400 font-bold">[E] Revive</span>
+          </div>
+        </div>
+
+        <div class="bg-black/85 backdrop-blur-md p-2.5 rounded-2xl border border-amber-900/80 shadow-xl w-60 sm:w-64">
+          <div class="flex justify-between items-center mb-1">
+            <div class="flex items-center space-x-1.5">
+              <span class="text-base">🐕</span>
+              <div>
+                <div class="text-[9px] font-black text-amber-400 font-mono-tech leading-none">K9 PELINDUNG</div>
+                <div class="text-xs font-bold text-neutral-100">Ghost (K9 Unit)</div>
+              </div>
+            </div>
+            <span id="dogCommandBadge" class="text-[9px] font-black px-1.5 py-0.5 rounded bg-amber-900/80 text-amber-300 font-mono-tech border border-amber-700/50">COMBAT</span>
+          </div>
+          <div class="w-full h-1.5 bg-neutral-900 rounded-full overflow-hidden border border-neutral-800">
+            <div id="dogHpBar" class="h-full bg-gradient-to-r from-amber-600 to-amber-400 transition-all duration-150 w-full"></div>
+          </div>
+          <div class="flex justify-between items-center text-[9px] text-neutral-400 font-mono-tech mt-1">
+            <span>Status: <span id="dogActionText" class="text-amber-300 font-bold">Hunting</span></span>
+            <span class="text-amber-400 font-bold">[E] Heal</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col items-end">
+        <div class="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-black/90 border-2 border-sky-900/80 shadow-[0_0_15px_rgba(56,189,248,0.2)] overflow-hidden">
+          <canvas id="radarCanvas" width="140" height="140" class="w-full h-full"></canvas>
+          <div class="absolute inset-0 border border-sky-500/20 rounded-full pointer-events-none"></div>
+          <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-sky-400 rounded-full shadow-[0_0_6px_#38bdf8]"></div>
+        </div>
+        <div class="text-[9px] font-bold text-neutral-400 uppercase tracking-widest mt-1 font-mono-tech">RADAR PROXIMITY</div>
+      </div>
+    </div>
+
+    <div class="flex flex-col items-center justify-center space-y-1">
+      <div id="hudCenterAlert" class="font-teko text-4xl sm:text-5xl text-amber-400 uppercase tracking-wider font-bold drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] opacity-0 transition-opacity duration-200">RELOADING...</div>
+      <div id="hudInteractionHint" class="text-xs font-mono-tech bg-cyan-950/90 text-cyan-300 px-3.5 py-1.5 rounded-lg border border-cyan-600 opacity-0 transition-opacity flex items-center space-x-1.5 shadow-lg">
+        <span>⚡</span><span id="hudInteractionText">[E] REVIVE SGT. RAMIREZ</span>
+      </div>
+    </div>
+
+    <div class="flex items-end justify-between w-full">
+      <div class="flex flex-col space-y-2 bg-black/85 backdrop-blur-md p-3.5 rounded-2xl border border-neutral-800 shadow-2xl w-64 sm:w-72">
+        <div>
+          <div class="flex justify-between items-center text-xs font-bold mb-0.5">
+            <span class="text-red-400 tracking-wider font-mono-tech">VITAL HEALTH</span>
+            <span id="hudHpText" class="text-red-500 font-teko text-xl">100 HP</span>
+          </div>
+          <div class="w-full h-2.5 bg-neutral-900 rounded-full overflow-hidden border border-neutral-800">
+            <div id="hudHpBar" class="h-full bg-gradient-to-r from-red-600 to-red-500 transition-all duration-150 w-full"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between items-center text-[10px] font-bold mb-0.5">
+            <span class="text-sky-400 tracking-wider font-mono-tech flex items-center gap-1">🛡️ BALLISTIC ARMOR (85% BLOK)</span>
+            <span id="hudArmorText" class="text-sky-400 font-teko text-lg">100 / 100</span>
+          </div>
+          <div class="w-full h-2 bg-neutral-900 rounded-full overflow-hidden border border-neutral-800">
+            <div id="hudArmorBar" class="h-full bg-gradient-to-r from-sky-600 via-sky-400 to-cyan-300 transition-all duration-100 w-full"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between items-center text-[9px] font-bold mb-0.5 text-neutral-400 font-mono-tech">
+            <span>STAMINA SPRINT</span>
+            <span id="hudStaminaText" class="text-teal-400 font-teko text-sm">100%</span>
+          </div>
+          <div class="w-full h-1 bg-neutral-900 rounded-full overflow-hidden border border-neutral-800">
+            <div id="hudStaminaBar" class="h-full bg-teal-500 transition-all duration-75 w-full"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3 bg-black/85 backdrop-blur-md px-4 py-3 rounded-2xl border border-neutral-800 shadow-2xl">
+        <div class="flex flex-col items-end">
+          <div id="hudWeaponName" class="text-xs font-black text-sky-400 uppercase tracking-widest font-mono-tech">PULSE ASSAULT RIFLE</div>
+          <div class="flex items-baseline space-x-1.5">
+            <span id="hudAmmoMag" class="font-teko text-4xl sm:text-5xl font-bold text-amber-400 leading-none">30</span>
+            <span class="text-neutral-500 text-xl font-teko">/</span>
+            <span id="hudAmmoReserve" class="font-teko text-2xl sm:text-3xl text-neutral-400 leading-none">180</span>
+          </div>
+          <div class="text-[9px] text-sky-400 font-mono-tech font-bold">[RIGHT CLICK] ANGKAT ARMOR | [V] BASH</div>
+        </div>
+        <div class="text-[9px] text-neutral-400 border-l border-neutral-800 pl-3 flex flex-col space-y-0.5 font-mono-tech">
+          <span>[1-6] Senjata | [B] Arsenal Toko</span>
+          <span class="text-amber-400 font-bold">[X] Pasang Ranjau | [T] Turret</span>
+          <span class="text-sky-300">[R-CLICK] Blok Armor | [V] Bash</span>
+          <span class="text-cyan-400">[E] Revive | [F] Senter Lebar</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="shopModal" class="absolute inset-0 z-30 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 hidden">
+    <div class="max-w-2xl w-full bg-neutral-950 border-2 border-sky-600 rounded-3xl p-5 sm:p-7 shadow-[0_0_50px_rgba(56,189,248,0.25)] flex flex-col max-h-[92vh] overflow-y-auto">
+      <div class="flex justify-between items-center pb-3 border-b border-neutral-800 mb-4">
+        <div>
+          <h2 class="font-horror text-3xl sm:text-4xl text-sky-400 tracking-wider">OUTPOST ARSENAL & ARMORY</h2>
+          <p class="text-xs text-neutral-400 font-mono-tech">Pasok Senjata, Ranjau, Sentry Turret, dan Pelat Armor</p>
+        </div>
+        <div class="text-right">
+          <div class="text-[10px] text-neutral-400 font-mono-tech">AVAILABLE REWARD:</div>
+          <div class="text-3xl font-teko font-bold text-amber-400">$<span id="shopCreditDisplay">500</span></div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-4">
+        <div class="bg-neutral-900/90 p-3 rounded-xl border border-neutral-800 flex justify-between items-center"><div><div class="text-xs font-bold text-neutral-200">1. Combat Pistol .45</div><div class="text-[10px] text-neutral-400">Sidearm Standar | Mag: 12</div></div><button class="px-3 py-1 bg-neutral-800 text-neutral-400 text-xs font-mono-tech rounded font-bold cursor-default">DIMILIKI</button></div>
+        <div class="bg-neutral-900/90 p-3 rounded-xl border border-neutral-800 flex justify-between items-center"><div><div class="text-xs font-bold text-neutral-200">2. Riot Auto-Shotgun</div><div class="text-[10px] text-neutral-400">8 Peluru Sebar | Mag: 8</div></div><button id="buy_shotgun_btn" onclick="buyWeapon('shotgun', 300)" class="px-3 py-1 bg-sky-600 hover:bg-sky-500 text-white text-xs font-mono-tech rounded font-bold transition-all">$300</button></div>
+        <div class="bg-neutral-900/90 p-3 rounded-xl border border-neutral-800 flex justify-between items-center"><div><div class="text-xs font-bold text-neutral-200">3. Pulse Assault Rifle</div><div class="text-[10px] text-neutral-400">Rapid Fire Combat | Mag: 30</div></div><button id="buy_rifle_btn" onclick="buyWeapon('rifle', 450)" class="px-3 py-1 bg-sky-600 hover:bg-sky-500 text-white text-xs font-mono-tech rounded font-bold transition-all">$450</button></div>
+        <div class="bg-neutral-900/90 p-3 rounded-xl border border-neutral-800 flex justify-between items-center"><div><div class="text-xs font-bold text-neutral-200">4. Tactical Sniper Rifle</div><div class="text-[10px] text-neutral-400">Mil-Dot Scope Jernih, Headshot Masif</div></div><button id="buy_sniper_btn" onclick="buyWeapon('sniper', 750)" class="px-3 py-1 bg-sky-600 hover:bg-sky-500 text-white text-xs font-mono-tech rounded font-bold transition-all">$750</button></div>
+        <div class="bg-neutral-900/90 p-3 rounded-xl border border-neutral-800 flex justify-between items-center"><div><div class="text-xs font-bold text-amber-300">5. Heavy Rotary Minigun</div><div class="text-[10px] text-neutral-400">Penyapu Boss Titan & Anomali | Mag: 100</div></div><button id="buy_minigun_btn" onclick="buyWeapon('minigun', 1200)" class="px-3 py-1 bg-amber-600 hover:bg-amber-500 text-white text-xs font-mono-tech rounded font-bold transition-all">$1200</button></div>
+        <div class="bg-neutral-900/90 p-3 rounded-xl border border-sky-800/80 flex justify-between items-center"><div><div class="text-xs font-bold text-sky-400">6. Ballistic Armor Shield</div><div class="text-[10px] text-neutral-400">Perisai Balistik SWAT Non-Mengganggu</div></div><button class="px-3 py-1 bg-neutral-800 text-sky-400 text-xs font-mono-tech rounded font-bold cursor-default">READY [6]</button></div>
+      </div>
+
+      <h3 class="text-xs font-bold text-sky-400 uppercase font-mono-tech mb-2">Perlengkapan Tempur & Dukungan Skuad</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4">
+        <div class="bg-neutral-900 p-2.5 rounded-xl border border-neutral-800 text-left"><div class="text-xs font-bold text-amber-400">Pack Ranjau (+3 Ranjau)</div><div class="text-[10px] text-neutral-400 mb-2">Sensor laser proximity memusnahkan gerombolan</div><button onclick="buyEquipment('mine', 200)" class="w-full py-1 bg-amber-700 hover:bg-amber-600 text-white text-xs font-mono-tech rounded font-bold">$200</button></div>
+        <div class="bg-neutral-900 p-2.5 rounded-xl border border-neutral-800 text-left"><div class="text-xs font-bold text-cyan-400">Deployable Sentry Turret (+1)</div><div class="text-[10px] text-neutral-400 mb-2">Turret otomatis berputar menembaki zombie</div><button onclick="buyEquipment('turret', 400)" class="w-full py-1 bg-cyan-700 hover:bg-cyan-600 text-white text-xs font-mono-tech rounded font-bold">$400</button></div>
+        <div class="bg-neutral-900 p-2.5 rounded-xl border border-neutral-800 text-left"><div class="text-xs font-bold text-sky-300">Ballistic Armor Plates</div><div class="text-[10px] text-neutral-400 mb-2">Perbaiki ketahanan pelat perisai ke 100%</div><button onclick="buyUpgrade('armorRepair', 250)" class="w-full py-1 bg-sky-700 hover:bg-sky-600 text-white text-xs font-mono-tech rounded font-bold">$250</button></div>
+      </div>
+
+      <button onclick="toggleShop(false)" class="w-full py-2.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-teko text-xl font-bold tracking-wider rounded-xl transition-all">KEMBALI KE PERTEMPURAN [TUTUP TOKO]</button>
+    </div>
+  </div>
+
+  <div id="mainMenu" class="absolute inset-0 z-30 bg-black/90 backdrop-blur-xl flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="max-w-3xl w-full menu-card border border-sky-500/30 rounded-3xl p-5 sm:p-8 shadow-[0_0_80px_rgba(6,182,212,0.25)] flex flex-col my-auto">
+      <div class="flex items-center justify-between border-b border-sky-900/60 pb-4 mb-5">
+        <div class="flex items-center space-x-3.5">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-600/30 to-cyan-500/10 border border-sky-400/50 flex items-center justify-center shadow-[0_0_20px_rgba(56,189,248,0.35)]"><span class="text-2xl">☣️</span></div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <h1 class="font-orbitron font-extrabold text-2xl sm:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-cyan-200 to-amber-300 tracking-wider">DEAD OUTPOST</h1>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono-tech bg-cyan-950 text-cyan-400 border border-cyan-700/60">VANGUARD 2.0</span>
+            </div>
+            <p class="text-xs text-neutral-400 font-mono-tech">Sistem Kolisi Padat • Senter Lebar • Rekan Taktikal • Skuad K9</p>
+          </div>
+        </div>
+        <div class="hidden sm:flex flex-col items-end">
+          <div class="text-[10px] text-neutral-500 font-mono-tech">DEFENSE PROTOCOL</div>
+          <div class="text-sm font-bold font-mono-tech text-emerald-400 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> ONLINE</div>
+        </div>
+      </div>
+
+      <div class="mb-5">
+        <div class="flex items-center justify-between mb-2">
+          <label class="text-xs font-bold text-sky-300 uppercase tracking-wider font-mono-tech flex items-center gap-1.5"><span>⚔️</span> 1. PILIH TINGKAT KESULITAN HORDE (ZOMBIE MODE):</label>
+          <span class="text-[10px] text-neutral-400 font-mono-tech">Klik untuk memilih</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          <div onclick="setZombieMode('santai')" id="btn_mode_santai" class="mode-btn cursor-pointer p-3 rounded-2xl border-2 border-neutral-800 bg-neutral-900/60 hover:border-emerald-500/70 transition-all flex flex-col justify-between"><div class="flex items-center justify-between mb-1.5"><span class="text-base font-orbitron font-bold text-emerald-400">SANTAI</span><span class="text-xs px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-mono-tech">EASY</span></div><p class="text-[11px] text-neutral-400 leading-snug">Zombie berjalan lambat, serangan ringan, drop amunisi & medis berlimpah (+65%).</p></div>
+          <div onclick="setZombieMode('sedang')" id="btn_mode_sedang" class="mode-btn cursor-pointer p-3 rounded-2xl border-2 border-amber-500 bg-neutral-900/90 glow-amber transition-all flex flex-col justify-between"><div class="flex items-center justify-between mb-1.5"><span class="text-base font-orbitron font-bold text-amber-400">SEDANG</span><span class="text-xs px-2 py-0.5 rounded bg-amber-950 text-amber-300 font-mono-tech">BALANCED</span></div><p class="text-[11px] text-neutral-300 leading-snug">Ritme standar pos penjagaan. Kecepatan & gelombang anomali seimbang.</p></div>
+          <div onclick="setZombieMode('gila')" id="btn_mode_gila" class="mode-btn cursor-pointer p-3 rounded-2xl border-2 border-neutral-800 bg-neutral-900/60 hover:border-rose-500/70 transition-all flex flex-col justify-between"><div class="flex items-center justify-between mb-1.5"><span class="text-base font-orbitron font-bold text-rose-500">GILA</span><span class="text-xs px-2 py-0.5 rounded bg-rose-950 text-rose-300 font-mono-tech">NIGHTMARE</span></div><p class="text-[11px] text-neutral-400 leading-snug">Kecepatan lari kilat (+42%), damage fatal, kabut tebal & anomali mutan ganas.</p></div>
+        </div>
+      </div>
+
+      <div class="mb-5">
+        <div class="flex items-center justify-between mb-2">
+          <label class="text-xs font-bold text-cyan-300 uppercase tracking-wider font-mono-tech flex items-center gap-1.5"><span>🛡️</span> 2. KETAHANAN SKUAD & ANJING K9 (DURABILITY):</label>
+          <span class="text-[10px] text-neutral-400 font-mono-tech">Opsi diminta pengguna</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          <div onclick="setCompanionDurability('fragile')" id="btn_fragile" class="durability-btn cursor-pointer p-3 rounded-2xl border-2 border-rose-500 bg-neutral-900/90 glow-rose transition-all flex flex-col justify-between"><div class="flex items-center justify-between mb-1.5"><span class="text-sm font-orbitron font-bold text-rose-400">LEMAH BANGET</span><span class="text-[10px] px-1.5 py-0.5 rounded bg-rose-950 text-rose-300 font-mono-tech">FRAGILE</span></div><p class="text-[11px] text-neutral-300 leading-snug">HP tipis! Rekan & K9 mudah tumbang, rintihan K9 jika terluka parah. Wajib sering di-revive [E].</p></div>
+          <div onclick="setCompanionDurability('normal')" id="btn_normal" class="durability-btn cursor-pointer p-3 rounded-2xl border-2 border-neutral-800 bg-neutral-900/60 hover:border-amber-500/70 transition-all flex flex-col justify-between"><div class="flex items-center justify-between mb-1.5"><span class="text-sm font-orbitron font-bold text-amber-400">STANDAR</span><span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-950 text-amber-300 font-mono-tech">NORMAL</span></div><p class="text-[11px] text-neutral-400 leading-snug">Daya tahan prajurit & K9 seimbang untuk pertempuran standar.</p></div>
+          <div onclick="setCompanionDurability('veteran')" id="btn_veteran" class="durability-btn cursor-pointer p-3 rounded-2xl border-2 border-neutral-800 bg-neutral-900/60 hover:border-emerald-500/70 transition-all flex flex-col justify-between"><div class="flex items-center justify-between mb-1.5"><span class="text-sm font-orbitron font-bold text-emerald-400">VETERAN</span><span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 font-mono-tech">ARMORED</span></div><p class="text-[11px] text-neutral-400 leading-snug">Rompi baja tebal & K9 terlatih kuat bertarung menghadapi bos dan gerombolan.</p></div>
+        </div>
+      </div>
+
+      <div class="bg-black/60 rounded-2xl p-3 border border-neutral-800/80 mb-5 text-[11px] font-mono-tech text-neutral-400 grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div><span class="text-sky-300 font-bold">WASD / Spasi:</span> Gerak & Lompat</div>
+        <div><span class="text-amber-300 font-bold">Klik Kiri / R:</span> Tembak & Reload</div>
+        <div><span class="text-cyan-300 font-bold">R-Click / V:</span> Blok Armor / Bash</div>
+        <div><span class="text-emerald-300 font-bold">F:</span> Senter Ultra-Wide</div>
+        <div><span class="text-purple-300 font-bold">X / T:</span> Ranjau / Sentry</div>
+        <div><span class="text-yellow-300 font-bold">E:</span> Revive Prajurit / K9</div>
+        <div><span class="text-rose-300 font-bold">1 - 6:</span> Ganti Senjata</div>
+        <div><span class="text-sky-400 font-bold">B / Tab:</span> Arsenal & Upgrade</div>
+      </div>
+
+      <button id="btnStartGame" onclick="startGameSession()" class="btn-neon w-full py-4 bg-gradient-to-r from-sky-600 via-cyan-600 to-sky-500 hover:from-sky-500 hover:to-cyan-400 text-white font-orbitron text-lg sm:text-xl font-black tracking-widest rounded-2xl shadow-[0_0_35px_rgba(6,182,212,0.4)] transition-all flex items-center justify-center space-x-3">
+        <span>MASUK KE OUTPOST</span>
+        <span class="text-sm font-mono-tech font-bold opacity-80">[KLIK UNTUK KUNCI MOUSE]</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="pauseMenu" class="absolute inset-0 z-30 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="max-w-sm w-full bg-neutral-950 border-2 border-neutral-700 rounded-3xl p-6 text-center shadow-2xl flex flex-col items-center">
+      <h2 class="font-horror text-4xl text-neutral-200 mb-2">GAME DIHENTIKAN</h2>
+      <p class="text-xs text-neutral-400 mb-6 font-semibold font-mono-tech">Gunakan [B] untuk membuka Toko Senjata saat jeda.</p>
+      <div class="w-full space-y-3">
+        <button onclick="resumeGameSession()" class="w-full py-3 bg-sky-600 hover:bg-sky-500 text-white font-teko text-xl font-bold rounded-xl tracking-wider">LANJUTKAN (RESUME)</button>
+        <button onclick="toggleShop(true)" class="w-full py-2.5 bg-neutral-800 hover:bg-neutral-700 text-amber-300 font-teko text-lg font-bold rounded-xl tracking-wider">BUKA TOKO WEAPON & ARMOR [B]</button>
+        <button onclick="quitToMainMenu()" class="w-full py-2.5 bg-neutral-900 hover:bg-neutral-800 text-neutral-400 font-teko text-lg font-bold rounded-xl tracking-wider">MENU UTAMA</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="gameOverModal" class="absolute inset-0 z-30 bg-black/90 backdrop-blur-lg flex items-center justify-center p-4 hidden">
+    <div class="max-w-md w-full bg-neutral-950 border-2 border-red-700 rounded-3xl p-6 sm:p-8 text-center shadow-[0_0_60px_rgba(220,38,38,0.4)] flex flex-col items-center">
+      <div class="font-horror text-5xl text-red-600 tracking-wider mb-1 animate-pulse">PASUKAN GUGUR</div>
+      <p class="text-xs uppercase font-extrabold text-neutral-400 tracking-widest mb-6 font-mono-tech">Pos Terluar Telah Runtuh</p>
+      <div class="w-full bg-neutral-900 rounded-2xl p-4 border border-neutral-800 mb-6 space-y-2 text-xs font-bold text-neutral-300 font-mono-tech">
+        <div class="flex justify-between"><span class="text-neutral-500">Gelombang Berhasil:</span><span id="goWave" class="text-sky-400 font-teko text-xl">0</span></div>
+        <div class="flex justify-between"><span class="text-neutral-500">Zombie Dieliminasi:</span><span id="goKills" class="text-amber-400 font-teko text-xl">0</span></div>
+        <div class="flex justify-between"><span class="text-neutral-500">Boss Dikalahkan:</span><span id="goBossKills" class="text-red-400 font-teko text-xl">0</span></div>
+        <div class="flex justify-between"><span class="text-neutral-500">Total Hadiah Reward:</span><span id="goEarnings" class="text-emerald-400 font-teko text-xl">$0</span></div>
+        <div class="flex justify-between"><span class="text-neutral-500">Skor Akhir:</span><span id="goScore" class="text-neutral-100 font-teko text-2xl">0</span></div>
+      </div>
+      <button onclick="restartGameSession()" class="w-full py-3.5 bg-sky-600 hover:bg-sky-500 text-white font-teko text-2xl font-bold tracking-wider rounded-2xl shadow-[0_0_20px_#0284c7]">RESTART PERTEMPURAN</button>
+    </div>
+  </div>
+  <script>
+    class FPSSoundEngine {
+      constructor() { this.ctx = null; this.muted = false; }
+      init() {
+        if (!this.ctx) { const AudioContext = window.AudioContext || window.webkitAudioContext; this.ctx = new AudioContext(); }
+        if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+      }
+      playTone(freq, endFreq, type, dur, vol) {
+        if (this.muted) return; this.init(); const t = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
+        osc.type = type; osc.frequency.setValueAtTime(freq, t);
+        if (endFreq) osc.frequency.exponentialRampToValueAtTime(endFreq, t + dur);
+        gain.gain.setValueAtTime(vol, t); gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        osc.connect(gain); gain.connect(this.ctx.destination); osc.start(t); osc.stop(t + dur + 0.01);
+      }
+      playFlashlightClick() { this.playTone(1400, 400, 'sine', 0.04, 0.3); }
+      playArmorDeflect() { this.playTone(840, 320, 'triangle', 0.18, 0.5); }
+      playShieldBash() { this.playTone(160, 35, 'square', 0.22, 0.7); }
+      playMineBeep() { this.playTone(1800, 1800, 'sine', 0.06, 0.2); }
+      playExplosion() { this.playTone(120, 20, 'triangle', 0.65, 0.9); }
+      playDogBark() { this.playTone(280, 90, 'sawtooth', 0.18, 0.45); }
+      playDogWhimper() { this.playTone(650, 400, 'sine', 0.4, 0.35); }
+      playGlitchTeleport() { this.playTone(150, 1200, 'sawtooth', 0.18, 0.4); }
+      playTurretShot() { this.playTone(540, 80, 'square', 0.06, 0.3); }
+      playPistol() { this.playTone(360, 35, 'triangle', 0.12, 0.55); }
+      playShotgun() { this.playTone(170, 20, 'sawtooth', 0.3, 0.85); }
+      playRifle() { this.playTone(460, 40, 'sawtooth', 0.09, 0.5); }
+      playSniper() { this.playTone(620, 25, 'sawtooth', 0.45, 0.95); }
+      playMinigun() { this.playTone(320, 60, 'square', 0.06, 0.4); }
+      playBossRoar() { this.playTone(95, 20, 'sawtooth', 1.2, 0.9); }
+      playCoinReward() { this.playTone(987, 1318, 'sine', 0.22, 0.3); }
+      playReload() { this.playTone(280, 620, 'sine', 0.22, 0.3); }
+      playHitMarker() { this.playTone(1250, 1250, 'sine', 0.05, 0.12); }
+    }
+    const soundEngine = new FPSSoundEngine();
+
+    const COMPANION_DURABILITIES = {
+      fragile: { soldierHp: 45, dogHp: 35, soldierDmg: 24, dogDmg: 28, label: 'LEMAH BANGET' },
+      normal:  { soldierHp: 160, dogHp: 130, soldierDmg: 36, dogDmg: 42, label: 'STANDAR' },
+      veteran: { soldierHp: 300, dogHp: 250, soldierDmg: 52, dogDmg: 58, label: 'VETERAN' }
+    };
+    let currentCompanionDurability = 'fragile';
+
+    const ZOMBIE_MODES = {
+      santai: { name: 'Mode Santai', speedMult: 0.72, damageMult: 0.55, hpMult: 0.75, hordeCountMult: 0.75, fogDensity: 0.018, dropRate: 0.65, colorTheme: '#10b981' },
+      sedang: { name: 'Mode Sedang', speedMult: 1.0, damageMult: 1.0, hpMult: 1.0, hordeCountMult: 1.0, fogDensity: 0.025, dropRate: 0.42, colorTheme: '#f59e0b' },
+      gila:   { name: 'Mode Gila', speedMult: 1.42, damageMult: 1.85, hpMult: 1.35, hordeCountMult: 1.5, fogDensity: 0.040, dropRate: 0.22, colorTheme: '#f43f5e' }
+    };
+    let currentZombieMode = 'sedang';
+
+    function setZombieMode(mode) {
+      currentZombieMode = mode;
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.remove('border-emerald-500', 'border-amber-500', 'border-rose-500', 'bg-neutral-900/90', 'glow-cyan', 'glow-amber', 'glow-rose');
+        btn.classList.add('border-neutral-800', 'bg-neutral-900/60');
+      });
+      const activeBtn = document.getElementById(`btn_mode_${mode}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('border-neutral-800', 'bg-neutral-900/60');
+        activeBtn.classList.add('bg-neutral-900/90');
+        if (mode === 'santai') activeBtn.classList.add('border-emerald-500', 'glow-cyan');
+        else if (mode === 'sedang') activeBtn.classList.add('border-amber-500', 'glow-amber');
+        else activeBtn.classList.add('border-rose-500', 'glow-rose');
+      }
+    }
+
+    function setCompanionDurability(mode) {
+      currentCompanionDurability = mode;
+      document.querySelectorAll('.durability-btn').forEach(btn => {
+        btn.classList.remove('border-rose-500', 'border-amber-500', 'border-emerald-500', 'bg-neutral-900/90', 'glow-rose', 'glow-amber', 'glow-cyan');
+        btn.classList.add('border-neutral-800', 'bg-neutral-900/60');
+      });
+      const activeBtn = document.getElementById(`btn_${mode}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('border-neutral-800', 'bg-neutral-900/60');
+        activeBtn.classList.add('bg-neutral-900/90');
+        if (mode === 'fragile') activeBtn.classList.add('border-rose-500', 'glow-rose');
+        else if (mode === 'normal') activeBtn.classList.add('border-amber-500', 'glow-amber');
+        else activeBtn.classList.add('border-emerald-500', 'glow-cyan');
+      }
+    }
+
+    const WEAPONS = {
+      pistol:  { name: 'Combat Pistol .45', magSize: 12, damage: 38, fireRateMs: 190, reloadTimeMs: 1100, range: 70, pellets: 1, spread: 0.008, owned: true, sound: () => soundEngine.playPistol() },
+      shotgun: { name: 'Riot Auto-Shotgun', magSize: 8, damage: 25, fireRateMs: 600, reloadTimeMs: 1800, range: 42, pellets: 8, spread: 0.075, owned: false, sound: () => soundEngine.playShotgun() },
+      rifle:   { name: 'Pulse Assault Rifle', magSize: 30, damage: 46, fireRateMs: 100, reloadTimeMs: 1400, range: 90, pellets: 1, spread: 0.022, owned: true, sound: () => soundEngine.playRifle() },
+      sniper:  { name: 'Tactical Marksman Sniper', magSize: 5, damage: 250, fireRateMs: 900, reloadTimeMs: 2200, range: 160, pellets: 1, spread: 0.002, owned: false, sound: () => soundEngine.playSniper() },
+      minigun: { name: 'Heavy Rotary Minigun', magSize: 100, damage: 35, fireRateMs: 65, reloadTimeMs: 3200, range: 85, pellets: 1, spread: 0.045, owned: false, sound: () => soundEngine.playMinigun() },
+      shield:  { name: 'Tactical Ballistic Armor Shield', magSize: 1, damage: 90, fireRateMs: 400, reloadTimeMs: 0, range: 4.5, pellets: 1, spread: 0.0, owned: true, sound: () => soundEngine.playShieldBash() }
+    };
+
+    let gameState = {
+      active: false, paused: false, inShop: false, wave: 1, credits: 500, score: 0, kills: 0, bossKills: 0, headshots: 0, damageMultiplier: 1.0,
+      hp: 100, maxHp: 100, armorHp: 100, maxArmorHp: 100, isShieldBlocking: false, stamina: 100, isSprinting: false, isReloading: false, isSniperScoped: false,
+      currentWeaponKey: 'rifle', flashlightOn: true, lastShotTime: 0, lastBashTime: 0, mines: 3, turrets: 1,
+      ammo: {
+        pistol:  { mag: 12, reserve: 60 },
+        shotgun: { mag: 8, reserve: 40 },
+        rifle:   { mag: 30, reserve: 150 },
+        sniper:  { mag: 5, reserve: 25 },
+        minigun: { mag: 100, reserve: 300 },
+        shield:  { mag: 1, reserve: 1 }
+      }
+    };
+
+    let soldierAlly = { mesh: null, armR: null, legs: [], hp: 45, maxHp: 45, isDowned: false, state: 'assault', speed: 6.2, damage: 24, lastShotTime: 0, animCycle: 0 };
+    let dogCompanion = { mesh: null, legs: [], tail: null, jaw: null, hp: 35, maxHp: 35, isDowned: false, state: 'attack', speed: 8.8, damage: 28, lastAttackTime: 0, lastBarkTime: 0, animCycle: 0 };
+    let activeBoss = null, placedMines = [], deployedTurrets = [], toxicPuddles = [];
+
+    let scene, camera, renderer, clock;
+    let playerObj, weaponViewModel, ballisticShieldModel, muzzleFlashLight, flashlightSpot, flashlightAmbientFill;
+    let collidableMeshes = [], solidObstacles = [], explosiveBarrels = [], pickupItems = [], zombies = [], bloodParticles = [], sparkParticles = [];
+    let isPointerLocked = false, cameraPitch = 0, cameraYaw = 0;
+    const moveInput = { forward: false, backward: false, left: false, right: false, jump: false };
+    const playerVelocity = new THREE.Vector3();
+    let isGrounded = true;
+
+    function initThreeEngine() {
+      const canvas = document.getElementById('gameCanvas');
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x020508);
+      scene.fog = new THREE.FogExp2(0x040810, 0.025);
+      clock = new THREE.Clock();
+
+      camera = new THREE.PerspectiveCamera(72, window.innerWidth / window.innerHeight, 0.1, 300);
+      camera.position.set(0, 1.7, 0);
+
+      playerObj = new THREE.Group();
+      playerObj.position.set(0, 0, 10);
+      playerObj.add(camera);
+      scene.add(playerObj);
+
+      setupLighting();
+      buildCompoundMap();
+      createTacticalBallisticArmorShield();
+      createWeaponViewModel();
+      createSoldierAlly();
+      createTacticalDogCompanion();
+      initRadar();
+
+      window.addEventListener('resize', onWindowResize);
+      setupControls();
+    }
+
+    function setupLighting() {
+      scene.add(new THREE.AmbientLight(0x131d2e, 0.75));
+      const moonLight = new THREE.DirectionalLight(0x406085, 0.7);
+      moonLight.position.set(40, 70, -30);
+      moonLight.castShadow = true;
+      scene.add(moonLight);
+
+      flashlightSpot = new THREE.SpotLight(0xfff5e6, 6.0, 85, Math.PI / 3.2, 0.5, 1.1);
+      flashlightSpot.position.set(0.2, -0.1, -0.1);
+      flashlightSpot.castShadow = true;
+      const fTarget = new THREE.Object3D();
+      fTarget.position.set(0, 0, -25);
+      camera.add(fTarget);
+      flashlightSpot.target = fTarget;
+      camera.add(flashlightSpot);
+
+      flashlightAmbientFill = new THREE.PointLight(0xffedd5, 1.4, 28);
+      flashlightAmbientFill.position.set(0, 0, -0.5);
+      camera.add(flashlightAmbientFill);
+
+      muzzleFlashLight = new THREE.PointLight(0xf59e0b, 0, 16);
+      muzzleFlashLight.position.set(0.2, -0.15, -0.8);
+      camera.add(muzzleFlashLight);
+    }
+
+    function toggleFlashlight() {
+      gameState.flashlightOn = !gameState.flashlightOn;
+      flashlightSpot.intensity = gameState.flashlightOn ? 6.0 : 0;
+      flashlightAmbientFill.intensity = gameState.flashlightOn ? 1.4 : 0;
+      soundEngine.playFlashlightClick();
+      const icon = document.getElementById('flashlightIcon');
+      const text = document.getElementById('flashlightStatusText');
+      if (gameState.flashlightOn) {
+        icon.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_8px_#f59e0b]';
+        text.className = 'text-[10px] font-mono-tech text-amber-400 font-extrabold'; text.innerText = 'ON';
+      } else {
+        icon.className = 'w-2.5 h-2.5 rounded-full bg-neutral-600';
+        text.className = 'text-[10px] font-mono-tech text-neutral-500 font-bold'; text.innerText = 'OFF';
+      }
+    }
+
+    function createTacticalBallisticArmorShield() {
+      ballisticShieldModel = new THREE.Group();
+      ballisticShieldModel.position.set(-0.38, -0.36, -0.5);
+      ballisticShieldModel.rotation.set(0.12, 0.35, -0.08);
+      const plateMat = new THREE.MeshStandardMaterial({ color: 0x18181b, metalness: 0.7, roughness: 0.4 });
+      const rimMat = new THREE.MeshStandardMaterial({ color: 0x27272a, metalness: 0.85, roughness: 0.3 });
+      ballisticShieldModel.add(new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.65, 0.035), plateMat));
+      const topBevel = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.05, 0.045), rimMat); topBevel.position.y = 0.33; ballisticShieldModel.add(topBevel);
+      const botBevel = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.05, 0.045), rimMat); botBevel.position.y = -0.33; ballisticShieldModel.add(botBevel);
+      const glassWindow = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.12, 0.03), new THREE.MeshBasicMaterial({ color: 0xe0f2fe, transparent: true, opacity: 0.28 }));
+      glassWindow.position.set(0, 0.16, 0.005); ballisticShieldModel.add(glassWindow);
+      camera.add(ballisticShieldModel);
+    }
+
+    function registerSolidObstacle(type, data) { solidObstacles.push({ type, ...data }); }
+
+    function buildCompoundMap() {
+      const ground = new THREE.Mesh(new THREE.PlaneGeometry(160, 160, 32, 32), new THREE.MeshStandardMaterial({ color: 0x0f1412, roughness: 0.95 }));
+      ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+
+      const wallMat = new THREE.MeshStandardMaterial({ color: 0x0a0e14, roughness: 0.85 });
+      [
+        { w: 160, h: 6, d: 2, x: 0, z: -80 }, { w: 160, h: 6, d: 2, x: 0, z: 80 },
+        { w: 2, h: 6, d: 160, x: -80, z: 0 }, { w: 2, h: 6, d: 160, x: 80, z: 0 }
+      ].forEach(cfg => {
+        const mesh = new THREE.Mesh(new THREE.BoxGeometry(cfg.w, cfg.h, cfg.d), wallMat);
+        mesh.position.set(cfg.x, cfg.h / 2, cfg.z); scene.add(mesh); collidableMeshes.push(mesh);
+        registerSolidObstacle('box', { minX: cfg.x - cfg.w / 2, maxX: cfg.x + cfg.w / 2, minZ: cfg.z - cfg.d / 2, maxZ: cfg.z + cfg.d / 2 });
+      });
+
+      [[-42, -42, 0x38bdf8], [42, -42, 0x06b6d4], [-42, 42, 0xf59e0b], [42, 42, 0xef4444]].forEach(([x, z, lightColor]) => {
+        const towerGroup = new THREE.Group(); towerGroup.position.set(x, 0, z);
+        const legMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.6 });
+        [[-2, -2], [2, -2], [-2, 2], [2, 2]].forEach(([ox, oz]) => {
+          const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 12), legMat);
+          leg.position.set(ox, 6, oz); towerGroup.add(leg);
+          registerSolidObstacle('cylinder', { x: x + ox, z: z + oz, radius: 0.65 });
+        });
+        const plat = new THREE.Mesh(new THREE.BoxGeometry(6, 0.8, 6), legMat); plat.position.set(0, 12, 0); towerGroup.add(plat);
+        const spot = new THREE.SpotLight(lightColor, 2.2, 65, Math.PI / 6, 0.4, 1); spot.position.set(0, 13, 0);
+        spot.target.position.set(x * 0.4, 0, z * 0.4); scene.add(spot.target); towerGroup.add(spot); scene.add(towerGroup);
+      });
+
+      [[0, -22, 26, 8, 18, 0x1a212b], [-32, 10, 14, 6, 12, 0x171d24], [34, 10, 14, 6, 12, 0x171d24]].forEach(([x, z, w, h, d, color]) => {
+        const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshStandardMaterial({ color, roughness: 0.85 }));
+        mesh.position.set(x, h / 2, z); scene.add(mesh); collidableMeshes.push(mesh);
+        registerSolidObstacle('box', { minX: x - w / 2, maxX: x + w / 2, minZ: z - d / 2, maxZ: z + d / 2 });
+      });
+
+      [[-16, 5, 4, 3, 9, 0x1e293b, Math.PI / 5], [18, -3, 4, 3, 9, 0x1e3a8a, -Math.PI / 4], [0, 24, 4, 3, 9, 0x7f1d1d, 0]].forEach(([x, z, w, h, d, color, rotY]) => {
+        const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshStandardMaterial({ color, roughness: 0.5, metalness: 0.35 }));
+        mesh.position.set(x, h / 2, z); mesh.rotation.y = rotY; scene.add(mesh); collidableMeshes.push(mesh);
+        const extentX = (Math.abs(Math.cos(rotY) * w) + Math.abs(Math.sin(rotY) * d)) / 2;
+        const extentZ = (Math.abs(Math.sin(rotY) * w) + Math.abs(Math.cos(rotY) * d)) / 2;
+        registerSolidObstacle('box', { minX: x - extentX, maxX: x + extentX, minZ: z - extentZ, maxZ: z + extentZ });
+      });
+
+      [[-8, 14], [10, 18], [-24, -15], [26, -20]].forEach(([x, z]) => {
+        const crateMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.9 });
+        for (let i = 0; i < 3; i++) {
+          const cx = x + (i * 1.3), cz = z + (i % 2 === 0 ? 0.3 : -0.3);
+          const crate = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 1.5), crateMat);
+          crate.position.set(cx, 0.75, cz); scene.add(crate); collidableMeshes.push(crate);
+          registerSolidObstacle('box', { minX: cx - 0.8, maxX: cx + 0.8, minZ: cz - 0.8, maxZ: cz + 0.8 });
+        }
+      });
+
+      [[-12, 8], [14, 6], [-4, -10], [22, 2], [0, 36], [-28, -8], [25, -12]].forEach(([x, z]) => spawnExplosiveBarrel(x, z));
+    }
+
+    function spawnExplosiveBarrel(x, z) {
+      const barrelGroup = new THREE.Group(); barrelGroup.position.set(x, 0, z);
+      const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 2, 16), new THREE.MeshStandardMaterial({ color: 0xdc2626, metalness: 0.5, roughness: 0.4 }));
+      barrel.position.y = 1; barrelGroup.add(barrel);
+      const stripe = new THREE.Mesh(new THREE.CylinderGeometry(0.71, 0.71, 0.4, 16), new THREE.MeshStandardMaterial({ color: 0xfacc15 }));
+      stripe.position.y = 1; barrelGroup.add(stripe);
+      scene.add(barrelGroup);
+      const colliderData = { type: 'cylinder', x, z, radius: 0.85 };
+      registerSolidObstacle('cylinder', colliderData);
+      barrelGroup.userData = { isBarrel: true, hp: 30, exploded: false, pos: new THREE.Vector3(x, 1, z), collider: colliderData };
+      explosiveBarrels.push(barrelGroup); collidableMeshes.push(barrel);
+    }
+
+    function explodeBarrel(barrelObj) {
+      if (!barrelObj || barrelObj.userData.exploded) return;
+      barrelObj.userData.exploded = true;
+      soundEngine.playExplosion();
+      const bPos = barrelObj.userData.pos.clone();
+      spawnExplosionParticles(bPos);
+      if (barrelObj.userData.collider) {
+        const cIdx = solidObstacles.indexOf(barrelObj.userData.collider);
+        if (cIdx !== -1) solidObstacles.splice(cIdx, 1);
+      }
+      explosiveBarrels.forEach(other => {
+        if (other !== barrelObj && !other.userData.exploded && other.userData.pos.distanceTo(bPos) < 7.5) {
+          setTimeout(() => explodeBarrel(other), 180);
+        }
+      });
+      zombies.forEach(z => {
+        if (!z.isDead) {
+          const dist = z.mesh.position.distanceTo(bPos);
+          if (dist < 12) damageZombie(z, 280 * (1 - dist / 12), false);
+        }
+      });
+      if (activeBoss && !activeBoss.isDead) {
+        const bDist = activeBoss.mesh.position.distanceTo(bPos);
+        if (bDist < 12) damageBoss(350 * (1 - bDist / 12));
+      }
+      const pDist = playerObj.position.distanceTo(bPos);
+      if (pDist < 10) damagePlayer(Math.round(45 * (1 - pDist / 10)));
+      scene.remove(barrelObj);
+      const idx = explosiveBarrels.indexOf(barrelObj);
+      if (idx !== -1) explosiveBarrels.splice(idx, 1);
+    }
+
+    function resolveSolidCollision(pos, radius) {
+      for (let i = 0; i < solidObstacles.length; i++) {
+        const obs = solidObstacles[i];
+        if (obs.type === 'box') {
+          const nearestX = Math.max(obs.minX, Math.min(pos.x, obs.maxX));
+          const nearestZ = Math.max(obs.minZ, Math.min(pos.z, obs.maxZ));
+          const dx = pos.x - nearestX, dz = pos.z - nearestZ;
+          const distSq = dx * dx + dz * dz;
+          if (distSq < radius * radius) {
+            const dist = Math.sqrt(distSq);
+            if (dist > 0.0001) { pos.x += (dx / dist) * (radius - dist); pos.z += (dz / dist) * (radius - dist); }
+            else pos.x = obs.minX - radius;
+          }
+        } else if (obs.type === 'cylinder') {
+          const dx = pos.x - obs.x, dz = pos.z - obs.z, minDist = radius + obs.radius;
+          const distSq = dx * dx + dz * dz;
+          if (distSq < minDist * minDist) {
+            const dist = Math.sqrt(distSq);
+            if (dist > 0.0001) { pos.x += (dx / dist) * (minDist - dist); pos.z += (dz / dist) * (minDist - dist); }
+            else pos.x += minDist;
+          }
+        }
+      }
+    }
+    function placeProximityMine() {
+      if (gameState.mines <= 0) { showCenterAlert('RANJAU HABIS! BELI DI TOKO [B]', 1000); return; }
+      gameState.mines--; document.getElementById('hudMinesCount').innerText = gameState.mines; soundEngine.playMineBeep();
+      const mineGroup = new THREE.Group(); const pPos = playerObj.position; mineGroup.position.set(pPos.x, 0.15, pPos.z);
+      mineGroup.add(new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.25, 0.4), new THREE.MeshStandardMaterial({ color: 0x3f3f46, metalness: 0.6 })));
+      const led = new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 8), new THREE.MeshBasicMaterial({ color: 0xef4444 })); led.position.set(0, 0.15, 0); mineGroup.add(led);
+      scene.add(mineGroup); placedMines.push({ mesh: mineGroup, led, pos: mineGroup.position.clone(), timer: 0, armed: false });
+      showCenterAlert('💣 RANJAU PROXIMITY TERPASANG!', 1000);
+      setTimeout(() => { const m = placedMines.find(item => item.mesh === mineGroup); if (m) m.armed = true; }, 1000);
+    }
+
+    function updateMines(delta) {
+      for (let i = placedMines.length - 1; i >= 0; i--) {
+        const m = placedMines[i]; m.timer += delta * 6; m.led.visible = Math.sin(m.timer) > 0;
+        if (!m.armed) continue;
+        let triggered = zombies.some(z => !z.isDead && z.mesh.position.distanceTo(m.pos) < 3.2) || (activeBoss && !activeBoss.isDead && activeBoss.mesh.position.distanceTo(m.pos) < 4.5);
+        if (triggered) {
+          soundEngine.playMineBeep(); soundEngine.playExplosion(); spawnExplosionParticles(m.pos);
+          zombies.forEach(z => { if (!z.isDead) { const dist = z.mesh.position.distanceTo(m.pos); if (dist < 9.5) damageZombie(z, 360 * (1 - dist / 9.5), false); } });
+          if (activeBoss && !activeBoss.isDead) { const bDist = activeBoss.mesh.position.distanceTo(m.pos); if (bDist < 9.5) damageBoss(450 * (1 - bDist / 9.5)); }
+          scene.remove(m.mesh); placedMines.splice(i, 1);
+        }
+      }
+    }
+
+    function deploySentryTurret() {
+      if (gameState.turrets <= 0) { showCenterAlert('TURRET HABIS! BELI DI TOKO [B]', 1000); return; }
+      gameState.turrets--; document.getElementById('hudTurretCount').innerText = gameState.turrets;
+      const turretGroup = new THREE.Group(); const pPos = playerObj.position; turretGroup.position.set(pPos.x + 1, 0, pPos.z - 1);
+      const metalMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.8 });
+      const base = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.4, 0.7, 3), metalMat); base.position.y = 0.35; turretGroup.add(base);
+      const headGroup = new THREE.Group(); headGroup.position.y = 0.85;
+      headGroup.add(new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.3, 0.6), metalMat));
+      turretGroup.add(headGroup); scene.add(turretGroup);
+      deployedTurrets.push({ group: turretGroup, head: headGroup, lastShot: 0, ammo: 140, lifeTime: 45 });
+      showCenterAlert('🤖 SENTRY TURRET OTOMATIS AKTIF!', 1200);
+    }
+
+    function updateTurrets(delta) {
+      const now = performance.now();
+      for (let i = deployedTurrets.length - 1; i >= 0; i--) {
+        const t = deployedTurrets[i]; t.lifeTime -= delta;
+        let target = null, closestDist = 26;
+        if (activeBoss && !activeBoss.isDead) { const d = t.group.position.distanceTo(activeBoss.mesh.position); if (d < closestDist) { closestDist = d; target = activeBoss; } }
+        zombies.forEach(z => { if (!z.isDead) { const d = t.group.position.distanceTo(z.mesh.position); if (d < closestDist) { closestDist = d; target = z; } } });
+        if (target) {
+          const dir = target.mesh.position.clone().sub(t.group.position); t.head.rotation.y = Math.atan2(dir.x, dir.z);
+          if (now - t.lastShot > 140 && t.ammo > 0) {
+            t.lastShot = now; t.ammo--; soundEngine.playTurretShot();
+            if (target === activeBoss) damageBoss(24); else damageZombie(target, 28, false);
+          }
+        }
+        if (t.lifeTime <= 0 || t.ammo <= 0) { scene.remove(t.group); deployedTurrets.splice(i, 1); }
+      }
+    }
+
+    function createSoldierAlly() {
+      const soldier = new THREE.Group(); soldier.position.set(-2.5, 0, 8);
+      const camoMat = new THREE.MeshStandardMaterial({ color: 0x1f2e24, roughness: 0.8 });
+      const torso = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.1, 0.45), camoMat); torso.position.y = 1.35; soldier.add(torso);
+      const head = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.45, 0.45), new THREE.MeshStandardMaterial({ color: 0xbf8264 })); head.position.set(0, 2.1, 0); soldier.add(head);
+      const armR = new THREE.Group(); armR.position.set(0.52, 1.7, 0);
+      const armRMesh = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.8, 0.2), camoMat); armRMesh.position.set(0, -0.3, 0.15); armR.add(armRMesh);
+      soldier.add(armR); soldierAlly.armR = armR;
+      const legL = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.9, 0.26), camoMat); legL.position.set(-0.22, 0.45, 0); soldier.add(legL);
+      const legR = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.9, 0.26), camoMat); legR.position.set(0.22, 0.45, 0); soldier.add(legR);
+      soldierAlly.legs = [legL, legR]; scene.add(soldier); soldierAlly.mesh = soldier;
+    }
+
+    function createTacticalDogCompanion() {
+      const dog = new THREE.Group(); dog.position.set(2.5, 0, 8);
+      const furBrownMat = new THREE.MeshStandardMaterial({ color: 0x8b5a2b, roughness: 0.9 });
+      const furBlackMat = new THREE.MeshStandardMaterial({ color: 0x1f1f1f, roughness: 0.9 });
+      const torso = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.65, 1.25), furBrownMat); torso.position.y = 0.75; dog.add(torso);
+      const headGroup = new THREE.Group(); headGroup.position.set(0, 1.05, 0.65);
+      headGroup.add(new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.42, 0.5), furBlackMat));
+      const jaw = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.1, 0.3), furBrownMat); jaw.position.set(0, -0.16, 0.3); headGroup.add(jaw); dogCompanion.jaw = jaw;
+      dog.add(headGroup);
+      const tail = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.03, 0.6, 6), furBlackMat); tail.position.set(0, 0.85, -0.65); dog.add(tail); dogCompanion.tail = tail;
+      [{ x: -0.24, z: 0.42 }, { x: 0.24, z: 0.42 }, { x: -0.24, z: -0.42 }, { x: 0.24, z: -0.42 }].forEach(cfg => {
+        const legPivot = new THREE.Group(); legPivot.position.set(cfg.x, 0.55, cfg.z);
+        const legMesh = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.55, 0.18), furBrownMat); legMesh.position.y = -0.27; legPivot.add(legMesh);
+        dog.add(legPivot); dogCompanion.legs.push(legPivot);
+      });
+      scene.add(dog); dogCompanion.mesh = dog;
+    }
+
+    function damageSoldier(amount) {
+      if (soldierAlly.isDowned) return;
+      soldierAlly.hp -= amount; updateSquadHUD();
+      if (soldierAlly.hp <= 0) {
+        soldierAlly.isDowned = true; soldierAlly.mesh.rotation.z = Math.PI / 2.2; soldierAlly.mesh.position.y = 0.3;
+        document.getElementById('soldierStatusBadge').innerText = 'DOWNED';
+        document.getElementById('soldierActionText').innerText = 'Butuh Revive!';
+        showCenterAlert('⚠️ SGT. RAMIREZ TUMBANG! TEKAN [E] DI DEKATNYA', 2000);
+      }
+    }
+
+    function damageDog(amount) {
+      if (dogCompanion.isDowned) return;
+      dogCompanion.hp -= amount; soundEngine.playDogWhimper(); updateSquadHUD();
+      if (dogCompanion.hp <= 0) {
+        dogCompanion.isDowned = true; dogCompanion.mesh.rotation.z = Math.PI / 2.2; dogCompanion.mesh.position.y = 0.2;
+        document.getElementById('dogCommandBadge').innerText = 'TERLUKA';
+        document.getElementById('dogActionText').innerText = 'Rintihan K9 [E]';
+        showCenterAlert('🐕 ANJING GHOST TERLUKA PARAH! TEKAN [E] UNTUK MENYEMBUHKAN', 2000);
+      }
+    }
+
+    function updateSoldierAllyAI(delta) {
+      if (!soldierAlly.mesh || !gameState.active) return;
+      const ally = soldierAlly.mesh, pPos = playerObj.position, now = performance.now();
+      if (soldierAlly.isDowned) {
+        if (pPos.distanceTo(ally.position) < 3.2) {
+          document.getElementById('hudInteractionHint').classList.remove('opacity-0');
+          document.getElementById('hudInteractionText').innerText = '[E] REVIVE SGT. RAMIREZ';
+        }
+        return;
+      }
+      soldierAlly.animCycle += delta * 10;
+      let closestEnemy = null, closestDist = 999;
+      if (activeBoss && !activeBoss.isDead) { closestEnemy = activeBoss; closestDist = ally.position.distanceTo(activeBoss.mesh.position); }
+      else zombies.forEach(z => { if (!z.isDead) { const dist = ally.position.distanceTo(z.mesh.position); if (dist < closestDist) { closestDist = dist; closestEnemy = z; } } });
+
+      const idealPos = pPos.clone().add(new THREE.Vector3(-2.2, 0, 1.5).applyAxisAngle(new THREE.Vector3(0, 1, 0), cameraYaw));
+      if (ally.position.distanceTo(idealPos) > 2.0) {
+        const moveDir = idealPos.clone().sub(ally.position).normalize();
+        ally.position.addScaledVector(moveDir, soldierAlly.speed * delta);
+        resolveSolidCollision(ally.position, 0.6);
+        ally.rotation.y = Math.atan2(moveDir.x, moveDir.z);
+        soldierAlly.legs[0].rotation.x = Math.sin(soldierAlly.animCycle) * 0.7;
+        soldierAlly.legs[1].rotation.x = -Math.sin(soldierAlly.animCycle) * 0.7;
+      } else {
+        soldierAlly.legs.forEach(l => l.rotation.x = 0);
+        if (closestEnemy) {
+          const eDir = closestEnemy.mesh.position.clone().sub(ally.position).normalize();
+          ally.rotation.y = Math.atan2(eDir.x, eDir.z);
+        }
+      }
+      if (closestEnemy && closestDist < 30 && (now - soldierAlly.lastShotTime > 260)) {
+        soldierAlly.lastShotTime = now; soundEngine.playRifle();
+        if (closestEnemy === activeBoss) damageBoss(soldierAlly.damage); else damageZombie(closestEnemy, soldierAlly.damage, false);
+      }
+    }
+
+    function reviveSoldierAlly() {
+      if (soldierAlly.isDowned) {
+        soldierAlly.isDowned = false; soldierAlly.hp = soldierAlly.maxHp; soldierAlly.mesh.rotation.z = 0; soldierAlly.mesh.position.y = 0;
+        document.getElementById('soldierStatusBadge').innerText = 'ASSAULT'; document.getElementById('soldierActionText').innerText = 'Covering';
+        document.getElementById('hudInteractionHint').classList.add('opacity-0');
+        showCenterAlert('SGT. RAMIREZ KEMBALI BERDIRI!', 1200);
+      }
+      if (dogCompanion.isDowned) {
+        dogCompanion.isDowned = false; dogCompanion.hp = dogCompanion.maxHp; dogCompanion.mesh.rotation.z = 0; dogCompanion.mesh.position.y = 0;
+        document.getElementById('dogCommandBadge').innerText = 'COMBAT'; document.getElementById('dogActionText').innerText = 'Hunting';
+        document.getElementById('hudInteractionHint').classList.add('opacity-0');
+        soundEngine.playDogBark(); showCenterAlert('🐕 ANJING GHOST TELAH DIPULIHKAN!', 1200);
+      }
+      updateSquadHUD();
+    }
+
+    function updateDogCompanionAI(delta) {
+      if (!dogCompanion.mesh || !gameState.active) return;
+      const dog = dogCompanion.mesh, pPos = playerObj.position, now = performance.now();
+      if (dogCompanion.isDowned) {
+        if (pPos.distanceTo(dog.position) < 3.0) {
+          document.getElementById('hudInteractionHint').classList.remove('opacity-0');
+          document.getElementById('hudInteractionText').innerText = '[E] HEAL & BANGUNKAN ANJING K9';
+        }
+        return;
+      }
+      dogCompanion.animCycle += delta * 12;
+      let targetZombie = null, closestDist = 999;
+      if (activeBoss && !activeBoss.isDead) { targetZombie = activeBoss; closestDist = dog.position.distanceTo(activeBoss.mesh.position); }
+      else zombies.forEach(z => { if (!z.isDead) { const dist = dog.position.distanceTo(z.mesh.position); if (dist < closestDist) { closestDist = dist; targetZombie = z; } } });
+
+      if (targetZombie && closestDist < 18) {
+        const dir = targetZombie.mesh.position.clone().sub(dog.position); dir.y = 0; dir.normalize();
+        dog.rotation.y = Math.atan2(dir.x, dir.z);
+        if (closestDist > 1.8) {
+          dog.position.addScaledVector(dir, dogCompanion.speed * delta);
+          resolveSolidCollision(dog.position, 0.55);
+        } else if (now - dogCompanion.lastAttackTime > 600) {
+          dogCompanion.lastAttackTime = now;
+          if (targetZombie === activeBoss) damageBoss(dogCompanion.damage); else damageZombie(targetZombie, dogCompanion.damage, false);
+        }
+      } else {
+        const targetPos = pPos.clone().add(new THREE.Vector3(2.2, 0, 1.2).applyAxisAngle(new THREE.Vector3(0, 1, 0), cameraYaw));
+        if (dog.position.distanceTo(targetPos) > 1.5) {
+          const dir = targetPos.clone().sub(dog.position).normalize();
+          dog.rotation.y = Math.atan2(dir.x, dir.z);
+          dog.position.addScaledVector(dir, dogCompanion.speed * delta);
+          resolveSolidCollision(dog.position, 0.55);
+        }
+      }
+    }
+
+    function updateSquadHUD() {
+      document.getElementById('soldierHpBar').style.width = `${Math.max(0, (soldierAlly.hp / soldierAlly.maxHp) * 100)}%`;
+      document.getElementById('dogHpBar').style.width = `${Math.max(0, (dogCompanion.hp / dogCompanion.maxHp) * 100)}%`;
+    }
+
+    let weaponRecoilOffset = 0, weaponBobTimer = 0;
+    function createWeaponViewModel() {
+      weaponViewModel = new THREE.Group(); weaponViewModel.position.set(0.24, -0.22, -0.45);
+      weaponViewModel.add(new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.12, 0.44), new THREE.MeshStandardMaterial({ color: 0x1f2937, metalness: 0.8, roughness: 0.3 })));
+      const barrelMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.024, 0.32), new THREE.MeshStandardMaterial({ color: 0x111827, metalness: 0.9 }));
+      barrelMesh.rotation.x = Math.PI / 2; barrelMesh.position.set(0, 0.03, -0.32); weaponViewModel.add(barrelMesh);
+      camera.add(weaponViewModel);
+    }
+
+    function switchWeapon(key) {
+      if (gameState.isReloading) return;
+      if (!WEAPONS[key].owned) { showCenterAlert(`SENJATA TERKUNCI! BUKA TOKO [B] UNTUK MEMBELI`, 1200); return; }
+      if (gameState.isSniperScoped && key !== 'sniper') toggleSniperScope(false);
+      gameState.currentWeaponKey = key; soundEngine.playReload();
+      setBallisticArmorRaised(key === 'shield');
+      updateWeaponHUD();
+    }
+
+    function setBallisticArmorRaised(raised) {
+      gameState.isShieldBlocking = raised;
+      if (raised) { ballisticShieldModel.position.set(-0.22, -0.14, -0.42); ballisticShieldModel.rotation.set(0.05, 0.15, -0.02); }
+      else { ballisticShieldModel.position.set(-0.38, -0.36, -0.5); ballisticShieldModel.rotation.set(0.12, 0.35, -0.08); }
+    }
+
+    function toggleSniperScope(forceState) {
+      gameState.isSniperScoped = forceState !== undefined ? forceState : !gameState.isSniperScoped;
+      const scopeEl = document.getElementById('sniperScopeOverlay'), crosshair = document.getElementById('crosshairContainer');
+      camera.fov = gameState.isSniperScoped ? 22 : 72; camera.updateProjectionMatrix();
+      scopeEl.classList.toggle('hidden', !gameState.isSniperScoped);
+      crosshair.classList.toggle('hidden', gameState.isSniperScoped);
+      weaponViewModel.visible = !gameState.isSniperScoped;
+      ballisticShieldModel.visible = !gameState.isSniperScoped;
+    }
+
+    function triggerShieldBash() {
+      const now = performance.now();
+      if (now - gameState.lastBashTime < 500) return;
+      gameState.lastBashTime = now; soundEngine.playShieldBash();
+      zombies.forEach(z => {
+        if (!z.isDead && playerObj.position.distanceTo(z.mesh.position) <= 4.8) {
+          const pushDir = z.mesh.position.clone().sub(playerObj.position).normalize();
+          z.mesh.position.addScaledVector(pushDir, 3.8);
+          resolveSolidCollision(z.mesh.position, 0.55);
+          damageZombie(z, 90 * gameState.damageMultiplier, false);
+        }
+      });
+      if (activeBoss && !activeBoss.isDead && playerObj.position.distanceTo(activeBoss.mesh.position) <= 5.5) {
+        damageBoss(75 * gameState.damageMultiplier);
+      }
+    }
+
+    function triggerShoot() {
+      if (!gameState.active || gameState.paused || gameState.isReloading || gameState.inShop) return;
+      if (gameState.currentWeaponKey === 'shield') { triggerShieldBash(); return; }
+      const wpn = WEAPONS[gameState.currentWeaponKey], curAmmo = gameState.ammo[gameState.currentWeaponKey], now = performance.now();
+      if (now - gameState.lastShotTime < wpn.fireRateMs) return;
+      if (curAmmo.mag <= 0) { showCenterAlert('TEKAN [R] UNTUK RELOAD', 800); return; }
+      gameState.lastShotTime = now; curAmmo.mag--; wpn.sound();
+      weaponRecoilOffset = gameState.currentWeaponKey === 'sniper' ? 0.25 : 0.12;
+      muzzleFlashLight.intensity = 4.0; setTimeout(() => muzzleFlashLight.intensity = 0, 45);
+
+      const raycaster = new THREE.Raycaster(); let hitAny = false;
+      for (let p = 0; p < wpn.pellets; p++) {
+        const spreadFactor = gameState.isSniperScoped ? 0.001 : wpn.spread;
+        raycaster.setFromCamera(new THREE.Vector2((Math.random() - 0.5) * spreadFactor, (Math.random() - 0.5) * spreadFactor), camera);
+        if (activeBoss && !activeBoss.isDead) {
+          const bossIntersects = raycaster.intersectObject(activeBoss.mesh, true);
+          if (bossIntersects.length > 0) {
+            hitAny = true;
+            const isHead = bossIntersects[0].object === activeBoss.headMesh;
+            damageBoss((isHead ? wpn.damage * 2.2 : wpn.damage) * gameState.damageMultiplier);
+            spawnHitParticles(bossIntersects[0].point, 0xef4444, 10);
+            continue;
+          }
+        }
+        const barrelHits = raycaster.intersectObjects(collidableMeshes);
+        if (barrelHits.length > 0) {
+          const barrelParent = explosiveBarrels.find(b => b.children.includes(barrelHits[0].object));
+          if (barrelParent && !barrelParent.userData.exploded) {
+            barrelParent.userData.hp -= wpn.damage;
+            if (barrelParent.userData.hp <= 0) explodeBarrel(barrelParent);
+          }
+        }
+        for (let i = 0; i < zombies.length; i++) {
+          const z = zombies[i]; if (z.isDead) continue;
+          const intersects = raycaster.intersectObject(z.mesh, true);
+          if (intersects.length > 0 && intersects[0].distance <= wpn.range) {
+            hitAny = true;
+            const isHeadshot = intersects[0].object === z.headMesh;
+            if (isHeadshot) gameState.headshots++;
+            damageZombie(z, (isHeadshot ? wpn.damage * 2.5 : wpn.damage) * gameState.damageMultiplier, isHeadshot);
+            spawnHitParticles(intersects[0].point, 0xdc2626, isHeadshot ? 14 : 7);
+            break;
+          }
+        }
+      }
+      if (hitAny) { soundEngine.playHitMarker(); triggerHitmarker(); }
+      updateWeaponHUD();
+    }
+
+    function reloadWeapon() {
+      if (gameState.isReloading || gameState.currentWeaponKey === 'shield') return;
+      const wpn = WEAPONS[gameState.currentWeaponKey], curAmmo = gameState.ammo[gameState.currentWeaponKey];
+      if (curAmmo.mag === wpn.magSize || curAmmo.reserve <= 0) return;
+      gameState.isReloading = true; soundEngine.playReload(); showCenterAlert('RELOADING...', wpn.reloadTimeMs);
+      setTimeout(() => {
+        const available = Math.min(wpn.magSize - curAmmo.mag, curAmmo.reserve);
+        curAmmo.mag += available; curAmmo.reserve -= available;
+        gameState.isReloading = false; updateWeaponHUD();
+      }, wpn.reloadTimeMs);
+    }
+
+    const ZOMBIE_TYPES = {
+      walker:     { name: 'Walker', hp: 80, speed: 3.2, damage: 14, scale: 1.0, color: 0x334e1c, eyeColor: 0xef4444, reward: 25 },
+      runner:     { name: 'Runner', hp: 55, speed: 6.2, damage: 18, scale: 0.92, color: 0x78350f, eyeColor: 0xfacc15, reward: 35 },
+      tank:       { name: 'Brute Tank', hp: 380, speed: 2.3, damage: 38, scale: 1.8, color: 0x1e293b, eyeColor: 0x38bdf8, reward: 120 },
+      teleporter: { name: 'Anomali Phase-Shifter', hp: 120, speed: 4.8, damage: 28, scale: 1.05, color: 0x581c87, eyeColor: 0xc084fc, reward: 150, isAnomaly: true },
+      bloater:    { name: 'Volatile Acid Bloater', hp: 190, speed: 2.8, damage: 32, scale: 1.4, color: 0x14532d, eyeColor: 0x84cc16, reward: 160, isBloater: true },
+      electric:   { name: 'Electrified Revenant', hp: 140, speed: 4.2, damage: 24, scale: 1.1, color: 0x0369a1, eyeColor: 0x38bdf8, reward: 180, isElectric: true }
+    };
+
+    function spawnZombie(typeKey, spawnX, spawnZ) {
+      const typeDef = ZOMBIE_TYPES[typeKey], modeCfg = ZOMBIE_MODES[currentZombieMode], group = new THREE.Group();
+      const maxHp = typeDef.hp * (1 + (gameState.wave - 1) * 0.16) * modeCfg.hpMult;
+      const skinMat = new THREE.MeshStandardMaterial({ color: typeDef.color, roughness: 0.85 });
+      const torsoW = typeDef.isBloater ? 1.4 : 0.8, torsoH = typeDef.isBloater ? 1.3 : 1.1;
+      const torso = new THREE.Mesh(new THREE.BoxGeometry(torsoW, torsoH, torsoW * 0.6), skinMat); torso.position.y = 1.35; group.add(torso);
+      const head = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.55, 0.5), skinMat); head.position.set(0, 2.15, 0); group.add(head);
+      const armL = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.9), skinMat); armL.position.set(-0.5, 1.6, 0.45); group.add(armL);
+      const armR = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.9), skinMat); armR.position.set(0.5, 1.6, 0.45); group.add(armR);
+      const legL = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.9, 0.25), new THREE.MeshStandardMaterial({ color: 0x1f2937 })); legL.position.set(-0.24, 0.45, 0); group.add(legL);
+      const legR = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.9, 0.25), new THREE.MeshStandardMaterial({ color: 0x1f2937 })); legR.position.set(0.24, 0.45, 0); group.add(legR);
+      group.scale.set(typeDef.scale, typeDef.scale, typeDef.scale); group.position.set(spawnX, 0, spawnZ); scene.add(group);
+      zombies.push({ mesh: group, headMesh: head, armL, armR, legL, legR, type: typeKey, typeDef, hp: maxHp, maxHp, speed: typeDef.speed * modeCfg.speedMult, damage: typeDef.damage * modeCfg.damageMult, reward: typeDef.reward, animTimer: Math.random() * 10, lastAttackTime: 0, lastTeleportTime: performance.now(), isDead: false });
+    }
+
+    function damageZombie(zombie, damage, isHeadshot) {
+      zombie.hp -= damage;
+      const pushDir = zombie.mesh.position.clone().sub(playerObj.position).normalize();
+      zombie.mesh.position.addScaledVector(pushDir, 0.45);
+      resolveSolidCollision(zombie.mesh.position, 0.55);
+      if (zombie.hp <= 0 && !zombie.isDead) {
+        zombie.isDead = true; gameState.kills++;
+        const rewardGained = Math.round(zombie.reward * (isHeadshot ? 1.5 : 1.0));
+        addCredits(rewardGained); gameState.score += rewardGained * 5;
+        zombie.mesh.rotation.x = -Math.PI / 2; zombie.mesh.position.y = 0.3;
+        if (Math.random() < ZOMBIE_MODES[currentZombieMode].dropRate) spawnPickupDrop(zombie.mesh.position.x, zombie.mesh.position.z);
+        setTimeout(() => { scene.remove(zombie.mesh); const idx = zombies.indexOf(zombie); if (idx !== -1) zombies.splice(idx, 1); checkWaveClearance(); }, 1200);
+      }
+    }
+
+    function updateToxicPuddles(delta) {
+      for (let i = toxicPuddles.length - 1; i >= 0; i--) {
+        const p = toxicPuddles[i]; p.duration -= delta;
+        if (playerObj.position.distanceTo(p.pos) < 3.5) damagePlayer(15 * delta);
+        if (p.duration <= 0) { scene.remove(p.mesh); toxicPuddles.splice(i, 1); }
+      }
+    }
+
+    function updateZombiesAI(delta) {
+      const pPos = playerObj.position, now = performance.now();
+      zombies.forEach(z => {
+        if (z.isDead) return;
+        let targetPos = pPos, targetEntity = 'player';
+        if (dogCompanion.mesh && !dogCompanion.isDowned && z.mesh.position.distanceTo(dogCompanion.mesh.position) < 6.5) { targetPos = dogCompanion.mesh.position; targetEntity = 'dog'; }
+        else if (soldierAlly.mesh && !soldierAlly.isDowned && z.mesh.position.distanceTo(soldierAlly.mesh.position) < 8.0) { targetPos = soldierAlly.mesh.position; targetEntity = 'soldier'; }
+        const dir = targetPos.clone().sub(z.mesh.position); dir.y = 0; const dist = dir.length(); dir.normalize();
+        z.mesh.rotation.y = Math.atan2(dir.x, dir.z);
+        z.animTimer += delta * (z.speed * 1.5);
+        z.legL.rotation.x = Math.sin(z.animTimer) * 0.6; z.legR.rotation.x = -Math.sin(z.animTimer) * 0.6;
+        if (dist > 1.5) { z.mesh.position.addScaledVector(dir, z.speed * delta); resolveSolidCollision(z.mesh.position, 0.55); }
+        else if (now - z.lastAttackTime > 1000) {
+          z.lastAttackTime = now;
+          if (targetEntity === 'player') damagePlayer(z.damage);
+          else if (targetEntity === 'soldier') damageSoldier(z.damage);
+          else if (targetEntity === 'dog') damageDog(z.damage);
+        }
+      });
+    }
+
+    function spawnBossZombie() {
+      soundEngine.playBossRoar();
+      showCenterAlert('⚠️ PERINGATAN: MUTANT TITAN NEMESIS TELAH MUNCUL!', 3000);
+      const bossGroup = new THREE.Group(); bossGroup.position.set(0, 0, -45);
+      const bossMat = new THREE.MeshStandardMaterial({ color: 0x450a0a, roughness: 0.7, metalness: 0.3 });
+      const armorMat = new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.5 });
+      const torso = new THREE.Mesh(new THREE.BoxGeometry(2.4, 3.2, 1.5), bossMat); torso.position.y = 3.6; bossGroup.add(torso);
+      const head = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.4, 1.4), bossMat); head.position.set(0, 5.8, 0.2); bossGroup.add(head);
+      const armL = new THREE.Mesh(new THREE.BoxGeometry(0.7, 2.4, 0.7), bossMat); armL.position.set(-1.7, 3.6, 0.6); bossGroup.add(armL);
+      const armR = new THREE.Mesh(new THREE.BoxGeometry(0.7, 2.4, 0.7), bossMat); armR.position.set(1.7, 3.6, 0.6); bossGroup.add(armR);
+      const legL = new THREE.Mesh(new THREE.BoxGeometry(0.8, 2.2, 0.8), armorMat); legL.position.set(-0.8, 1.1, 0); bossGroup.add(legL);
+      const legR = new THREE.Mesh(new THREE.BoxGeometry(0.8, 2.2, 0.8), armorMat); legR.position.set(0.8, 1.1, 0); bossGroup.add(legR);
+      scene.add(bossGroup);
+      const bossHp = 2400 + (gameState.wave * 450);
+      activeBoss = { mesh: bossGroup, headMesh: head, armL, armR, legL, legR, hp: bossHp, maxHp: bossHp, speed: 3.4, damage: 60, lastSlamTime: 0, animTimer: 0, isDead: false };
+      document.getElementById('bossHudContainer').classList.remove('hidden');
+      updateBossHpUI();
+    }
+
+    function updateBossHpUI() {
+      if (!activeBoss) return;
+      const pct = Math.max(0, Math.round((activeBoss.hp / activeBoss.maxHp) * 100));
+      document.getElementById('bossHpPercent').innerText = `${pct}%`;
+      document.getElementById('bossHpBar').style.width = `${pct}%`;
+    }
+
+    function damageBoss(dmg) {
+      if (!activeBoss || activeBoss.isDead) return;
+      activeBoss.hp -= dmg; updateBossHpUI();
+      if (activeBoss.hp <= 0) {
+        activeBoss.isDead = true; gameState.bossKills++; gameState.score += 2500; addCredits(1200);
+        soundEngine.playCoinReward(); showCenterAlert('🏆 BOSS DIKALAHKAN! REWARD +$1200 & +2500 PTS!', 3000);
+        activeBoss.mesh.rotation.x = -Math.PI / 2;
+        setTimeout(() => { scene.remove(activeBoss.mesh); activeBoss = null; document.getElementById('bossHudContainer').classList.add('hidden'); checkWaveClearance(); }, 2500);
+      }
+    }
+
+    function updateBossAI(delta) {
+      if (!activeBoss || activeBoss.isDead) return;
+      const b = activeBoss, pPos = playerObj.position, now = performance.now();
+      const dir = pPos.clone().sub(b.mesh.position); dir.y = 0; const dist = dir.length(); dir.normalize();
+      b.mesh.rotation.y = Math.atan2(dir.x, dir.z);
+      if (dist > 3.5) { b.mesh.position.addScaledVector(dir, b.speed * delta); resolveSolidCollision(b.mesh.position, 1.4); }
+      else if (now - b.lastSlamTime > 2800) {
+        b.lastSlamTime = now; soundEngine.playExplosion(); damagePlayer(b.damage); showCenterAlert('💥 TITAN GROUND SLAM!', 1200);
+      }
+    }
+
+    function spawnHordeForWave(waveNum) {
+      const modeCfg = ZOMBIE_MODES[currentZombieMode];
+      showCenterAlert(`GELOMBANG ${waveNum} TIBA! [${modeCfg.name.toUpperCase()}]`, 2200);
+      if (waveNum % 3 === 0) setTimeout(() => spawnBossZombie(), 1500);
+      const count = Math.round((7 + waveNum * 4) * modeCfg.hordeCountMult);
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2, radius = 45 + Math.random() * 25;
+        const types = ['walker', 'runner', 'tank', 'teleporter', 'bloater', 'electric'];
+        const type = types[Math.floor(Math.random() * types.length)];
+        setTimeout(() => { if (gameState.active) { spawnZombie(type, Math.cos(angle) * radius, Math.sin(angle) * radius); updateHUDStats(); } }, i * 240);
+      }
+    }
+
+    function toggleShop(open) {
+      gameState.inShop = open;
+      document.getElementById('shopModal').classList.toggle('hidden', !open);
+      if (open) document.exitPointerLock();
+      else if (gameState.active && !gameState.paused) document.getElementById('gameCanvas').requestPointerLock();
+    }
+
+    function buyWeapon(key, cost) {
+      if (gameState.credits >= cost && !WEAPONS[key].owned) {
+        gameState.credits -= cost; WEAPONS[key].owned = true; soundEngine.playCoinReward();
+        const btn = document.getElementById(`buy_${key}_btn`);
+        if (btn) { btn.className = 'px-3 py-1 bg-neutral-800 text-sky-400 text-xs font-mono-tech rounded font-bold cursor-default'; btn.innerText = 'DIMILIKI'; }
+        addCredits(0); showCenterAlert(`${WEAPONS[key].name} BERHASIL DIBELI!`, 1500);
+      } else showCenterAlert('REWARD DANA TIDAK CUKUP!', 1000);
+    }
+
+    function buyEquipment(type, cost) {
+      if (gameState.credits >= cost) {
+        gameState.credits -= cost; soundEngine.playCoinReward();
+        if (type === 'mine') { gameState.mines += 3; document.getElementById('hudMinesCount').innerText = gameState.mines; }
+        else if (type === 'turret') { gameState.turrets += 1; document.getElementById('hudTurretCount').innerText = gameState.turrets; }
+        addCredits(0);
+      } else showCenterAlert('DANA TIDAK CUKUP!', 1000);
+    }
+
+    function buyUpgrade(type, cost) {
+      if (gameState.credits >= cost) {
+        gameState.credits -= cost; soundEngine.playCoinReward();
+        if (type === 'armorRepair') { gameState.armorHp = gameState.maxArmorHp; updateHUDStats(); }
+        addCredits(0);
+      } else showCenterAlert('DANA TIDAK CUKUP!', 1000);
+    }
+
+    function addCredits(amount) {
+      gameState.credits += amount;
+      document.getElementById('hudCredits').innerText = gameState.credits;
+      document.getElementById('shopCreditDisplay').innerText = gameState.credits;
+    }
+
+    function spawnHitParticles(pos, colorHex, count = 8) {
+      for (let i = 0; i < count; i++) {
+        const p = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 0.06), new THREE.MeshBasicMaterial({ color: colorHex }));
+        p.position.copy(pos); p.userData = { vel: new THREE.Vector3((Math.random() - 0.5) * 4, Math.random() * 3 + 1, (Math.random() - 0.5) * 4), life: 0.5 };
+        scene.add(p); bloodParticles.push(p);
+      }
+    }
+
+    function spawnArmorDeflectSparks(pos, count = 10) {
+      for (let i = 0; i < count; i++) {
+        const p = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 0.05), new THREE.MeshBasicMaterial({ color: 0x38bdf8 }));
+        p.position.copy(pos); p.userData = { vel: new THREE.Vector3((Math.random() - 0.5) * 5, Math.random() * 4 + 1, (Math.random() - 0.5) * 5), life: 0.35 };
+        scene.add(p); sparkParticles.push(p);
+      }
+    }
+
+    function spawnExplosionParticles(pos) {
+      for (let i = 0; i < 20; i++) {
+        const p = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.35, 0.35), new THREE.MeshBasicMaterial({ color: i % 2 === 0 ? 0xef4444 : 0xf59e0b }));
+        p.position.copy(pos); p.userData = { vel: new THREE.Vector3((Math.random() - 0.5) * 14, Math.random() * 9 + 2, (Math.random() - 0.5) * 14), life: 0.95 };
+        scene.add(p); bloodParticles.push(p);
+      }
+    }
+
+    function spawnPickupDrop(x, z) {
+      const roll = Math.random(), group = new THREE.Group(); group.position.set(x, 0.5, z);
+      if (roll < 0.4) { group.add(new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.5, 0.4), new THREE.MeshStandardMaterial({ color: 0xdc2626 }))); group.userData = { type: 'medkit', amount: 40 }; }
+      else if (roll < 0.75) { group.add(new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.4, 0.4), new THREE.MeshStandardMaterial({ color: 0x15803d }))); group.userData = { type: 'ammo', amount: 60 }; }
+      else { group.add(new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.1), new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.8 }))); group.userData = { type: 'armor', amount: 50 }; }
+      scene.add(group); pickupItems.push(group);
+    }
+
+    function updatePickups(delta) {
+      for (let i = pickupItems.length - 1; i >= 0; i--) {
+        const item = pickupItems[i]; item.rotation.y += delta * 2;
+        if (playerObj.position.distanceTo(item.position) < 1.8) {
+          if (item.userData.type === 'medkit') gameState.hp = Math.min(gameState.maxHp, gameState.hp + item.userData.amount);
+          else if (item.userData.type === 'armor') gameState.armorHp = Math.min(gameState.maxArmorHp, gameState.armorHp + item.userData.amount);
+          else Object.keys(gameState.ammo).forEach(k => { if (gameState.ammo[k].reserve !== undefined) gameState.ammo[k].reserve += 40; });
+          soundEngine.playHitMarker(); scene.remove(item); pickupItems.splice(i, 1); updateHUDStats(); updateWeaponHUD();
+        }
+      }
+    }
+
+    let radarCanvas, radarCtx;
+    function initRadar() { radarCanvas = document.getElementById('radarCanvas'); radarCtx = radarCanvas.getContext('2d'); }
+    function updateRadar() {
+      if (!radarCtx) return;
+      const w = radarCanvas.width, h = radarCanvas.height, center = w / 2, radarRange = 65;
+      radarCtx.clearRect(0, 0, w, h);
+      radarCtx.strokeStyle = 'rgba(56, 189, 248, 0.25)'; radarCtx.beginPath(); radarCtx.arc(center, center, center - 2, 0, Math.PI * 2); radarCtx.stroke();
+      zombies.forEach(z => {
+        if (z.isDead) return;
+        const dx = z.mesh.position.x - playerObj.position.x, dz = z.mesh.position.z - playerObj.position.z, angle = -cameraYaw;
+        const rx = dx * Math.cos(angle) - dz * Math.sin(angle), rz = dx * Math.sin(angle) + dz * Math.cos(angle);
+        radarCtx.fillStyle = '#f97316'; radarCtx.beginPath(); radarCtx.arc(center + (rx / radarRange) * center, center + (rz / radarRange) * center, 2.5, 0, Math.PI * 2); radarCtx.fill();
+      });
+    }
+
+    function triggerHitmarker() { const hm = document.getElementById('hitmarkerEl'); hm.classList.add('active'); setTimeout(() => hm.classList.remove('active'), 90); }
+
+    function setupControls() {
+      const canvas = document.getElementById('gameCanvas');
+      canvas.addEventListener('click', () => { if (gameState.active && !gameState.paused && !gameState.inShop) canvas.requestPointerLock(); });
+      document.addEventListener('pointerlockchange', () => {
+        isPointerLocked = (document.pointerLockElement === canvas);
+        if (!isPointerLocked && gameState.active && !gameState.paused && !gameState.inShop) pauseGameSession();
+      });
+      document.addEventListener('mousemove', (e) => {
+        if (!isPointerLocked || !gameState.active || gameState.paused || gameState.inShop) return;
+        const sensitivity = gameState.isSniperScoped ? 0.0008 : 0.0022;
+        cameraYaw -= e.movementX * sensitivity; cameraPitch -= e.movementY * sensitivity;
+        cameraPitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, cameraPitch));
+        playerObj.rotation.y = cameraYaw; camera.rotation.x = cameraPitch;
+      });
+      document.addEventListener('mousedown', (e) => {
+        if (!isPointerLocked) return;
+        if (e.button === 0) triggerShoot();
+        else if (e.button === 2) { if (gameState.currentWeaponKey === 'sniper') toggleSniperScope(true); else setBallisticArmorRaised(true); }
+      });
+      document.addEventListener('mouseup', (e) => {
+        if (e.button === 2) { if (gameState.currentWeaponKey === 'sniper') toggleSniperScope(false); else if (gameState.currentWeaponKey !== 'shield') setBallisticArmorRaised(false); }
+      });
+      window.addEventListener('contextmenu', (e) => e.preventDefault());
+      window.addEventListener('keydown', (e) => {
+        if (e.code === 'KeyW') moveInput.forward = true;
+        if (e.code === 'KeyS') moveInput.backward = true;
+        if (e.code === 'KeyA') moveInput.left = true;
+        if (e.code === 'KeyD') moveInput.right = true;
+        if (e.code === 'Space') moveInput.jump = true;
+        if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') gameState.isSprinting = true;
+        if (e.code === 'KeyR') reloadWeapon();
+        if (e.code === 'KeyF') toggleFlashlight();
+        if (e.code === 'KeyV') triggerShieldBash();
+        if (e.code === 'KeyE') reviveSoldierAlly();
+        if (e.code === 'KeyX') placeProximityMine();
+        if (e.code === 'KeyT') deploySentryTurret();
+        if (e.code === 'KeyB' || e.code === 'Tab') { e.preventDefault(); toggleShop(!gameState.inShop); }
+        if (e.code === 'Digit1') switchWeapon('pistol');
+        if (e.code === 'Digit2') switchWeapon('shotgun');
+        if (e.code === 'Digit3') switchWeapon('rifle');
+        if (e.code === 'Digit4') switchWeapon('sniper');
+        if (e.code === 'Digit5') switchWeapon('minigun');
+        if (e.code === 'Digit6') switchWeapon('shield');
+        if (e.code === 'Escape' && gameState.active) {
+          if (gameState.inShop) toggleShop(false); else if (gameState.paused) resumeGameSession(); else pauseGameSession();
+        }
+      });
+      window.addEventListener('keyup', (e) => {
+        if (e.code === 'KeyW') moveInput.forward = false;
+        if (e.code === 'KeyS') moveInput.backward = false;
+        if (e.code === 'KeyA') moveInput.left = false;
+        if (e.code === 'KeyD') moveInput.right = false;
+        if (e.code === 'Space') moveInput.jump = false;
+        if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') gameState.isSprinting = false;
+      });
+    }
+
+    function updatePlayerMovement(delta) {
+      let currentSpeed = 7.0;
+      if (gameState.isSprinting && (moveInput.forward || moveInput.backward || moveInput.left || moveInput.right) && gameState.stamina > 5) {
+        currentSpeed = 12.0; gameState.stamina = Math.max(0, gameState.stamina - delta * 24);
+      } else gameState.stamina = Math.min(100, gameState.stamina + delta * 15);
+      if (gameState.isShieldBlocking) currentSpeed *= 0.72;
+
+      const moveVec = new THREE.Vector3();
+      if (moveInput.forward) moveVec.z -= 1;
+      if (moveInput.backward) moveVec.z += 1;
+      if (moveInput.left) moveVec.x -= 1;
+      if (moveInput.right) moveVec.x += 1;
+      moveVec.normalize(); moveVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), cameraYaw);
+
+      playerVelocity.x = moveVec.x * currentSpeed;
+      playerVelocity.z = moveVec.z * currentSpeed;
+      if (moveInput.jump && isGrounded) { playerVelocity.y = 8.5; isGrounded = false; }
+      if (!isGrounded) playerVelocity.y -= 22 * delta;
+
+      playerObj.position.x += playerVelocity.x * delta;
+      playerObj.position.z += playerVelocity.z * delta;
+      playerObj.position.y += playerVelocity.y * delta;
+      resolveSolidCollision(playerObj.position, 0.75);
+
+      if (playerObj.position.y <= 0) { playerObj.position.y = 0; playerVelocity.y = 0; isGrounded = true; }
+      playerObj.position.x = Math.max(-76, Math.min(76, playerObj.position.x));
+      playerObj.position.z = Math.max(-76, Math.min(76, playerObj.position.z));
+      weaponRecoilOffset = Math.max(0, weaponRecoilOffset - delta * 0.8);
+      updateHUDStats();
+    }
+
+    function damagePlayer(amount) {
+      if (gameState.isShieldBlocking && gameState.armorHp > 0) {
+        soundEngine.playArmorDeflect();
+        const absorbed = amount * 0.85;
+        gameState.armorHp = Math.max(0, gameState.armorHp - absorbed);
+        gameState.hp = Math.max(0, gameState.hp - (amount - absorbed));
+      } else gameState.hp = Math.max(0, gameState.hp - amount);
+      document.getElementById('damageOverlay').style.opacity = '1';
+      setTimeout(() => document.getElementById('damageOverlay').style.opacity = '0', 200);
+      updateHUDStats();
+      if (gameState.hp <= 0) endGameSession();
+    }
+
+    function checkWaveClearance() {
+      const alive = zombies.filter(z => !z.isDead).length + (activeBoss && !activeBoss.isDead ? 1 : 0);
+      document.getElementById('hudZombiesLeft').innerText = alive;
+      if (alive === 0 && gameState.active) {
+        gameState.wave++; gameState.score += 700; addCredits(250);
+        showCenterAlert(`GELOMBANG BERSIH! REWARD +$250 & +700 POIN`, 2200);
+        setTimeout(() => { if (gameState.active) spawnHordeForWave(gameState.wave); }, 3500);
+      }
+    }
+
+    function updateHUDStats() {
+      document.getElementById('hudHpText').innerText = `${Math.round(gameState.hp)} HP`;
+      document.getElementById('hudHpBar').style.width = `${(gameState.hp / gameState.maxHp) * 100}%`;
+      document.getElementById('hudArmorText').innerText = `${Math.round(gameState.armorHp)} / ${gameState.maxArmorHp}`;
+      document.getElementById('hudArmorBar').style.width = `${(gameState.armorHp / gameState.maxArmorHp) * 100}%`;
+      document.getElementById('hudStaminaText').innerText = `${Math.round(gameState.stamina)}%`;
+      document.getElementById('hudStaminaBar').style.width = `${gameState.stamina}%`;
+      document.getElementById('hudWaveNum').innerText = gameState.wave;
+      document.getElementById('hudScore').innerText = gameState.score;
+    }
+
+    function updateWeaponHUD() {
+      const cur = WEAPONS[gameState.currentWeaponKey], curAmmo = gameState.ammo[gameState.currentWeaponKey];
+      document.getElementById('hudWeaponName').innerText = cur.name;
+      document.getElementById('hudAmmoMag').innerText = curAmmo.mag;
+      document.getElementById('hudAmmoReserve').innerText = curAmmo.reserve;
+    }
+
+    function showCenterAlert(msg, durationMs = 1200) {
+      const el = document.getElementById('hudCenterAlert');
+      el.innerText = msg; el.classList.remove('opacity-0');
+      setTimeout(() => el.classList.add('opacity-0'), durationMs);
+    }
+
+    function onWindowResize() {
+      if (!camera || !renderer) return;
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function startGameSession() {
+      soundEngine.init();
+      document.getElementById('mainMenu').classList.add('hidden');
+      document.getElementById('hudLayer').classList.remove('hidden');
+      if (scene) scene.fog.density = ZOMBIE_MODES[currentZombieMode].fogDensity;
+      const compConfig = COMPANION_DURABILITIES[currentCompanionDurability];
+      soldierAlly.maxHp = compConfig.soldierHp; soldierAlly.hp = compConfig.soldierHp; soldierAlly.damage = compConfig.soldierDmg; soldierAlly.isDowned = false;
+      dogCompanion.maxHp = compConfig.dogHp; dogCompanion.hp = compConfig.dogHp; dogCompanion.damage = compConfig.dogDmg; dogCompanion.isDowned = false;
+      gameState.active = true; gameState.paused = false; gameState.inShop = false; gameState.hp = 100; gameState.armorHp = 100; gameState.stamina = 100;
+      gameState.wave = 1; gameState.credits = 500; gameState.score = 0; gameState.kills = 0; gameState.bossKills = 0;
+      playerObj.position.set(0, 0, 10); cameraPitch = 0; cameraYaw = 0;
+      zombies.forEach(z => scene.remove(z.mesh)); zombies = [];
+      updateHUDStats(); updateWeaponHUD(); updateSquadHUD(); addCredits(0);
+      document.getElementById('gameCanvas').requestPointerLock();
+      spawnHordeForWave(1);
+    }
+
+    function pauseGameSession() { if (!gameState.active) return; gameState.paused = true; document.exitPointerLock(); document.getElementById('pauseMenu').classList.remove('hidden'); }
+    function resumeGameSession() { gameState.paused = false; document.getElementById('pauseMenu').classList.add('hidden'); document.getElementById('gameCanvas').requestPointerLock(); }
+    function quitToMainMenu() {
+      gameState.active = false;
+      document.getElementById('pauseMenu').classList.add('hidden');
+      document.getElementById('hudLayer').classList.add('hidden');
+      document.getElementById('shopModal').classList.add('hidden');
+      document.getElementById('mainMenu').classList.remove('hidden');
+      document.exitPointerLock();
+    }
+    function endGameSession() {
+      gameState.active = false; document.exitPointerLock();
+      document.getElementById('goWave').innerText = gameState.wave;
+      document.getElementById('goKills').innerText = gameState.kills;
+      document.getElementById('goBossKills').innerText = gameState.bossKills;
+      document.getElementById('goEarnings').innerText = `$${gameState.credits}`;
+      document.getElementById('goScore').innerText = gameState.score;
+      document.getElementById('gameOverModal').classList.remove('hidden');
+    }
+    function restartGameSession() { document.getElementById('gameOverModal').classList.add('hidden'); startGameSession(); }
+
+    function gameLoop() {
+      requestAnimationFrame(gameLoop);
+      const delta = Math.min(clock.getDelta(), 0.1);
+      if (gameState.active && !gameState.paused && !gameState.inShop) {
+        updatePlayerMovement(delta); updateZombiesAI(delta); updateSoldierAllyAI(delta); updateDogCompanionAI(delta);
+        updateBossAI(delta); updateMines(delta); updateTurrets(delta); updateToxicPuddles(delta); updatePickups(delta); updateRadar();
+        for (let i = bloodParticles.length - 1; i >= 0; i--) {
+          const p = bloodParticles[i]; p.userData.life -= delta; p.position.addScaledVector(p.userData.vel, delta); p.userData.vel.y -= 9.8 * delta;
+          if (p.userData.life <= 0) { scene.remove(p); bloodParticles.splice(i, 1); }
+        }
+        for (let i = sparkParticles.length - 1; i >= 0; i--) {
+          const p = sparkParticles[i]; p.userData.life -= delta; p.position.addScaledVector(p.userData.vel, delta);
+          if (p.userData.life <= 0) { scene.remove(p); sparkParticles.splice(i, 1); }
+        }
+      }
+      renderer.render(scene, camera);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initThreeEngine();
+      setZombieMode('sedang');
+      setCompanionDurability('fragile');
+      gameLoop();
+    });
+  </script>
+</body>
+</html>
