@@ -43,6 +43,16 @@
     "description": "Belajar kosakata dan menyusun kata Bahasa Inggris seru lewat petualangan edukatif bersama burung hantu pintar di Wordy Woods."
   },
   {
+    "id": "kebun-bahagia",
+    "title": "Kebun Bahagia",
+    "category": "Arcade",
+    "code": "KB",
+    "coverUrl": "/uploads/cover-kebun-bahagia.svg",
+    "url": "games/kebun-bahagia.html",
+    "featured": true,
+    "description": "Simulator berkebun seru! Cangkul tanah, siram tanaman, tanam gandum hingga stroberi, pasang sprinkler otomatis, dan raih panen raya."
+  },
+  {
     "id": "neon-tetris",
     "title": "Neon Tetris",
     "category": "Puzzle",
