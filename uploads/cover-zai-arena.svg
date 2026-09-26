@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1e1b4b"/>
+      <stop offset="50%" stop-color="#312e81"/>
+      <stop offset="100%" stop-color="#4c1d95"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#818cf8"/>
+    </linearGradient>
+    <linearGradient id="goldBadge" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#ea580c"/>
+    </linearGradient>
+    <filter id="glow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <rect width="800" height="600" fill="url(#bgGrad)"/>
+
+  <!-- Decorative Grid & Stars -->
+  <g stroke="#6366f1" stroke-opacity="0.2" stroke-width="2">
+    <line x1="0" y1="120" x2="800" y2="120"/>
+    <line x1="0" y1="240" x2="800" y2="240"/>
+    <line x1="0" y1="360" x2="800" y2="360"/>
+    <line x1="0" y1="480" x2="800" y2="480"/>
+    <line x1="160" y1="0" x2="160" y2="600"/>
+    <line x1="320" y1="0" x2="320" y2="600"/>
+    <line x1="480" y1="0" x2="480" y2="600"/>
+    <line x1="640" y1="0" x2="640" y2="600"/>
+  </g>
+
+  <circle cx="140" cy="110" r="5" fill="#fde047" opacity="0.8"/>
+  <circle cx="670" cy="140" r="6" fill="#38bdf8" opacity="0.8"/>
+  <circle cx="210" cy="340" r="4" fill="#f472b6" opacity="0.8"/>
+  <circle cx="620" cy="310" r="5" fill="#4ade80" opacity="0.8"/>
+
+  <!-- Central Game Controller Emblem -->
+  <g transform="translate(400, 235)" filter="url(#glow)">
+    <circle cx="0" cy="0" r="135" fill="#312e81" stroke="url(#accentGrad)" stroke-width="6"/>
+    <circle cx="0" cy="0" r="110" fill="#1e1b4b"/>
+    <!-- Gamepad body -->
+    <path d="M-75,-20 C-75,-45 -45,-55 0,-55 C45,-55 75,-45 75,-20 L88,35 C92,58 68,72 50,55 L30,32 L-30,32 L-50,55 C-68,72 -92,58 -88,35 Z" fill="url(#accentGrad)" stroke="#ffffff" stroke-width="4"/>
+    <!-- D-Pad -->
+    <rect x="-52" y="-18" width="12" height="34" rx="3" fill="#1e1b4b"/>
+    <rect x="-63" y="-7" width="34" height="12" rx="3" fill="#1e1b4b"/>
+    <!-- Action Buttons -->
+    <circle cx="48" cy="-14" r="7" fill="#fde047"/>
+    <circle cx="34" cy="0" r="7" fill="#4ade80"/>
+    <circle cx="62" cy="0" r="7" fill="#f43f5e"/>
+    <circle cx="48" cy="14" r="7" fill="#38bdf8"/>
+  </g>
+
+  <!-- Title Banner -->
+  <g transform="translate(400, 495)" filter="url(#glow)">
+    <rect x="-265" y="-46" width="530" height="86" rx="26" fill="url(#goldBadge)" stroke="#ffffff" stroke-width="5"/>
+    <text x="0" y="6" font-family="'Fredoka', 'Arial Rounded MT Bold', sans-serif" font-size="40" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="1.5">ARCADE QUEST Z</text>
+    <text x="0" y="29" font-family="'Quicksand', sans-serif" font-size="14" font-weight="800" fill="#fef08a" text-anchor="middle" letter-spacing="3.5">Z.AI INTERACTIVE WEB GAME</text>
+  </g>
+</svg>

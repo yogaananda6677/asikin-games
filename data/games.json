@@ -43,6 +43,16 @@
     "description": "Belajar kosakata dan menyusun kata Bahasa Inggris seru lewat petualangan edukatif bersama burung hantu pintar di Wordy Woods."
   },
   {
+    "id": "zai-w1h5q8dgjku1",
+    "title": "Arcade Quest Z",
+    "category": "Arcade",
+    "code": "AQ",
+    "coverUrl": "/uploads/cover-zai-arena.svg",
+    "url": "https://chat.z.ai/space/w1h5q8dgjku1-art",
+    "featured": true,
+    "description": "Mainkan game interaktif seru dari Z.ai Space langsung di panggung utama ASIKIN GAMES."
+  },
+  {
     "id": "kebun-bahagia",
     "title": "Kebun Bahagia",
     "category": "Arcade",
