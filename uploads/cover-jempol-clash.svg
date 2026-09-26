@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#090d16"/>
+      <stop offset="55%" stop-color="#1e1b4b"/>
+      <stop offset="100%" stop-color="#05030f"/>
+    </linearGradient>
+    <linearGradient id="titleGold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="50%" stop-color="#fde047"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <rect width="800" height="600" fill="url(#bgSky)"/>
+
+  <!-- Cyber Arena Grid -->
+  <g stroke="#06b6d4" stroke-opacity="0.25" stroke-width="2">
+    <line x1="0" y1="340" x2="800" y2="340"/>
+    <line x1="0" y1="390" x2="800" y2="390"/>
+    <line x1="0" y1="450" x2="800" y2="450"/>
+    <line x1="400" y1="300" x2="100" y2="600"/>
+    <line x1="400" y1="300" x2="250" y2="600"/>
+    <line x1="400" y1="300" x2="400" y2="600"/>
+    <line x1="400" y1="300" x2="550" y2="600"/>
+    <line x1="400" y1="300" x2="700" y2="600"/>
+  </g>
+
+  <!-- Clash Lightning Effect -->
+  <g transform="translate(400, 220)" filter="url(#shadow)">
+    <polygon points="0,-110 25,-30 105,-40 35,15 65,95 0,40 -65,95 -35,15 -105,-40 -25,-30" fill="#facc15" stroke="#ef4444" stroke-width="5"/>
+  </g>
+
+  <!-- Interlocked Wrestling Hands Base -->
+  <path d="M80 430 Q250 375 400 395 Q550 375 720 430 L720 530 L80 530 Z" fill="#eed2ba" stroke="#4a250e" stroke-width="8" filter="url(#shadow)"/>
+  <rect x="350" y="405" width="100" height="18" rx="9" fill="#dfb08c" stroke="#4a250e" stroke-width="5"/>
+  <rect x="355" y="427" width="90" height="18" rx="9" fill="#e6bf9e" stroke="#4a250e" stroke-width="5"/>
+
+  <!-- Left Thumb: Burger Boy -->
+  <g transform="translate(285, 395) rotate(18)" filter="url(#shadow)">
+    <rect x="-42" y="-190" width="84" height="195" rx="38" fill="#eed2ba" stroke="#4a250e" stroke-width="8"/>
+    <rect x="-38" y="-170" width="22" height="38" rx="8" fill="#fff4ce" stroke="#c48a28" stroke-width="3"/>
+    <circle cx="0" cy="-115" r="11" fill="#ffffff" stroke="#000" stroke-width="4"/>
+    <circle cx="22" cy="-115" r="11" fill="#ffffff" stroke="#000" stroke-width="4"/>
+    <circle cx="4" cy="-115" r="5" fill="#000000"/>
+    <circle cx="26" cy="-115" r="5" fill="#000000"/>
+    <rect x="-5" y="-92" width="32" height="12" rx="4" fill="#ffffff" stroke="#000" stroke-width="3.5"/>
+    <!-- Burger Hat -->
+    <path d="M-45,-190 A45,35 0 0,1 45,-190 Z" fill="#f59e0b" stroke="#391d04" stroke-width="5"/>
+    <rect x="-48" y="-192" width="96" height="11" rx="5" fill="#22c55e" stroke="#391d04" stroke-width="4"/>
+    <rect x="-44" y="-181" width="88" height="12" rx="5" fill="#5c220e" stroke="#391d04" stroke-width="4"/>
+  </g>
+
+  <!-- Right Thumb: Evilbag -->
+  <g transform="translate(515, 395) rotate(-18)" filter="url(#shadow)">
+    <rect x="-42" y="-190" width="84" height="195" rx="38" fill="#eed2ba" stroke="#4a250e" stroke-width="8"/>
+    <!-- Paper Bag Mask -->
+    <polygon points="-46,-205 -22,-192 0,-208 22,-192 46,-205 44,-95 -44,-95" fill="#c79c46" stroke="#392100" stroke-width="6"/>
+    <rect x="-30" y="-160" width="60" height="28" fill="#211304"/>
+    <polygon points="-22,-152 -6,-146 -18,-138" fill="#ef4444"/>
+    <polygon points="22,-152 6,-146 18,-138" fill="#ef4444"/>
+  </g>
+
+  <!-- Title Logo Badge -->
+  <g transform="translate(400, 485)" filter="url(#shadow)">
+    <rect x="-260" y="-42" width="520" height="72" rx="22" fill="url(#titleGold)" stroke="#000000" stroke-width="6" transform="rotate(-1)"/>
+    <text x="0" y="8" font-family="'Titan One', 'Fredoka', sans-serif" font-size="48" font-weight="900" fill="#000000" text-anchor="middle" letter-spacing="1">JEMPOL CLASH</text>
+    <rect x="-155" y="22" width="310" height="38" rx="12" fill="#dc2626" stroke="#000000" stroke-width="5" transform="rotate(1)"/>
+    <text x="0" y="48" font-family="'Chakra Petch', sans-serif" font-size="22" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="4">BATTLE ROYALE</text>
+  </g>
+</svg>

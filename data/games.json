@@ -53,6 +53,16 @@
     "description": "Pertarungan Stickman 1 vs 1 brutal di lima arena! Susun atributmu, baca gaya lawan AI tiga tingkat, dan tutup combo dengan ultimate."
   },
   {
+    "id": "jempol-clash",
+    "title": "Jempol Clash: Battle Royale",
+    "category": "Action",
+    "code": "JC",
+    "coverUrl": "/uploads/cover-jempol-clash.svg",
+    "url": "games/jempol-clash.html",
+    "featured": true,
+    "description": "Adu gulat jempol kocak 1P vs AI (Easy hingga Sepuh) & 2P Lokal! Gunakan jurus sakti Petir, Kloningan Bayangan, Perisai, dan Anvil di 4 Arena."
+  },
+  {
     "id": "kebun-bahagia",
     "title": "Kebun Bahagia",
     "category": "Arcade",
